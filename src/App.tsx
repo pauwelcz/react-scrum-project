@@ -23,6 +23,7 @@ import './App.css';
 import Login from './pages/Login';
 import Notfound from './pages/NotFound';
 import Home from './pages/Home';
+import MyProjects from './pages/MyProjects';
 import { signOut, useLoggedInUser } from './utils/firebase';
 
 // MUI theme override
@@ -38,7 +39,11 @@ const ourTheme = createMuiTheme({
 });
 
 const useStyles = makeStyles(theme => ({
-  menuButton: { marginRight: theme.spacing(2) },
+  menuButton: { 
+    marginRight: theme.spacing(2),
+    variant: 'outlined',
+    color: 'secondary',
+  },
   link: { textDecoration: 'none' },
 }));
 
@@ -63,11 +68,21 @@ const App: FC = () => {
                 <Button className={classes.menuButton}>Login</Button>
               </Link>
             )}
+            {user && (
+              <>
+                <Link className={classes.link} to='/my-projects'>
+                  <Button className={classes.menuButton}>My Projects</Button>
+                </Link>
+                <Button className={classes.menuButton} onClick={signOut}>
+                  Logout
+                </Button>
+              </>
+            )}
           </Toolbar>
         </AppBar>
 
         {user === null && <Redirect to='/login' />}
-        
+
         <main className='App'>
           <Container maxWidth='sm'>
             {/* Wait for user session */}
@@ -77,6 +92,7 @@ const App: FC = () => {
               <Switch>
                 <Route path='/' exact component={Home} />
                 <Route path='/login' exact component={Login} />
+                <Route path='/my-projects' exact component={MyProjects} />
                 <Route component={Notfound} />
               </Switch>
             )}
