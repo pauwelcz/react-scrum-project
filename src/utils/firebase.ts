@@ -40,6 +40,7 @@ export const projectsCollection = db.collection('projects') as firebase.firestor
 // Category
 export type Category = {
   by: User;
+  color: string;
   project: string;
   name: string;
 }
@@ -51,6 +52,7 @@ export type Task = {
   by: User;
   name: string;
   category: string;
+  phase: string;
   note?: string;
 }
 

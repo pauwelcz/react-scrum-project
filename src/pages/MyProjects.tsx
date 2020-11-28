@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import {Project, projectsCollection, useLoggedInUser } from '../utils/firebase';
 import Grid from '@material-ui/core/Grid';
+import ProjectItem from '../components/ProjectItem';
 
 // Homepage is out tic-tac-toc game
 const MyProjects: FC = () => {
@@ -12,12 +13,15 @@ const MyProjects: FC = () => {
 
     const [error, setError] = useState<string>();
     const [projects, setProjects] = useState<Project[]>([]);
+    // Pomoci tohoto ziskam idcka
+    const [projectsID, setID] = useState<string[]>([]);
     useEffect(() => {
     // Call .onSnapshot() to listen to changes
     projectsCollection.onSnapshot(
         snapshot => {
-        // Access .docs property of snapshot
-        setProjects(snapshot.docs.map(doc => doc.data()));
+            // Access .docs property of snapshot
+            setProjects(snapshot.docs.map(doc => doc.data()));
+            setID(snapshot.docs.map(doc => doc.id));
         },
         err => setError(err.message),
     );
@@ -30,10 +34,8 @@ const MyProjects: FC = () => {
         </Typography>
 
         {projects.map((r, i) => (
-            <Grid key={i} xs={12} sm={6} item>
-                <Typography>
-                    {i}
-                </Typography>
+            <Grid key={i} item>
+                <ProjectItem {...r} />
             </Grid>
         ))}
         <Link to='/project'>
