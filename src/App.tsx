@@ -25,6 +25,7 @@ import Notfound from './pages/NotFound';
 import Home from './pages/Home';
 import MyProjects from './pages/MyProjects';
 import { signOut, useLoggedInUser } from './utils/firebase';
+import ProjectForm from './pages/Project';
 
 // MUI theme override
 const ourTheme = createMuiTheme({
@@ -93,6 +94,7 @@ const App: FC = () => {
                 <Route path='/' exact component={Home} />
                 <Route path='/login' exact component={Login} />
                 <Route path='/my-projects' exact component={MyProjects} />
+                <Route path='/project' exact component={ProjectForm} />
                 <Route component={Notfound} />
               </Switch>
             )}
