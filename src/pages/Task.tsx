@@ -36,8 +36,9 @@ const useStyles = makeStyles((theme) => ({
 
 const TaskForm: FC = () => {
   const [name, setName] = useState('');
-  const [phase, setPhase] = useState('');
-  const [category, setCategory] = useState('');
+  const [phase, setPhase] = useState('TO DO');
+  const category = ['Ahoj']
+  // const [category, setCategory] = useState('');
   const [project, setProject] = useState('');
   const [error, setError] = useState<string>();
 
@@ -54,7 +55,7 @@ const TaskForm: FC = () => {
 
   const user = useLoggedInUser();
 
-  const handleChange = (event) => {
+  const handleChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
     setPhase(event.target.value);
   };
 
@@ -106,7 +107,6 @@ const TaskForm: FC = () => {
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             value={phase}
-            onChange={handleChange}
           >
             <MenuItem value={'TO DO'}>TO DO</MenuItem>
             <MenuItem value={'IN PROGRESS'}>IN PROGRESS</MenuItem>

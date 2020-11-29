@@ -25,19 +25,22 @@ const useStyles = makeStyles(theme => ({
   link: { textDecoration: 'none' },
 }));
 
-const ProjectItem: FC<Project> = ({by, name}) => {
+const ProjectItem: FC<Project> = ({by, name, note}) => {
     return (
         <Card>
             <CardContent>
                 <Typography variant='h5' color='textSecondary'>
-                    jmeno
+                    {name}
                 </Typography>
                 <Typography color='textSecondary'>
-                    nereknu
+                    {by.email}
                 </Typography>
-                <ReactMarkdown>
-                    Tady bude markdown
-                </ReactMarkdown>
+                {note && (
+                    <ReactMarkdown>
+                        {note}
+                    </ReactMarkdown>
+                )}     
+                
             </CardContent>
             <CardActions>   
                 <Link to={{
@@ -47,10 +50,10 @@ const ProjectItem: FC<Project> = ({by, name}) => {
                         Show SCRUM    
                     </Button>   
                 </Link>         
-                <IconButton>
+                <IconButton onClick={() => alert('Update')}>
                     <EditIcon />
                 </IconButton>
-                <IconButton onClick={() => alert('Ahoj')}>
+                <IconButton onClick={() => alert('Delete')}>
                     <DeleteIcon />
                 </IconButton>
             </CardActions>
