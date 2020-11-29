@@ -11,7 +11,7 @@ import ReactMarkdown from 'react-markdown';
 
 
 import { categoriesCollection, Category, tasksCollection, useLoggedInUser } from '../utils/firebase';
-import { Checkbox, FormLabel, makeStyles } from '@material-ui/core';
+import { Checkbox, FormLabel, makeStyles, Radio, RadioGroup } from '@material-ui/core';
 import FormGroup from '@material-ui/core/FormGroup/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
 
@@ -38,15 +38,8 @@ const useStyles = makeStyles((theme) => ({
 const TaskForm: FC = () => {
   const [name, setName] = useState('');
   const [phase, setPhase] = useState('TO DO');
-  const category: never[] = []
-  // const [category, setCategory] = useState('');
   const [error, setError] = useState<string>();
-
-  const [state, setState] = useState({
-    gilad: true,
-    jason: false,
-    antoine: false,
-  });
+  const [category, setCategory] = useState('');
 
   const classes = useStyles();
 
@@ -58,11 +51,13 @@ const TaskForm: FC = () => {
   let location = useLocation();
   const project = "" + location.state
 
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleChangePhase = (event: React.ChangeEvent<{ value: unknown }>) => {
     setPhase(event.target.value as string);
   };
 
-
+  const handleChangeCategory = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setCategory(event.target.value as string);
+  };
 
   const handleSubmit = async () => {
     try {
@@ -86,19 +81,18 @@ const TaskForm: FC = () => {
     }
   };
 
-  const { gilad, jason, antoine } = state;
-
   /**
    * Zobrazeni kategorii
    */
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesId, setCategoriesID] = useState<string[]>([]);
     // Pomoci tohoto ziskam idcka
     useEffect(() => {
-    // Call .onSnapshot() to listen to changes
     categoriesCollection.onSnapshot(
         snapshot => {
-            // Access .docs property of snapshot
             setCategories(snapshot.docs.map(doc => doc.data()));
+            setCategoriesID(snapshot.docs.map(doc => doc.id));
+
         },
         err => setError(err.message),
     );
@@ -126,7 +120,7 @@ const TaskForm: FC = () => {
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             value={phase}
-            onChange={handleChange}
+            onChange={handleChangePhase}
           >
             <MenuItem value={'TO DO'}>TO DO</MenuItem>
             <MenuItem value={'IN PROGRESS'}>IN PROGRESS</MenuItem>
@@ -134,14 +128,16 @@ const TaskForm: FC = () => {
             <MenuItem value={'DONE'}>DONE</MenuItem>
           </Select>
         </FormControl>
-        <Typography>
-          Tady budu davat k dispozici kategorie
-        </Typography>
-        {categories.filter(category => category.project === project).map((r, i) => (
-            <Grid key={i} item>
-                {r.name}
-            </Grid>
-        ))}
+
+        <FormControl component="fieldset">
+              <FormLabel component="legend">Categories</FormLabel>
+              <RadioGroup aria-label="gender" name="gender1" value={category} onChange={handleChangeCategory}>
+                {categories.filter(category => category.project === project).map((r, i) => (
+                    <FormControlLabel value={categoriesId[i]} control={<Radio />} label={r.name} />
+                ))}         
+              </RadioGroup>
+        </FormControl>
+
         {error && (
           <Typography variant='subtitle2' align='left' color='error' paragraph>
             <b>{error}</b>

@@ -24,31 +24,57 @@ const ProjectScrum: FC = () => {
     let location = useLocation();
 
     const [error, setError] = useState<string>();
+
+    /**
+     * Ziskani pole kategorii pro zobrazeni
+     */
     const [categories, setCategories] = useState<Category[]>([]);
-    // Pomoci tohoto ziskam idcka
+    const [categoriesID, setCategoriesID] = useState<string[]>([]);
+
     useEffect(() => {
-    // Call .onSnapshot() to listen to changes
     categoriesCollection.onSnapshot(
         snapshot => {
-            // Access .docs property of snapshot
             setCategories(snapshot.docs.map(doc => doc.data()));
+            setCategoriesID(snapshot.docs.map(doc => doc.id));
         },
         err => setError(err.message),
     );
     }, []);
     
+    /**
+     * Ziskani pole tasku
+     */
     const [tasks, setTasks] = useState<Task[]>([]);
-    // Pomoci tohoto ziskam idcka
+    const [tasksID, setTasksID] = useState<string[]>([]);
     useEffect(() => {
-    // Call .onSnapshot() to listen to changes
     tasksCollection.onSnapshot(
         snapshot => {
-            // Access .docs property of snapshot
             setTasks(snapshot.docs.map(doc => doc.data()));
+            setTasksID(snapshot.docs.map(doc => doc.id));
         },
         err => setError(err.message),
     );
     }, []);
+
+    /**
+     * Funkce pro mazani kategorie
+     */
+    const deleteCategory = (category_id: string) => {
+        /**
+         * Nejprve musim prepsat u tasku s danou kategorii polozku category na prazdny retezec
+         */
+        tasks.filter(item => item.category === category_id).map((r, i) => {
+            tasksCollection.doc(tasksID[i]).set({
+                category: "",
+                by: r.by,
+                phase: r.phase,
+                project: r.project,
+                name: r.name
+            });
+        });
+
+        categoriesCollection.doc(category_id).delete();
+    }
 
     return (
         <div>
@@ -107,7 +133,7 @@ const ProjectScrum: FC = () => {
                         <IconButton onClick={() => alert('Update')}>
                             <EditIcon />
                         </IconButton>
-                        <IconButton onClick={() => alert('Delete')}>
+                        <IconButton onClick={() => deleteCategory(categoriesID[i])}>
                             <DeleteIcon />
                         </IconButton>
                         </CardActions>
@@ -135,7 +161,7 @@ const ProjectScrum: FC = () => {
                         <IconButton onClick={() => alert('Update')}>
                             <EditIcon />
                         </IconButton>
-                        <IconButton onClick={() => alert('Delete')}>
+                        <IconButton onClick={() => tasksCollection.doc(tasksID[i]).delete()}>
                             <DeleteIcon />
                         </IconButton>
                         </CardActions>

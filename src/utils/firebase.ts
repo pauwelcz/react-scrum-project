@@ -51,7 +51,7 @@ export const categoriesCollection = db.collection('categories') as firebase.fire
 export type Task = {
   by: User;
   name: string;
-  category: Array<string>;
+  category: string;
   project: string;
   phase: string;
   note?: string;

@@ -11,14 +11,14 @@ const MyProjects: FC = () => {
     const user = useLoggedInUser();
 
     const [error, setError] = useState<string>();
+    /**
+     * Ziskani pole projektu
+     */
     const [projects, setProjects] = useState<Project[]>([]);
-    // Pomoci tohoto ziskam idcka
     const [projectsID, setID] = useState<string[]>([]);
     useEffect(() => {
-    // Call .onSnapshot() to listen to changes
     projectsCollection.onSnapshot(
         snapshot => {
-            // Access .docs property of snapshot
             setProjects(snapshot.docs.map(doc => doc.data()));
             setID(snapshot.docs.map(doc => doc.id));
         },
