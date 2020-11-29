@@ -17,6 +17,7 @@ import { Project, projectsCollection, useLoggedInUser } from '../utils/firebase'
 import ReactMarkdown from 'react-markdown';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
+import { BuildInvalidedProject } from 'typescript';
 
 const useStyles = makeStyles(theme => ({
   card: { height: '100%' },
@@ -24,30 +25,32 @@ const useStyles = makeStyles(theme => ({
   link: { textDecoration: 'none' },
 }));
 
-const ProjectItem: FC<Project> = ({name, by, note}) => {
+const ProjectItem: FC<Project> = ({by, name}) => {
     return (
         <Card>
             <CardContent>
                 <Typography variant='h5' color='textSecondary'>
-                    {name}
+                    jmeno
                 </Typography>
                 <Typography color='textSecondary'>
-                    {by.email}
+                    nereknu
                 </Typography>
                 <ReactMarkdown>
                     Tady bude markdown
                 </ReactMarkdown>
             </CardContent>
             <CardActions>   
-                <Link to='/project-scrum'>
-                    <Button>
+                <Link to={{
+                    pathname: '/project-scrum',
+                }}>
+                    <Button  variant='contained'>
                         Show SCRUM    
                     </Button>   
                 </Link>         
                 <IconButton>
                     <EditIcon />
                 </IconButton>
-                <IconButton onClick={() => {alert('you deleted')}}>
+                <IconButton onClick={() => alert('Ahoj')}>
                     <DeleteIcon />
                 </IconButton>
             </CardActions>

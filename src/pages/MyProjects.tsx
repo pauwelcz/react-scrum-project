@@ -8,7 +8,6 @@ import ProjectItem from '../components/ProjectItem';
 
 // Homepage is out tic-tac-toc game
 const MyProjects: FC = () => {
-    
     const user = useLoggedInUser();
 
     const [error, setError] = useState<string>();

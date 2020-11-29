@@ -13,7 +13,8 @@ import { categoriesCollection, useLoggedInUser } from '../utils/firebase';
 
 const CategoryForm: FC = () => {
   const [name, setName] = useState('');
-  const [note, setNote] = useState('');
+  const [color, setColor] = useState('');
+  const [project, setProject] = useState(''); // potom vymazat
   const [error, setError] = useState<string>();
 
   const { push } = useHistory();
@@ -25,9 +26,17 @@ const CategoryForm: FC = () => {
       // TODO: Change this so reviews are saved under specific id
       // Call .add() and pass new Record as an argument
       // After awaiting previous call we can redirect back to /about page
-      
+      await categoriesCollection.add({
+        name,
+        color,
+        project,
+        by: {
+          uid: user?.uid ?? '',
+          email: user?.email ?? '',
+        },
+      });
 
-      push('/my-projects');
+      push('/project-scrum');
     } catch (err) {
       setError(err.what);
     }
@@ -49,20 +58,16 @@ const CategoryForm: FC = () => {
           onChange={e => setName(e.target.value)}
         />
         <TextField
-          label='Note'
-          name='note'
+          label='Color'
+          name='color'
           fullWidth
           multiline
           margin='normal'
           variant='outlined'
-          value={note}
-          onChange={e => setNote(e.target.value)}
+          value={color}
+          onChange={e => setColor(e.target.value)}
         />
-        <Typography variant='h5' gutterBottom>
-            Preview note:
-        </Typography>
-        <ReactMarkdown children={note}/>
-        
+
         {error && (
           <Typography variant='subtitle2' align='left' color='error' paragraph>
             <b>{error}</b>

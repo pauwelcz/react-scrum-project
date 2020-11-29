@@ -1,19 +1,22 @@
+import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const ProjectScrum: FC = () => {
-
     return (
         <>
+            <Typography>
+                Prostor pro trello
+            </Typography>
             <Link to='/category' >
-                <Button>
+                <Button variant='contained'>
                     Add category
                 </Button>
             </Link>
 
             <Link to='/task' >
-                <Button>
+                <Button variant='contained'>
                     Add task
                 </Button>
             </Link>

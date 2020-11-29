@@ -52,6 +52,7 @@ export type Task = {
   by: User;
   name: string;
   category: string;
+  project: string;
   phase: string;
   note?: string;
 }
