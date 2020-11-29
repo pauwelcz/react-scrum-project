@@ -69,7 +69,8 @@ const ProjectScrum: FC = () => {
                 by: r.by,
                 phase: r.phase,
                 project: r.project,
-                name: r.name
+                name: r.name,
+                note: r.note
             });
         });
 

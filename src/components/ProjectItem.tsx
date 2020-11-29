@@ -107,10 +107,16 @@ const ProjectItem: FC<Props> = ({note, name, project_id, author}) => {
                     <Button  variant='contained'>
                         Show SCRUM    
                     </Button>   
-                </Link>         
-                <IconButton onClick={() => alert('Update')}>
-                    <EditIcon />
-                </IconButton>
+                </Link>
+                <Link to={{
+                    pathname: '/project',
+                    state: project_id
+                    
+                }}>       
+                    <IconButton>
+                        <EditIcon />
+                    </IconButton>
+                </Link>
                 <IconButton onClick={() => deleteProject()}>
                     <DeleteIcon />
                 </IconButton>

@@ -37,7 +37,10 @@ const MyProjects: FC = () => {
                 <ProjectItem note={r.note} name={r.name} project_id={projectsID[i]} author={r.by.email}/>
             </Grid>
         ))}
-        <Link to='/project'>
+        <Link to={{
+            pathname: '/project',
+            state: ''
+        }}> 
             <Button variant='contained'>Add new project</Button>
         </Link>
     </div>

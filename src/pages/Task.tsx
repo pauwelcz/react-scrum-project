@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
 
 const TaskForm: FC = () => {
   const [name, setName] = useState('');
+  const [note, setNote] = useState('');
   const [phase, setPhase] = useState('TO DO');
   const [error, setError] = useState<string>();
   const [category, setCategory] = useState('');
@@ -73,6 +74,7 @@ const TaskForm: FC = () => {
           uid: user?.uid ?? '',
           email: user?.email ?? '',
         },
+        note,
       });
 
       push('/project-scrum', "" + location.state);
@@ -138,6 +140,21 @@ const TaskForm: FC = () => {
               </RadioGroup>
         </FormControl>
 
+        <TextField
+          label='Note'
+          name='note'
+          fullWidth
+          multiline
+          margin='normal'
+          variant='outlined'
+          value={note}
+          onChange={e => setNote(e.target.value)}
+        />
+        <Typography variant='h5' gutterBottom>
+            Preview note:
+        </Typography>
+        <ReactMarkdown children={note}/>
+        
         {error && (
           <Typography variant='subtitle2' align='left' color='error' paragraph>
             <b>{error}</b>

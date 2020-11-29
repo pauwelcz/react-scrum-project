@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -20,27 +20,57 @@ const ProjectForm: FC = () => {
 
   const user = useLoggedInUser();
 
-  const handleSubmit = async () => {
-    try {
-      // TODO: Change this so reviews are saved under specific id
-      // Call .add() and pass new Record as an argument
-      // After awaiting previous call we can redirect back to /about page
-      await projectsCollection.add({
-        name,
-        note,
-        by: {
-          uid: user?.uid ?? '',
-          email: user?.email ?? '',
-        },
-      });
+  let location = useLocation();
+  let project_id = location.state + ""
+    
+  const handleSubmitCreate = async () => {
+    if (project_id === "") {
+      try {
+        await projectsCollection.add({
+          name,
+          note,
+          by: {
+            uid: user?.uid ?? '',
+            email: user?.email ?? '',
+          },
+        });
 
-      push('/my-projects');
-    } catch (err) {
-      setError(err.what);
+        push('/my-projects');
+      } catch (err) {
+        setError(err.what);
+      }
+    } else {
+      try {
+        await projectsCollection.doc(project_id).set({
+          name,
+          note,
+          by: {
+            uid: user?.uid ?? '',
+            email: user?.email ?? '',
+          },
+        });
+
+        push('/my-projects');
+      } catch (err) {
+        setError(err.what);
+      }
     }
   };
 
+  /**
+   * Texty
+   */
+
+  const buttonName = () => {
+    if (project_id === "") {
+      return 'Create project';
+    } 
+    return 'Update project';
+  }
+
   return (
+    <>
+    
     <Card>
       <CardContent>
         <Typography variant='h4' gutterBottom>
@@ -81,12 +111,13 @@ const ProjectForm: FC = () => {
           variant='text'
           size='large'
           color='primary'
-          onClick={handleSubmit}
+          onClick={handleSubmitCreate}
         >
-          Create project
+          {buttonName()}
         </Button>
       </CardActions>
     </Card>
+    </>
   );
 };
 

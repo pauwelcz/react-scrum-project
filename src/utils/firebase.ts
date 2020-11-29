@@ -32,7 +32,7 @@ type User = Pick<firebase.User, 'uid' | 'email'>;
 export type Project = {
   by: User;
   name: string;
-  note?: string;
+  note: string;
 }
 
 export const projectsCollection = db.collection('projects') as firebase.firestore.CollectionReference<Project>;
@@ -54,7 +54,7 @@ export type Task = {
   category: string;
   project: string;
   phase: string;
-  note?: string;
+  note: string;
 }
 
 export const tasksCollection = db.collection('tasks') as firebase.firestore.CollectionReference<Task>;
