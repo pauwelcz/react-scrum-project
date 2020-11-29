@@ -34,7 +34,7 @@ const MyProjects: FC = () => {
 
         {projects.map((r, i) => (
             <Grid key={i} item>
-                <ProjectItem {...r} />
+                <ProjectItem note={r.note} name={r.name} project_id={projectsID[i]} author={r.by.email}/>
             </Grid>
         ))}
         <Link to='/project'>

@@ -1,5 +1,5 @@
-import { FC, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { FC, useEffect, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import ReactMarkdown from 'react-markdown';
 
 
-import { tasksCollection, useLoggedInUser } from '../utils/firebase';
+import { categoriesCollection, Category, tasksCollection, useLoggedInUser } from '../utils/firebase';
 import { Checkbox, FormLabel, makeStyles } from '@material-ui/core';
 import FormGroup from '@material-ui/core/FormGroup/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
@@ -21,6 +21,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import React from 'react';
+import Grid from '@material-ui/core/Grid/Grid';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -37,9 +38,8 @@ const useStyles = makeStyles((theme) => ({
 const TaskForm: FC = () => {
   const [name, setName] = useState('');
   const [phase, setPhase] = useState('TO DO');
-  const category = ['Ahoj']
+  const category: never[] = []
   // const [category, setCategory] = useState('');
-  const [project, setProject] = useState('');
   const [error, setError] = useState<string>();
 
   const [state, setState] = useState({
@@ -55,8 +55,11 @@ const TaskForm: FC = () => {
 
   const user = useLoggedInUser();
 
-  const handleChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
-    setPhase(event.target.value);
+  let location = useLocation();
+  const project = "" + location.state
+
+  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setPhase(event.target.value as string);
   };
 
 
@@ -77,13 +80,29 @@ const TaskForm: FC = () => {
         },
       });
 
-      push('/project-scrum');
+      push('/project-scrum', "" + location.state);
     } catch (err) {
       setError(err.what);
     }
   };
 
   const { gilad, jason, antoine } = state;
+
+  /**
+   * Zobrazeni kategorii
+   */
+  const [categories, setCategories] = useState<Category[]>([]);
+    // Pomoci tohoto ziskam idcka
+    useEffect(() => {
+    // Call .onSnapshot() to listen to changes
+    categoriesCollection.onSnapshot(
+        snapshot => {
+            // Access .docs property of snapshot
+            setCategories(snapshot.docs.map(doc => doc.data()));
+        },
+        err => setError(err.message),
+    );
+    }, []);
 
   return (
     <Card>
@@ -107,6 +126,7 @@ const TaskForm: FC = () => {
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             value={phase}
+            onChange={handleChange}
           >
             <MenuItem value={'TO DO'}>TO DO</MenuItem>
             <MenuItem value={'IN PROGRESS'}>IN PROGRESS</MenuItem>
@@ -114,13 +134,21 @@ const TaskForm: FC = () => {
             <MenuItem value={'DONE'}>DONE</MenuItem>
           </Select>
         </FormControl>
-
+        <Typography>
+          Tady budu davat k dispozici kategorie
+        </Typography>
+        {categories.filter(category => category.project === project).map((r, i) => (
+            <Grid key={i} item>
+                {r.name}
+            </Grid>
+        ))}
         {error && (
           <Typography variant='subtitle2' align='left' color='error' paragraph>
             <b>{error}</b>
           </Typography>
         )}
       </CardContent>
+
       <CardActions>
         <Button
           variant='text'

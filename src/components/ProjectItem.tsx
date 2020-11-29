@@ -25,7 +25,13 @@ const useStyles = makeStyles(theme => ({
   link: { textDecoration: 'none' },
 }));
 
-const ProjectItem: FC<Project> = ({by, name, note}) => {
+export type Props = {
+    name: string;
+    note?: string;
+    author: string | null;
+    project_id: string;
+}
+const ProjectItem: FC<Props> = ({note, name, project_id, author}) => {
     return (
         <Card>
             <CardContent>
@@ -33,7 +39,7 @@ const ProjectItem: FC<Project> = ({by, name, note}) => {
                     {name}
                 </Typography>
                 <Typography color='textSecondary'>
-                    {by.email}
+                    {author}
                 </Typography>
                 {note && (
                     <ReactMarkdown>
@@ -45,6 +51,7 @@ const ProjectItem: FC<Project> = ({by, name, note}) => {
             <CardActions>   
                 <Link to={{
                     pathname: '/project-scrum',
+                    state: project_id
                 }}>
                     <Button  variant='contained'>
                         Show SCRUM    

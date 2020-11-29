@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -14,13 +14,13 @@ import { categoriesCollection, useLoggedInUser } from '../utils/firebase';
 const CategoryForm: FC = () => {
   const [name, setName] = useState('');
   const [color, setColor] = useState('');
-  const [project, setProject] = useState(''); // potom vymazat
+  // const [project, setProject] = useState<string>(''); // potom vymazat
   const [error, setError] = useState<string>();
 
   const { push } = useHistory();
-
+  let location = useLocation();
   const user = useLoggedInUser();
-
+  const project = "" + location.state
   const handleSubmit = async () => {
     try {
       // TODO: Change this so reviews are saved under specific id
@@ -36,7 +36,8 @@ const CategoryForm: FC = () => {
         },
       });
 
-      push('/project-scrum');
+      // Do project scrum poslu zaroven i location state
+      push('/project-scrum', "" + location.state);
     } catch (err) {
       setError(err.what);
     }
