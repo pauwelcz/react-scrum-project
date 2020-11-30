@@ -8,18 +8,36 @@ import TextField from '@material-ui/core/TextField';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 import ReactMarkdown from 'react-markdown';
+import { ColorPalette } from 'material-ui-color';
+
 
 import { categoriesCollection, useLoggedInUser } from '../utils/firebase';
+import Chip from '@material-ui/core/Chip';
 
 /**
  * Stranka pro vytvareni kategorie
  */
 const CategoryForm: FC = () => {
-  const location = useLocation<{category_id: string, project: string, name: string }>();
+  const location = useLocation<{category_id: string, project: string, name: string, color: string }>();
 
   const [name, setName] = useState(location.state.name === undefined ? '' : location.state.name);
-  const [color, setColor] = useState('');
+  const [color, setColor] = useState(location.state.color === undefined ? 'white' : location.state.color);
   const [error, setError] = useState<string>();
+
+  const palette = {
+    red: '#ff0000',
+    blue: '#0000ff',
+    green: '#00ff00',
+    yellow: 'yellow',
+    cyan: 'cyan',
+    lime: 'lime',
+    gray: 'gray',
+    orange: 'orange',
+    lightpurple: '#dd33fa',
+    white: 'white',
+    pink: 'pink',
+    lightblue: 'lightblue',
+  };
 
   const { push } = useHistory();
   const user = useLoggedInUser();
@@ -91,17 +109,17 @@ const CategoryForm: FC = () => {
           value={name}
           onChange={e => setName(e.target.value)}
         />
-        <TextField
-          label='Color'
-          name='color'
-          fullWidth
-          multiline
-          margin='normal'
-          variant='outlined'
-          value={color}
-          onChange={e => setColor(e.target.value)}
-        />
 
+        <Typography>
+          Category color:
+        </Typography>
+        <ColorPalette palette={palette} onSelect={(e)=> setColor(palette[e])}/>
+
+        <Chip 
+            size="small"
+            label={name}
+            style={{backgroundColor: color, fontWeight: "bold"}}
+        />
         {error && (
           <Typography variant='subtitle2' align='left' color='error' paragraph>
             <b>{error}</b>

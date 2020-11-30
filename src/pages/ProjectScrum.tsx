@@ -153,6 +153,7 @@ const ProjectScrum: FC = () => {
                                     "category_id": categoriesID[i],
                                     "project": location.state,
                                     "name": r.name,
+                                    "color": r.color,
                                 }
                             }}>
                             <IconButton>

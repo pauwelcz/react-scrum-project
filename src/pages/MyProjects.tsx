@@ -35,15 +35,17 @@ const MyProjects: FC = () => {
             My projects
         </Typography>
 
-        {projects.map((r, i) => (
-            <Grid key={i} item>
-                {/**
-                 * Predavam komponente hodnoty hlavne pro zachovani id projektu, ktere
-                 * se vyuziva pri vytvareni kategorii a tasku v komponente (prace s databazi)
-                 */}
-                <ProjectItem note={r.note} name={r.name} project_id={projectsID[i]} by={r.by}/>
-            </Grid>
-        ))}
+        <Grid container spacing={1}>
+            {projects.map((r, i) => (
+                <Grid key={i} xs={12} item>
+                    {/**
+                     * Predavam komponente hodnoty hlavne pro zachovani id projektu, ktere
+                     * se vyuziva pri vytvareni kategorii a tasku v komponente (prace s databazi)
+                     */}
+                    <ProjectItem note={r.note} name={r.name} project_id={projectsID[i]} by={r.by}/>
+                </Grid>
+            ))}
+        </Grid>
         <Link to={{
             pathname: '/project',
             state: ''

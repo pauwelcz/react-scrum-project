@@ -81,7 +81,6 @@ const TaskForm: FC = () => {
   
         push('/project-scrum', project_id);
       } catch (err) {
-        alert(err)
         setError(err.what);
       }
     } else {
