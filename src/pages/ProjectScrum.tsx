@@ -13,6 +13,7 @@ import Card from '@material-ui/core/Card/Card';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { makeStyles } from '@material-ui/core/styles';
+import Chip from '@material-ui/core/Chip/Chip';
 
 const useStyles = makeStyles(theme => ({
     card: { height: '100%' },
@@ -23,6 +24,7 @@ const ProjectScrum: FC = () => {
 
     let location = useLocation();
 
+    
     const [error, setError] = useState<string>();
 
     /**
@@ -64,18 +66,14 @@ const ProjectScrum: FC = () => {
          * Nejprve musim prepsat u tasku s danou kategorii polozku category na prazdny retezec
          */
         tasks.filter(item => item.category === category_id).map((r, i) => {
-            tasksCollection.doc(tasksID[i]).set({
-                category: "",
-                by: r.by,
-                phase: r.phase,
-                project: r.project,
-                name: r.name,
-                note: r.note
+            tasksCollection.doc(tasksID[i]).update({
+                category: ""
             });
         });
 
         categoriesCollection.doc(category_id).delete();
     }
+
 
     return (
         <div>
@@ -117,7 +115,25 @@ const ProjectScrum: FC = () => {
             <Typography>
                 Prostor pro trello
             </Typography>
-
+            <Grid container spacing={1}>
+                {tasks.filter(task => task.project === location.state).map((r, i) => (
+                    <Grid xs={4} item>
+                        <Paper elevation={3} square> 
+                            <Typography variant="h6">
+                                {r.name}
+                            </Typography>
+                            <Typography variant="caption" align="left">
+                                {r.by.email}
+                            </Typography>
+                            <Chip 
+                                size="small"
+                                label ="Kategorie"
+                                color="primary"
+                            />
+                        </Paper>
+                    </Grid>
+                ))}
+            </Grid>
             <Typography>
                 Categories:
             </Typography>
@@ -131,9 +147,18 @@ const ProjectScrum: FC = () => {
                             </Typography>
                         </CardContent>
                         <CardActions>
-                        <IconButton onClick={() => alert('Update')}>
-                            <EditIcon />
-                        </IconButton>
+                        <Link to={{
+                                pathname: '/category',
+                                state: {
+                                    "category_id": categoriesID[i],
+                                    "project": location.state,
+                                    "name": r.name,
+                                }
+                            }}>
+                            <IconButton>
+                                <EditIcon />
+                            </IconButton>
+                        </Link>
                         <IconButton onClick={() => deleteCategory(categoriesID[i])}>
                             <DeleteIcon />
                         </IconButton>
@@ -141,6 +166,8 @@ const ProjectScrum: FC = () => {
                     </Card>
                 </Grid>
             ))}
+
+            {}
             </Grid>
             <Typography>
                 Tasks:
@@ -157,11 +184,25 @@ const ProjectScrum: FC = () => {
                             <Typography>
                                 {r.phase}
                             </Typography>
+
+
                         </CardContent>
                         <CardActions>
-                        <IconButton onClick={() => alert('Update')}>
-                            <EditIcon />
-                        </IconButton>
+                            <Link to={{
+                                pathname: '/task',
+                                state: {
+                                    "task_id": tasksID[i],
+                                    "project": location.state,
+                                    "phase": r.phase,
+                                    "note": r.note,
+                                    "name": r.name,
+                                    "category": r.category,
+                                }
+                            }}>
+                                <IconButton>
+                                    <EditIcon />
+                                </IconButton>
+                            </Link>
                         <IconButton onClick={() => tasksCollection.doc(tasksID[i]).delete()}>
                             <DeleteIcon />
                         </IconButton>
@@ -173,7 +214,9 @@ const ProjectScrum: FC = () => {
 
             <Link to={{
                 pathname: '/category',
-                state: location.state
+                state: {
+                    "project": location.state
+                }
             }}>
                 <Button variant='contained'>
                     Add category
@@ -182,7 +225,9 @@ const ProjectScrum: FC = () => {
 
                 <Link to={{
                     pathname: '/task',
-                    state: location.state
+                    state: {
+                        "project": location.state
+                    }
                 }}>
                 <Button variant='contained'>
                     Add task

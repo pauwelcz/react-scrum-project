@@ -34,7 +34,7 @@ export type Props = {
  * Componenta pro zobrazeni jednoho projektu
  */
 // TODO: Editace projektu (passnuti "note", "name" a "by"? kvuli defaultnim hodnotam)
-const ProjectItem: FC<Props> = ({note, name, project_id, by}) => {
+const ScrumCard: FC<Props> = ({note, name, project_id, by}) => {
     const [error, setError] = useState<string>();
     /**
      * Ziskani ID tasku
@@ -133,4 +133,4 @@ const ProjectItem: FC<Props> = ({note, name, project_id, by}) => {
         
 }
 
-export default ProjectItem;
+export default ScrumCard;

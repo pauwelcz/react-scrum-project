@@ -11,37 +11,70 @@ import ReactMarkdown from 'react-markdown';
 
 import { categoriesCollection, useLoggedInUser } from '../utils/firebase';
 
+/**
+ * Stranka pro vytvareni kategorie
+ */
 const CategoryForm: FC = () => {
-  const [name, setName] = useState('');
+  const location = useLocation<{category_id: string, project: string, name: string }>();
+
+  const [name, setName] = useState(location.state.name === undefined ? '' : location.state.name);
   const [color, setColor] = useState('');
-  // const [project, setProject] = useState<string>(''); // potom vymazat
   const [error, setError] = useState<string>();
 
   const { push } = useHistory();
-  let location = useLocation();
   const user = useLoggedInUser();
-  const project = "" + location.state
-  const handleSubmit = async () => {
-    try {
-      // TODO: Change this so reviews are saved under specific id
-      // Call .add() and pass new Record as an argument
-      // After awaiting previous call we can redirect back to /about page
-      await categoriesCollection.add({
-        name,
-        color,
-        project,
-        by: {
-          uid: user?.uid ?? '',
-          email: user?.email ?? '',
-        },
-      });
+  // Vicemene prevadim type "unknown" do stringu, aby jsem mohl dale pracovat s id projektu
+  const project = location.state.project
+  const category_id = location.state.category_id;
 
-      // Do project scrum poslu zaroven i location state
-      push('/project-scrum', "" + location.state);
-    } catch (err) {
-      setError(err.what);
+  /**
+   * Ulozeni kategorie
+   */
+  const handleSubmit = async () => {
+    if (category_id === undefined) {
+      try {
+        await categoriesCollection.add({
+          name,
+          color,
+          project,
+          by: {
+            uid: user?.uid ?? '',
+            email: user?.email ?? '',
+          },
+        });
+
+        push('/project-scrum', project);
+      } catch (err) {
+        setError(err.what);
+      }
+    } else {
+      try {
+        await categoriesCollection.doc(category_id).set({
+          name,
+          color,
+          project,
+          by: {
+            uid: user?.uid ?? '',
+            email: user?.email ?? '',
+          },
+        });
+
+        push('/project-scrum', project);
+      } catch (err) {
+        setError(err.what);
+      }
     }
   };
+
+  /**
+   * Zmena textu u tlacitka
+   */
+  const buttonName = () => {
+    if (category_id === undefined) {
+      return 'Create category';
+    } 
+    return 'Update category';
+  }
 
   return (
     <Card>
@@ -82,7 +115,7 @@ const CategoryForm: FC = () => {
           color='primary'
           onClick={handleSubmit}
         >
-          Create category
+          {buttonName()}
         </Button>
       </CardActions>
     </Card>

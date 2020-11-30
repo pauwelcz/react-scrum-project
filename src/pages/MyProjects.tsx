@@ -6,13 +6,16 @@ import {Project, projectsCollection, useLoggedInUser } from '../utils/firebase';
 import Grid from '@material-ui/core/Grid';
 import ProjectItem from '../components/ProjectItem';
 
-// Homepage is out tic-tac-toc game
+/**
+ * Zobrazeni "seznamu projektu"
+ * prozatim nastaveno, ze se zobrazi projekty vsech
+ */
 const MyProjects: FC = () => {
     const user = useLoggedInUser();
 
     const [error, setError] = useState<string>();
     /**
-     * Ziskani pole projektu
+     * Ziskani pole projektu (nevim jiste, jestli existuje jednodussi zpusob)
      */
     const [projects, setProjects] = useState<Project[]>([]);
     const [projectsID, setID] = useState<string[]>([]);
@@ -34,7 +37,11 @@ const MyProjects: FC = () => {
 
         {projects.map((r, i) => (
             <Grid key={i} item>
-                <ProjectItem note={r.note} name={r.name} project_id={projectsID[i]} author={r.by.email}/>
+                {/**
+                 * Predavam komponente hodnoty hlavne pro zachovani id projektu, ktere
+                 * se vyuziva pri vytvareni kategorii a tasku v komponente (prace s databazi)
+                 */}
+                <ProjectItem note={r.note} name={r.name} project_id={projectsID[i]} by={r.by}/>
             </Grid>
         ))}
         <Link to={{

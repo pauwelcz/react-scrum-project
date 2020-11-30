@@ -9,22 +9,24 @@ import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 import ReactMarkdown from 'react-markdown';
 
-import { projectsCollection, useLoggedInUser } from '../utils/firebase';
+import { projectsCollection, useLoggedInUser, User } from '../utils/firebase';
 
 const ProjectForm: FC = () => {
-  const [name, setName] = useState('');
-  const [note, setNote] = useState('');
-  const [error, setError] = useState<string>();
 
   const { push } = useHistory();
-
   const user = useLoggedInUser();
+  const location = useLocation<{project_id: string, name: string, note: string }>();
+  const project_id = location.state.project_id;
 
-  let location = useLocation();
-  let project_id = location.state + ""
-    
+  const [name, setName] = useState(location.state.name === undefined ? '' : location.state.name);
+  const [note, setNote] = useState(location.state.note === undefined ? '' : location.state.note);
+  const [error, setError] = useState<string>();
+  /**
+   * Podle toho, jaky je stav "project_id", funkce ulozi, nebo updatne novy projekt
+   */
+  // TODO: potreba zobrazeni puvodnich hodnot v textfieldu v pripade updatu
   const handleSubmitCreate = async () => {
-    if (project_id === "") {
+    if (project_id === undefined) {
       try {
         await projectsCollection.add({
           name,
@@ -58,11 +60,10 @@ const ProjectForm: FC = () => {
   };
 
   /**
-   * Texty
+   * Zmena textu u tlacitka
    */
-
   const buttonName = () => {
-    if (project_id === "") {
+    if (project_id === undefined) {
       return 'Create project';
     } 
     return 'Update project';
@@ -70,7 +71,6 @@ const ProjectForm: FC = () => {
 
   return (
     <>
-    
     <Card>
       <CardContent>
         <Typography variant='h4' gutterBottom>

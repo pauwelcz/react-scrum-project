@@ -21,8 +21,6 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import React from 'react';
-import Grid from '@material-ui/core/Grid/Grid';
-
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -34,23 +32,26 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
+/**
+ * Stranka pro vytvareni tasku
+ */
 const TaskForm: FC = () => {
-  const [name, setName] = useState('');
-  const [note, setNote] = useState('');
-  const [phase, setPhase] = useState('TO DO');
+  const location = useLocation<{task_id: string, project: string, category: string, name: string, note: string, phase: string}>();
+
+  const [name, setName] = useState(location.state.name === undefined ? '' : location.state.name);
+  const [note, setNote] = useState(location.state.note === undefined ? '' : location.state.note);
+  const [phase, setPhase] = useState(location.state.phase === undefined ? 'TO DO' : location.state.phase);
   const [error, setError] = useState<string>();
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(location.state.category === undefined ? '' : location.state.category);
 
   const classes = useStyles();
-
 
   const { push } = useHistory();
 
   const user = useLoggedInUser();
 
-  let location = useLocation();
-  const project = "" + location.state
+  const task_id = location.state.task_id;
+  const project_id = location.state.project;
 
   const handleChangePhase = (event: React.ChangeEvent<{ value: unknown }>) => {
     setPhase(event.target.value as string);
@@ -60,27 +61,50 @@ const TaskForm: FC = () => {
     setCategory(event.target.value as string);
   };
 
+  /**
+   * Ulozeni tasku
+   */
   const handleSubmit = async () => {
-    try {
-      // TODO: Change this so reviews are saved under specific id
-      // Call .add() and pass new Record as an argument
-      // After awaiting previous call we can redirect back to /about page
-      await tasksCollection.add({
-        name,
-        category,
-        phase,
-        project,
-        by: {
-          uid: user?.uid ?? '',
-          email: user?.email ?? '',
-        },
-        note,
-      });
-
-      push('/project-scrum', "" + location.state);
-    } catch (err) {
-      setError(err.what);
+    if (task_id === undefined) { 
+      try {
+        await tasksCollection.add({
+          name,
+          category,
+          phase,
+          "project": project_id,
+          by: {
+            uid: user?.uid ?? '',
+            email: user?.email ?? '',
+          },
+          note,
+        });
+  
+        push('/project-scrum', project_id);
+      } catch (err) {
+        alert(err)
+        setError(err.what);
+      }
+    } else {
+      try {
+        await tasksCollection.doc(task_id).set({
+          name,
+          category,
+          phase,
+          "project": project_id,
+          by: {
+            uid: user?.uid ?? '',
+            email: user?.email ?? '',
+          },
+          note,
+        });
+  
+        push('/project-scrum', project_id);
+      } catch (err) {
+        
+        setError(err.what);
+      }
     }
+    
   };
 
   /**
@@ -88,7 +112,6 @@ const TaskForm: FC = () => {
    */
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesId, setCategoriesID] = useState<string[]>([]);
-    // Pomoci tohoto ziskam idcka
     useEffect(() => {
     categoriesCollection.onSnapshot(
         snapshot => {
@@ -99,6 +122,16 @@ const TaskForm: FC = () => {
         err => setError(err.message),
     );
     }, []);
+
+  /**
+   * Zmena textu u tlacitka
+   */
+  const buttonName = () => {
+    if (task_id === undefined) {
+      return 'Create task';
+    } 
+    return 'Update task';
+  }
 
   return (
     <Card>
@@ -134,7 +167,7 @@ const TaskForm: FC = () => {
         <FormControl component="fieldset">
               <FormLabel component="legend">Categories</FormLabel>
               <RadioGroup aria-label="gender" name="gender1" value={category} onChange={handleChangeCategory}>
-                {categories.filter(category => category.project === project).map((r, i) => (
+                {categories.filter(category => category.project === project_id).map((r, i) => (
                     <FormControlLabel value={categoriesId[i]} control={<Radio />} label={r.name} />
                 ))}         
               </RadioGroup>
@@ -169,7 +202,7 @@ const TaskForm: FC = () => {
           color='primary'
           onClick={handleSubmit}
         >
-          Create task
+          {buttonName()}
         </Button>
       </CardActions>
     </Card>

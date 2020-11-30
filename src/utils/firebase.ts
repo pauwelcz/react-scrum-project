@@ -26,7 +26,7 @@ const db = firebase.firestore();
  * Sign in
  */
 // Simplified user type for referencing users
-type User = Pick<firebase.User, 'uid' | 'email'>;
+export type User = Pick<firebase.User, 'uid' | 'email'>;
 
 // Project
 export type Project = {
