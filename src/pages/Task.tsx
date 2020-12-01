@@ -30,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
+  taskButtons: {
+    variant: 'text',
+    size: 'large',
+    color: 'primary',
+  }
 }));
 
 /**
@@ -47,6 +52,7 @@ const TaskForm: FC = () => {
   const classes = useStyles();
 
   const { push } = useHistory();
+  const history = useHistory();
 
   const user = useLoggedInUser();
 
@@ -195,14 +201,8 @@ const TaskForm: FC = () => {
       </CardContent>
 
       <CardActions>
-        <Button
-          variant='text'
-          size='large'
-          color='primary'
-          onClick={handleSubmit}
-        >
-          {buttonName()}
-        </Button>
+        <Button className={classes.taskButtons} onClick={handleSubmit}>{buttonName()}</Button>
+        <Button className={classes.taskButtons} onClick={() => history.goBack()}>Back</Button>
       </CardActions>
     </Card>
   );
