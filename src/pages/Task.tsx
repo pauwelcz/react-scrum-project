@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   taskButtons: {
     variant: 'text',
     size: 'large',
-    color: 'primary',
+    color: theme.palette.primary.main,
   }
 }));
 
