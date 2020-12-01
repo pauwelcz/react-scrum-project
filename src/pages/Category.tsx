@@ -13,6 +13,15 @@ import { ColorPalette } from 'material-ui-color';
 
 import { categoriesCollection, useLoggedInUser } from '../utils/firebase';
 import Chip from '@material-ui/core/Chip';
+import { makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+  button: {
+    variant: 'text',
+    size: 'large',
+    color: theme.palette.primary.main,
+  }
+}));
 
 /**
  * Stranka pro vytvareni kategorie
@@ -40,6 +49,8 @@ const CategoryForm: FC = () => {
   };
 
   const { push } = useHistory();
+  const history = useHistory();
+  const classes = useStyles();
   const user = useLoggedInUser();
   // Vicemene prevadim type "unknown" do stringu, aby jsem mohl dale pracovat s id projektu
   const project = location.state.project
@@ -127,14 +138,8 @@ const CategoryForm: FC = () => {
         )}
       </CardContent>
       <CardActions>
-        <Button
-          variant='text'
-          size='large'
-          color='primary'
-          onClick={handleSubmit}
-        >
-          {buttonName()}
-        </Button>
+        <Button className={classes.button} onClick={handleSubmit}>{buttonName()}</Button>
+        <Button className={classes.button} onClick={() => history.goBack()}>Back</Button>
       </CardActions>
     </Card>
   );
