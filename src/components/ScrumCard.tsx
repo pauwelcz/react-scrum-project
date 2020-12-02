@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
   link: { textDecoration: 'none' },
 }));
 
-export type Props = {
+type Props = {
     name: string;
     note?: string;
     by: User;

@@ -88,7 +88,7 @@ const App: FC = () => {
         {user === null && <Redirect to='/login' />}
 
         <main className='App'>
-          <Container maxWidth='sm'>
+          <Container maxWidth='lg'>
             {/* Wait for user session */}
             {user === undefined ? (
               <CircularProgress />

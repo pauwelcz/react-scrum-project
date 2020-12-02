@@ -4,16 +4,13 @@ import React, { FC, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { CardActions, CardContent, IconButton, Paper } from '@material-ui/core';
-import List from '@material-ui/core/List/List';
-import ListSubheader from '@material-ui/core/ListSubheader/ListSubheader';
-import ListItemText from '@material-ui/core/ListItemText/ListItemText';
-import ListItem from '@material-ui/core/ListItem/ListItem';
 import { categoriesCollection, Category, Task, tasksCollection } from '../utils/firebase';
 import Card from '@material-ui/core/Card/Card';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { makeStyles } from '@material-ui/core/styles';
 import Chip from '@material-ui/core/Chip/Chip';
+import { BoardColumn } from '../components/BoardColumn';
 
 const useStyles = makeStyles(theme => ({
     card: { height: '100%' },
@@ -74,41 +71,27 @@ const ProjectScrum: FC = () => {
         categoriesCollection.doc(category_id).delete();
     }
 
+    const filterTasksByPhase = (phase: string) => {
+        return tasks.filter(item => item.phase === phase && item.project === location.state).map(function(task, i) {
+            return [task, tasksID[i]];
+          })
+    }
+
 
     return (
         <div>
         <Grid container spacing={1}>
-            <Grid item xs={6}>
-                <Paper>                    
-                    <Typography variant="h6">
-                        TO DO
-                    </Typography>
-                </Paper>
-
+            <Grid item  sm={3}>
+                <BoardColumn title={"TO DO"} items={filterTasksByPhase("TO DO")}/>
             </Grid>
-            <Grid item xs={6}>
-                <Paper>
-                    <Typography variant="h6">
-                        IN PROGRESS
-                    </Typography>
-                </Paper>
+            <Grid item sm={3}>
+                <BoardColumn title={"IN PROGRESS"} items={filterTasksByPhase("IN PROGRESS")}/>
             </Grid>
-            <Grid item xs={6}>
-                <Paper>
-                    <Typography variant="h6">
-                        TESTING
-                    </Typography>
-                </Paper>
+            <Grid item sm={3}>
+                <BoardColumn title={"TESTING"} items={filterTasksByPhase("TESTING")}/>
             </Grid>
-            <Grid item xs={6}>
-                <Paper>
-                    <Typography variant="h6">
-                        DONE
-                    </Typography>
-                    
-                
-                </Paper>
-                
+            <Grid item sm={3}>
+                <BoardColumn title={"DONE"} items={filterTasksByPhase("DONE")}/>
             </Grid>
         </Grid>
 

@@ -11,13 +11,11 @@ import ReactMarkdown from 'react-markdown';
 
 
 import { categoriesCollection, Category, tasksCollection, useLoggedInUser } from '../utils/firebase';
-import { Checkbox, FormLabel, makeStyles, Radio, RadioGroup } from '@material-ui/core';
-import FormGroup from '@material-ui/core/FormGroup/FormGroup';
+import { FormLabel, makeStyles, Radio, RadioGroup } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
 
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import React from 'react';
@@ -109,8 +107,15 @@ const TaskForm: FC = () => {
         setError(err.what);
       }
     }
-    
   };
+
+  const handleDelete = async () => {
+    try {
+      await tasksCollection.doc(task_id).delete();
+      push('/project-scrum', project_id);
+    } catch (err) {
+    setError(err.what);
+  }};
 
   /**
    * Zobrazeni kategorii
@@ -142,7 +147,7 @@ const TaskForm: FC = () => {
     <Card>
       <CardContent>
         <Typography variant='h4' gutterBottom>
-          Add task:
+          {buttonName()}
         </Typography>
         <TextField
           label='Task name'
@@ -202,6 +207,7 @@ const TaskForm: FC = () => {
 
       <CardActions>
         <Button className={classes.button} onClick={handleSubmit}>{buttonName()}</Button>
+        {(task_id) && <Button className={classes.button} onClick={handleDelete}>Delete task</Button>}
         <Button className={classes.button} onClick={() => history.goBack()}>Back</Button>
       </CardActions>
     </Card>
