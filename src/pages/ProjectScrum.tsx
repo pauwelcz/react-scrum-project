@@ -81,7 +81,7 @@ const ProjectScrum: FC = () => {
     return (
         <div>
         <Grid container spacing={1}>
-            <Grid item  sm={3}>
+            <Grid item sm={3}>
                 <BoardColumn title={"TO DO"} items={filterTasksByPhase("TO DO")}/>
             </Grid>
             <Grid item sm={3}>
@@ -95,28 +95,6 @@ const ProjectScrum: FC = () => {
             </Grid>
         </Grid>
 
-            <Typography>
-                Prostor pro trello
-            </Typography>
-            <Grid container spacing={1}>
-                {tasks.filter(task => task.project === location.state).map((r, i) => (
-                    <Grid xs={4} item>
-                        <Paper elevation={3} square> 
-                            <Typography variant="h6">
-                                {r.name}
-                            </Typography>
-                            <Typography variant="caption" align="left">
-                                {r.by.email}
-                            </Typography>
-                            <Chip 
-                                size="small"
-                                label ="Kategorie"
-                                color="primary"
-                            />
-                        </Paper>
-                    </Grid>
-                ))}
-            </Grid>
             <Typography>
                 Categories:
             </Typography>
@@ -152,48 +130,6 @@ const ProjectScrum: FC = () => {
             ))}
 
             {}
-            </Grid>
-            <Typography>
-                Tasks:
-            </Typography>
-            <Grid container spacing={1}>
-
-            {tasks.filter(task => task.project === location.state).map((r, i) => (
-                <Grid key={i} xs={4} item>
-                    <Card className={classes.card}>
-                        <CardContent>
-                            <Typography>
-                                {r.name}
-                            </Typography>
-                            <Typography>
-                                {r.phase}
-                            </Typography>
-
-
-                        </CardContent>
-                        <CardActions>
-                            <Link to={{
-                                pathname: '/task',
-                                state: {
-                                    "task_id": tasksID[i],
-                                    "project": location.state,
-                                    "phase": r.phase,
-                                    "note": r.note,
-                                    "name": r.name,
-                                    "category": r.category,
-                                }
-                            }}>
-                                <IconButton>
-                                    <EditIcon />
-                                </IconButton>
-                            </Link>
-                        <IconButton onClick={() => tasksCollection.doc(tasksID[i]).delete()}>
-                            <DeleteIcon />
-                        </IconButton>
-                        </CardActions>
-                    </Card>
-                </Grid>
-            ))}
             </Grid>
 
             <Link to={{
