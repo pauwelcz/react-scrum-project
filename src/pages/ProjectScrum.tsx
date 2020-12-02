@@ -72,11 +72,13 @@ const ProjectScrum: FC = () => {
     }
 
     const filterTasksByPhase = (phase: string) => {
-        return tasks.filter(item => item.phase === phase && item.project === location.state).map(function(task, i) {
+        return tasks.map(function(task, i) {
             return [task, tasksID[i]];
-          })
-    }
-
+          }).filter(function(item) {
+            const task = item[0] as Task;
+            return task.phase === phase && task.project === location.state;
+        })
+    };
 
     return (
         <div>

@@ -9,30 +9,23 @@ type Props = {
     items: (Task | string)[][],
   }
 
-const getTask = (item: (Task | string)[]) => {
-    return item[0] as Task;
-}
-
-const getId = (item: (Task | string)[]) => {
-    return item[1] as string;
-}
-
-
 export const BoardColumn: React.FC<Props> = (props) => {
     return(
         <div>
             <Paper>     
             <Grid container spacing={2} direction="column" justify="center" alignItems="center">
-            <Grid item>
-                <Typography variant="h6">{props.title}</Typography>
-            </Grid>
-            {/* list of tasks */}
-            {props.items.map((item: (Task | string)[], index: number) => 
-            <Grid container item direction="column">
-                <BoardCard key={index} name={getTask(item).name} note={getTask(item).note} project={getTask(item).project} 
-                            by={getTask(item).by} category={getTask(item).category} phase={getTask(item).phase} id={getId(item)}/>
-            </Grid>)
-            }
+                <Grid item>
+                    <Typography variant="h6">{props.title}</Typography>
+                </Grid>
+                {/* list of tasks */}
+                {props.items.map((item) => {
+                    const task = item[0] as Task;
+                    const id = item[1] as string;
+                    return  <Grid container item direction="column">
+                                <BoardCard key={id} name={task.name} note={task.note} project={task.project} 
+                                    by={task.by} category={task.category} phase={task.phase} id={id}/>
+                            </Grid>})
+                }
             </Grid>
             </Paper>
         </div>
