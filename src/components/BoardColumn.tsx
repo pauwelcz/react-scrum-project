@@ -6,7 +6,7 @@ import BoardCard from "./BoardCard"
 
 type Props = {
     title: string,
-    items: (Task | string)[][],
+    items: (Task | string | undefined)[][],
 }
 
 export const BoardColumn: React.FC<Props> = (props) => {

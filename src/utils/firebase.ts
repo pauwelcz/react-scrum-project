@@ -29,25 +29,26 @@ export type User = Pick<firebase.User, 'uid' | 'email'>;
 
 // Project
 export type Project = {
+  id?: string;
   by: User;
   name: string;
   note: string;
 }
-
 export const projectsCollection = db.collection('projects') as firebase.firestore.CollectionReference<Project>;
 
 // Category
 export type Category = {
+  id?: string;
   by: User;
   color: string;
   project: string;
   name: string;
 }
-
 export const categoriesCollection = db.collection('categories') as firebase.firestore.CollectionReference<Category>;
 
 // Task
 export type Task = {
+  id?: string;
   by: User;
   name: string;
   category: string; // Category#id
@@ -55,7 +56,6 @@ export type Task = {
   phase: string;
   note: string;
 }
-
 export const tasksCollection = db.collection('tasks') as firebase.firestore.CollectionReference<Task>;
 
 // Helper to get current time in Timestamp

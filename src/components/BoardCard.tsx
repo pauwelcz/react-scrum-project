@@ -33,7 +33,7 @@ const BoardCard: FC<TaskProps> = ({ id, name, note, project, phase, by, category
                 <Link to={{
                     pathname: '/task',
                     state: {
-                        "task_id": id,
+                        "taskId": id,
                         "project": project,
                         "phase": phase,
                         "note": note,
