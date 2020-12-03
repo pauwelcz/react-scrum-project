@@ -1,22 +1,12 @@
-import React, { FC } from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Redirect,
-  Switch,
-} from 'react-router-dom';
+import React, {FC} from 'react';
+import {BrowserRouter as Router, Link, Redirect, Route, Switch,} from 'react-router-dom';
 
 import Container from '@material-ui/core/Container';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import {
-  CircularProgress,
-  createMuiTheme,
-  MuiThemeProvider,
-} from '@material-ui/core';
+import {makeStyles} from '@material-ui/core/styles';
+import {CircularProgress, createMuiTheme, MuiThemeProvider,} from '@material-ui/core';
 
 import './App.css';
 
@@ -24,7 +14,7 @@ import Login from './pages/Login';
 import Notfound from './pages/NotFound';
 import Home from './pages/Home';
 import MyProjects from './pages/MyProjects';
-import { signOut, useLoggedInUser } from './utils/firebase';
+import {signOut, useLoggedInUser} from './utils/firebase';
 import ProjectForm from './pages/Project';
 import ProjectScrum from './pages/ProjectScrum';
 import CategoryForm from './pages/Category';
@@ -43,7 +33,7 @@ const ourTheme = createMuiTheme({
 });
 
 const useStyles = makeStyles(theme => ({
-  menuButton: { 
+  menuButton: {
     marginRight: theme.spacing(2),
     variant: 'outlined',
     color: 'secondary',
@@ -85,23 +75,23 @@ const App: FC = () => {
           </Toolbar>
         </AppBar>
 
-        {user === null && <Redirect to='/login' />}
+        {user === null && <Redirect to='/login'/>}
 
         <main className='App'>
           <Container maxWidth='lg'>
             {/* Wait for user session */}
             {user === undefined ? (
-              <CircularProgress />
+              <CircularProgress/>
             ) : (
               <Switch>
-                <Route path='/' exact component={Home} />
-                <Route path='/login' exact component={Login} />
-                <Route path='/my-projects' exact component={MyProjects} />
-                <Route path='/project' exact component={ProjectForm} /> 
-                <Route path='/category' exact component={CategoryForm} />
-                <Route path='/task' exact component={TaskForm} />
-                <Route path='/project-scrum' exact component={ProjectScrum} />
-                <Route component={Notfound} />
+                <Route path='/' exact component={Home}/>
+                <Route path='/login' exact component={Login}/>
+                <Route path='/my-projects' exact component={MyProjects}/>
+                <Route path='/project' exact component={ProjectForm}/>
+                <Route path='/category' exact component={CategoryForm}/>
+                <Route path='/task' exact component={TaskForm}/>
+                <Route path='/project-scrum' exact component={ProjectScrum}/>
+                <Route component={Notfound}/>
               </Switch>
             )}
           </Container>

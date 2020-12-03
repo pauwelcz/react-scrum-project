@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 
-// TODO: Add firebaseConfig and initialize the firebase app
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCvZiYImQuoE0Xgz1oSYiFCEy-7FbOoatw",
@@ -58,6 +57,7 @@ export type Task = {
 }
 
 export const tasksCollection = db.collection('tasks') as firebase.firestore.CollectionReference<Task>;
+
 // Helper to get current time in Timestamp
 export const timestampNow = firebase.firestore.Timestamp.now;
 
