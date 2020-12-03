@@ -59,51 +59,25 @@ const CategoryForm: FC = () => {
   /**
    * Ulozeni kategorie
    */
-  const handleSubmit = async () => {
-    if (categoryId === undefined) {
-      try {
-        await categoriesCollection.add({
-          name,
-          color,
-          project,
-          by: {
-            uid: user?.uid ?? '',
-            email: user?.email ?? '',
-          },
-        });
+  const handleCategorySubmit = async () => {
+    try {
+      await categoriesCollection.doc(categoryId).set({
+        id: categoryId,
+        name,
+        color,
+        project,
+        by: {
+          uid: user?.uid ?? '',
+          email: user?.email ?? '',
+        },
+      });
 
-        push('/project-scrum', project);
-      } catch (err) {
-        setError(err.what);
-      }
-    } else {
-      try {
-        await categoriesCollection.doc(categoryId).set({
-          name,
-          color,
-          project,
-          by: {
-            uid: user?.uid ?? '',
-            email: user?.email ?? '',
-          },
-        });
-
-        push('/project-scrum', project);
-      } catch (err) {
-        setError(err.what);
-      }
+      push('/project-scrum', project);
+    } catch (err) {
+      setError(err.what);
     }
   };
 
-  /**
-   * Zmena textu u tlacitka
-   */
-  const buttonName = () => {
-    if (categoryId === undefined) {
-      return 'Create category';
-    }
-    return 'Update category';
-  }
 
   return (
     <Card>
@@ -137,9 +111,14 @@ const CategoryForm: FC = () => {
           </Typography>
         )}
       </CardContent>
+
       <CardActions>
-        <Button className={classes.button} onClick={handleSubmit}>{buttonName()}</Button>
-        <Button className={classes.button} onClick={() => history.goBack()}>Back</Button>
+        <Button className={classes.button} onClick={handleCategorySubmit}>
+          {categoryId ? 'Update category' : 'Create category'}
+        </Button>
+        <Button className={classes.button} onClick={() => history.goBack()}>
+          Back
+        </Button>
       </CardActions>
     </Card>
   );

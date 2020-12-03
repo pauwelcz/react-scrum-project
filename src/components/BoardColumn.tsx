@@ -4,12 +4,12 @@ import { Task } from "../utils/firebase"
 import BoardCard from "./BoardCard"
 
 
-type Props = {
+type BoardColumnProps = {
     title: string,
-    items: (Task | string | undefined)[][],
+    tasks: Task[],
 }
 
-export const BoardColumn: React.FC<Props> = (props) => {
+export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
     return (
         <div>
             <Paper>
@@ -19,12 +19,18 @@ export const BoardColumn: React.FC<Props> = (props) => {
                     </Grid>
                     {/* list of tasks */}
                     {
-                        props.items.map((item) => {
-                            const task = item[0] as Task;
-                            const id = item[1] as string;
+                        props.tasks.map(task => {
                             return <Grid container item direction="column">
-                                <BoardCard key={id} name={task.name} note={task.note} project={task.project}
-                                    by={task.by} category={task.category} phase={task.phase} id={id} />
+                                <BoardCard
+                                    id={task.id}
+                                    key={task.id}
+                                    name={task.name}
+                                    note={task.note}
+                                    project={task.project}
+                                    by={task.by}
+                                    category={task.category}
+                                    phase={task.phase}
+                                />
                             </Grid>
                         })
                     }

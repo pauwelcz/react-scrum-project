@@ -18,57 +18,28 @@ const ProjectForm: FC = () => {
   const location = useLocation<{ projectId: string, name: string, note: string }>();
   const projectId = location.state.projectId;
 
-  const [name, setName] = useState(location.state.name === undefined ? '' : location.state.name);
-  const [note, setNote] = useState(location.state.note === undefined ? '' : location.state.note);
+  const [name, setName] = useState(location.state.name ?? '');
+  const [note, setNote] = useState(location.state.note ?? '');
   const [error, setError] = useState<string>();
 
-  /**
-   * Podle toho, jaky je stav "projectId", funkce ulozi, nebo updatne novy projekt
-   */
   // TODO: potreba zobrazeni puvodnich hodnot v textfieldu v pripade updatu
-  const handleSubmitCreate = async () => {
-    if (projectId === undefined) {
-      try {
-        await projectsCollection.add({
-          name,
-          note,
-          by: {
-            uid: user?.uid ?? '',
-            email: user?.email ?? '',
-          },
-        });
+  const handleProjectSubmit = async () => {
+    try {
+      await projectsCollection.doc(projectId).set({
+        id: projectId,
+        name,
+        note,
+        by: {
+          uid: user?.uid ?? '',
+          email: user?.email ?? '',
+        },
+      });
 
-        push('/my-projects');
-      } catch (err) {
-        setError(err.what);
-      }
-    } else {
-      try {
-        await projectsCollection.doc(projectId).set({
-          name,
-          note,
-          by: {
-            uid: user?.uid ?? '',
-            email: user?.email ?? '',
-          },
-        });
-
-        push('/my-projects');
-      } catch (err) {
-        setError(err.what);
-      }
+      push('/my-projects');
+    } catch (err) {
+      setError(err.what);
     }
   };
-
-  /**
-   * Zmena textu u tlacitka
-   */
-  const buttonName = () => {
-    if (projectId === undefined) {
-      return 'Create project';
-    }
-    return 'Update project';
-  }
 
   return (
     <>
@@ -112,9 +83,9 @@ const ProjectForm: FC = () => {
             variant='text'
             size='large'
             color='primary'
-            onClick={handleSubmitCreate}
+            onClick={handleProjectSubmit}
           >
-            {buttonName()}
+            {projectId ? 'Update project' : 'Create project'}
           </Button>
         </CardActions>
       </Card>

@@ -74,26 +74,23 @@ const ProjectScrum: FC = () => {
   }
 
   const filterTasksByPhase = (phase: string) => {
-    return tasks.map((task, i) => [task, task.id]).filter(item => {
-      const task = item[0] as Task;
-      return task.phase === phase && task.project === location.state;
-    })
+    return tasks.filter(task => task.phase === phase && task.project === location.state)
   };
 
   return (
     <div>
       <Grid container spacing={1}>
         <Grid item sm={3}>
-          <BoardColumn title={"TO DO"} items={filterTasksByPhase("TO DO")} />
+          <BoardColumn title={"TO DO"} tasks={filterTasksByPhase("TO DO")} />
         </Grid>
         <Grid item sm={3}>
-          <BoardColumn title={"IN PROGRESS"} items={filterTasksByPhase("IN PROGRESS")} />
+          <BoardColumn title={"IN PROGRESS"} tasks={filterTasksByPhase("IN PROGRESS")} />
         </Grid>
         <Grid item sm={3}>
-          <BoardColumn title={"TESTING"} items={filterTasksByPhase("TESTING")} />
+          <BoardColumn title={"TESTING"} tasks={filterTasksByPhase("TESTING")} />
         </Grid>
         <Grid item sm={3}>
-          <BoardColumn title={"DONE"} items={filterTasksByPhase("DONE")} />
+          <BoardColumn title={"DONE"} tasks={filterTasksByPhase("DONE")} />
         </Grid>
       </Grid>
 

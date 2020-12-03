@@ -29,7 +29,7 @@ export type User = Pick<firebase.User, 'uid' | 'email'>;
 
 // Project
 export type Project = {
-  id?: string;
+  id: string;
   by: User;
   name: string;
   note: string;
@@ -38,17 +38,17 @@ export const projectsCollection = db.collection('projects') as firebase.firestor
 
 // Category
 export type Category = {
-  id?: string;
+  id: string;
   by: User;
   color: string;
-  project: string;
+  project: string; // Project#id
   name: string;
 }
 export const categoriesCollection = db.collection('categories') as firebase.firestore.CollectionReference<Category>;
 
 // Task
 export type Task = {
-  id?: string;
+  id: string;
   by: User;
   name: string;
   category: string; // Category#id

@@ -11,11 +11,11 @@ import { Chip } from '@material-ui/core';
 import { User } from '../utils/firebase';
 
 type TaskProps = {
+    id: string;
     name: string;
     note?: string;
     by: User;
     project: string;
-    id: any;
     phase: string;
     category: string;
 }

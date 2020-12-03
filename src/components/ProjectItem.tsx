@@ -24,17 +24,17 @@ const useStyles = makeStyles(theme => ({
     link: { textDecoration: 'none' },
 }));
 
-export type Props = {
+export type ProjectItemProps = {
+    id: string;
     name: string;
     note?: string;
     by: User;
-    projectId: string | undefined;
 }
 /**
  * Componenta pro zobrazeni jednoho projektu
  */
 // TODO: Editace projektu (passnuti "note", "name" a "by"? kvuli defaultnim hodnotam)
-const ProjectItem: FC<Props> = ({ note, name, projectId, by }) => {
+const ProjectItem: FC<ProjectItemProps> = ({ note, name, id: projectId, by }) => {
     const [error, setError] = useState<string>();
 
     const [tasks, setTasks] = useState<Task[]>([]);

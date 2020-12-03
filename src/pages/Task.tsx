@@ -68,48 +68,29 @@ const TaskForm: FC = () => {
   /**
    * Ulozeni tasku
    */
-  const handleSubmit = async () => {
-    if (taskId === undefined) {
-      try {
-        await tasksCollection.add({
-          name,
-          category,
-          phase,
-          "project": projectId,
-          by: {
-            uid: user?.uid ?? '',
-            email: user?.email ?? '',
-          },
-          note,
-        });
+  const handleTaskSubmit = async () => {
+    try {
+      await tasksCollection.doc(taskId).set({
+        id: taskId,
+        name,
+        category,
+        phase,
+        project: projectId,
+        by: {
+          uid: user?.uid ?? '',
+          email: user?.email ?? '',
+        },
+        note,
+      });
 
-        push('/project-scrum', projectId);
-      } catch (err) {
-        setError(err.what);
-      }
-    } else {
-      try {
-        await tasksCollection.doc(taskId).set({
-          name,
-          category,
-          phase,
-          "project": projectId,
-          by: {
-            uid: user?.uid ?? '',
-            email: user?.email ?? '',
-          },
-          note,
-        });
+      push('/project-scrum', projectId);
+    } catch (err) {
 
-        push('/project-scrum', projectId);
-      } catch (err) {
-
-        setError(err.what);
-      }
+      setError(err.what);
     }
   };
 
-  const handleDelete = async () => {
+  const handleTaskDelete = async () => {
     try {
       await tasksCollection.doc(taskId).delete();
       push('/project-scrum', projectId);
@@ -136,21 +117,12 @@ const TaskForm: FC = () => {
     );
   }, []);
 
-  /**
-   * Zmena textu u tlacitka
-   */
-  const buttonName = () => {
-    if (taskId === undefined) {
-      return 'Create task';
-    }
-    return 'Update task';
-  }
 
   return (
     <Card>
       <CardContent>
         <Typography variant='h4' gutterBottom>
-          {buttonName()}
+          {taskId ? 'Update task' : 'Create task'}
         </Typography>
         <TextField
           label='Task name'
@@ -209,9 +181,17 @@ const TaskForm: FC = () => {
       </CardContent>
 
       <CardActions>
-        <Button className={classes.button} onClick={handleSubmit}>{buttonName()}</Button>
-        {(taskId) && <Button className={classes.button} onClick={handleDelete}>Delete task</Button>}
-        <Button className={classes.button} onClick={() => history.goBack()}>Back</Button>
+        <Button className={classes.button} onClick={handleTaskSubmit}>
+          {taskId ? 'Update task' : 'Create task'}
+        </Button>
+
+        {(taskId) && <Button className={classes.button} onClick={handleTaskDelete}>
+          Delete task
+        </Button>}
+
+        <Button className={classes.button} onClick={() => history.goBack()}>
+          Back
+        </Button>
       </CardActions>
     </Card>
   );
