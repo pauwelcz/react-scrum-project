@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
@@ -50,7 +50,7 @@ export const categoriesCollection = db.collection('categories') as firebase.fire
 export type Task = {
   by: User;
   name: string;
-  category: string;
+  category: string; // Category#id
   project: string;
   phase: string;
   note: string;

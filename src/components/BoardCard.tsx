@@ -10,7 +10,7 @@ import { Chip } from '@material-ui/core';
 
 import { User } from '../utils/firebase';
 
-type Props = {
+type TaskProps = {
     name: string;
     note?: string;
     by: User;
@@ -21,30 +21,31 @@ type Props = {
 }
 
 
-const BoardCard: FC<Props> = ({id, name, note, project, phase, by, category}) => {
+const BoardCard: FC<TaskProps> = ({ id, name, note, project, phase, by, category }) => {
     return (
-        <Card elevation={10}> 
-        <CardContent>
-            <Typography variant="h6">{name}</Typography>
-            {/* <Typography variant="caption" align="left">{by.email}</Typography> */}
-            <Chip size="small" label="Kategorie" color="primary"/>
-        </CardContent>
-        <CardActions>
-        <Link to={{
-            pathname: '/task',
-            state: {
-                "task_id": id,
-                "project": project,
-                "phase": phase,
-                "note": note,
-                "name": name,
-                "category": category,
-            }}}>
-            <IconButton>
-                <MoreHorizIcon />
-            </IconButton>
-        </Link>
-        </CardActions>
+        <Card elevation={10}>
+            <CardContent>
+                <Typography variant="h6">{name}</Typography>
+                {/* <Typography variant="caption" align="left">{by.email}</Typography> */}
+                <Chip size="medium" label="Kategorie" color="primary" />
+            </CardContent>
+            <CardActions>
+                <Link to={{
+                    pathname: '/task',
+                    state: {
+                        "task_id": id,
+                        "project": project,
+                        "phase": phase,
+                        "note": note,
+                        "name": name,
+                        "category": category,
+                    }
+                }}>
+                    <IconButton>
+                        <MoreHorizIcon />
+                    </IconButton>
+                </Link>
+            </CardActions>
         </Card>
     )
 }
