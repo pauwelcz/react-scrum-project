@@ -1,22 +1,12 @@
 import React, { FC } from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Redirect,
-  Switch,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Link, Redirect, Route, Switch, } from 'react-router-dom';
 
 import Container from '@material-ui/core/Container';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import {
-  CircularProgress,
-  createMuiTheme,
-  MuiThemeProvider,
-} from '@material-ui/core';
+import { CircularProgress, createMuiTheme, MuiThemeProvider, } from '@material-ui/core';
 
 import './App.css';
 
@@ -43,7 +33,7 @@ const ourTheme = createMuiTheme({
 });
 
 const useStyles = makeStyles(theme => ({
-  menuButton: { 
+  menuButton: {
     marginRight: theme.spacing(2),
     variant: 'outlined',
     color: 'secondary',
@@ -93,17 +83,17 @@ const App: FC = () => {
             {user === undefined ? (
               <CircularProgress />
             ) : (
-              <Switch>
-                <Route path='/' exact component={Home} />
-                <Route path='/login' exact component={Login} />
-                <Route path='/my-projects' exact component={MyProjects} />
-                <Route path='/project' exact component={ProjectForm} /> 
-                <Route path='/category' exact component={CategoryForm} />
-                <Route path='/task' exact component={TaskForm} />
-                <Route path='/project-scrum' exact component={ProjectScrum} />
-                <Route component={Notfound} />
-              </Switch>
-            )}
+                <Switch>
+                  <Route path='/' exact component={Home} />
+                  <Route path='/login' exact component={Login} />
+                  <Route path='/my-projects' exact component={MyProjects} />
+                  <Route path='/project' exact component={ProjectForm} />
+                  <Route path='/category' exact component={CategoryForm} />
+                  <Route path='/task' exact component={TaskForm} />
+                  <Route path='/project-scrum' exact component={ProjectScrum} />
+                  <Route component={Notfound} />
+                </Switch>
+              )}
           </Container>
         </main>
       </Router>

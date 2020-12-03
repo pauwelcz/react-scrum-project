@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
-import ReactMarkdown from 'react-markdown';
+// import ReactMarkdown from 'react-markdown';
 import { ColorPalette } from 'material-ui-color';
 
 
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
  * Stranka pro vytvareni kategorie
  */
 const CategoryForm: FC = () => {
-  const location = useLocation<{category_id: string, project: string, name: string, color: string }>();
+  const location = useLocation<{ categoryId: string, project: string, name: string, color: string }>();
 
   const [name, setName] = useState(location.state.name === undefined ? '' : location.state.name);
   const [color, setColor] = useState(location.state.color === undefined ? 'white' : location.state.color);
@@ -54,56 +54,30 @@ const CategoryForm: FC = () => {
   const user = useLoggedInUser();
   // Vicemene prevadim type "unknown" do stringu, aby jsem mohl dale pracovat s id projektu
   const project = location.state.project
-  const category_id = location.state.category_id;
+  const categoryId = location.state.categoryId;
 
   /**
    * Ulozeni kategorie
    */
-  const handleSubmit = async () => {
-    if (category_id === undefined) {
-      try {
-        await categoriesCollection.add({
-          name,
-          color,
-          project,
-          by: {
-            uid: user?.uid ?? '',
-            email: user?.email ?? '',
-          },
-        });
+  const handleCategorySubmit = async () => {
+    try {
+      await categoriesCollection.doc(categoryId).set({
+        id: categoryId,
+        name,
+        color,
+        project,
+        by: {
+          uid: user?.uid ?? '',
+          email: user?.email ?? '',
+        },
+      });
 
-        push('/project-scrum', project);
-      } catch (err) {
-        setError(err.what);
-      }
-    } else {
-      try {
-        await categoriesCollection.doc(category_id).set({
-          name,
-          color,
-          project,
-          by: {
-            uid: user?.uid ?? '',
-            email: user?.email ?? '',
-          },
-        });
-
-        push('/project-scrum', project);
-      } catch (err) {
-        setError(err.what);
-      }
+      push('/project-scrum', project);
+    } catch (err) {
+      setError(err.what);
     }
   };
 
-  /**
-   * Zmena textu u tlacitka
-   */
-  const buttonName = () => {
-    if (category_id === undefined) {
-      return 'Create category';
-    } 
-    return 'Update category';
-  }
 
   return (
     <Card>
@@ -124,12 +98,12 @@ const CategoryForm: FC = () => {
         <Typography>
           Category color:
         </Typography>
-        <ColorPalette palette={palette} onSelect={(e)=> setColor(palette[e])}/>
+        <ColorPalette palette={palette} onSelect={(e) => setColor(palette[e])} />
 
-        <Chip 
-            size="small"
-            label={name}
-            style={{backgroundColor: color, fontWeight: "bold"}}
+        <Chip
+          size="small"
+          label={name}
+          style={{ backgroundColor: color, fontWeight: "bold" }}
         />
         {error && (
           <Typography variant='subtitle2' align='left' color='error' paragraph>
@@ -137,9 +111,14 @@ const CategoryForm: FC = () => {
           </Typography>
         )}
       </CardContent>
+
       <CardActions>
-        <Button className={classes.button} onClick={handleSubmit}>{buttonName()}</Button>
-        <Button className={classes.button} onClick={() => history.goBack()}>Back</Button>
+        <Button className={classes.button} onClick={handleCategorySubmit}>
+          {categoryId ? 'Update category' : 'Create category'}
+        </Button>
+        <Button className={classes.button} onClick={() => history.goBack()}>
+          Back
+        </Button>
       </CardActions>
     </Card>
   );

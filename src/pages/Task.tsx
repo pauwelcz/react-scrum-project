@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
  * Stranka pro vytvareni tasku
  */
 const TaskForm: FC = () => {
-  const location = useLocation<{task_id: string, project: string, category: string, name: string, note: string, phase: string}>();
+  const location = useLocation<{ taskId: string, project: string, category: string, name: string, note: string, phase: string }>();
 
   const [name, setName] = useState(location.state.name === undefined ? '' : location.state.name);
   const [note, setNote] = useState(location.state.note === undefined ? '' : location.state.note);
@@ -54,8 +54,8 @@ const TaskForm: FC = () => {
 
   const user = useLoggedInUser();
 
-  const task_id = location.state.task_id;
-  const project_id = location.state.project;
+  const taskId = location.state.taskId;
+  const projectId = location.state.project;
 
   const handleChangePhase = (event: React.ChangeEvent<{ value: unknown }>) => {
     setPhase(event.target.value as string);
@@ -68,86 +68,61 @@ const TaskForm: FC = () => {
   /**
    * Ulozeni tasku
    */
-  const handleSubmit = async () => {
-    if (task_id === undefined) { 
-      try {
-        await tasksCollection.add({
-          name,
-          category,
-          phase,
-          "project": project_id,
-          by: {
-            uid: user?.uid ?? '',
-            email: user?.email ?? '',
-          },
-          note,
-        });
-  
-        push('/project-scrum', project_id);
-      } catch (err) {
-        setError(err.what);
-      }
-    } else {
-      try {
-        await tasksCollection.doc(task_id).set({
-          name,
-          category,
-          phase,
-          "project": project_id,
-          by: {
-            uid: user?.uid ?? '',
-            email: user?.email ?? '',
-          },
-          note,
-        });
-  
-        push('/project-scrum', project_id);
-      } catch (err) {
-        
-        setError(err.what);
-      }
+  const handleTaskSubmit = async () => {
+    try {
+      await tasksCollection.doc(taskId).set({
+        id: taskId,
+        name,
+        category,
+        phase,
+        project: projectId,
+        by: {
+          uid: user?.uid ?? '',
+          email: user?.email ?? '',
+        },
+        note,
+      });
+
+      push('/project-scrum', projectId);
+    } catch (err) {
+
+      setError(err.what);
     }
   };
 
-  const handleDelete = async () => {
+  const handleTaskDelete = async () => {
     try {
-      await tasksCollection.doc(task_id).delete();
-      push('/project-scrum', project_id);
+      await tasksCollection.doc(taskId).delete();
+      push('/project-scrum', projectId);
     } catch (err) {
-    setError(err.what);
-  }};
+      setError(err.what);
+    }
+  };
 
   /**
    * Zobrazeni kategorii
    */
   const [categories, setCategories] = useState<Category[]>([]);
-  const [categoriesId, setCategoriesID] = useState<string[]>([]);
-    useEffect(() => {
+  useEffect(() => {
     categoriesCollection.onSnapshot(
-        snapshot => {
-            setCategories(snapshot.docs.map(doc => doc.data()));
-            setCategoriesID(snapshot.docs.map(doc => doc.id));
-
-        },
-        err => setError(err.message),
+      snapshot => {
+        const categoriesFromFS: Category[] = snapshot.docs.map(doc => {
+          const cat: Category = doc.data();
+          const id: string = doc.id;
+          return { ...cat, id: id }
+        });
+        setCategories(categoriesFromFS);
+      },
+      err => setError(err.message),
     );
-    }, []);
+  }, []);
 
-  /**
-   * Zmena textu u tlacitka
-   */
-  const buttonName = () => {
-    if (task_id === undefined) {
-      return 'Create task';
-    } 
-    return 'Update task';
-  }
 
   return (
     <Card>
       <CardContent>
         <Typography variant='h4' gutterBottom>
-          {buttonName()}
+          {taskId ? 'Update task' : 'Create task'}
         </Typography>
         <TextField
           label='Task name'
@@ -158,7 +133,7 @@ const TaskForm: FC = () => {
           value={name}
           onChange={e => setName(e.target.value)}
         />
-        
+
         <FormControl className={classes.formControl}>
           <InputLabel id="demo-simple-select-label">Phase</InputLabel>
           <Select
@@ -175,12 +150,12 @@ const TaskForm: FC = () => {
         </FormControl>
 
         <FormControl component="fieldset">
-              <FormLabel component="legend">Categories</FormLabel>
-              <RadioGroup aria-label="gender" name="gender1" value={category} onChange={handleChangeCategory}>
-                {categories.filter(category => category.project === project_id).map((r, i) => (
-                    <FormControlLabel value={categoriesId[i]} control={<Radio />} label={r.name} />
-                ))}         
-              </RadioGroup>
+          <FormLabel component="legend">Categories</FormLabel>
+          <RadioGroup aria-label="gender" name="gender1" value={category} onChange={handleChangeCategory}>
+            {categories.filter(category => category.project === projectId).map((cat, i) => (
+              <FormControlLabel value={cat.id} control={<Radio />} label={cat.name} />
+            ))}
+          </RadioGroup>
         </FormControl>
 
         <TextField
@@ -194,10 +169,10 @@ const TaskForm: FC = () => {
           onChange={e => setNote(e.target.value)}
         />
         <Typography variant='h5' gutterBottom>
-            Preview note:
+          Preview note:
         </Typography>
-        <ReactMarkdown children={note}/>
-        
+        <ReactMarkdown children={note} />
+
         {error && (
           <Typography variant='subtitle2' align='left' color='error' paragraph>
             <b>{error}</b>
@@ -206,9 +181,17 @@ const TaskForm: FC = () => {
       </CardContent>
 
       <CardActions>
-        <Button className={classes.button} onClick={handleSubmit}>{buttonName()}</Button>
-        {(task_id) && <Button className={classes.button} onClick={handleDelete}>Delete task</Button>}
-        <Button className={classes.button} onClick={() => history.goBack()}>Back</Button>
+        <Button className={classes.button} onClick={handleTaskSubmit}>
+          {taskId ? 'Update task' : 'Create task'}
+        </Button>
+
+        {(taskId) && <Button className={classes.button} onClick={handleTaskDelete}>
+          Delete task
+        </Button>}
+
+        <Button className={classes.button} onClick={() => history.goBack()}>
+          Back
+        </Button>
       </CardActions>
     </Card>
   );

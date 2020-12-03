@@ -19,51 +19,55 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 
 const useStyles = makeStyles(theme => ({
-  card: { height: '100%' },
-  stars: { marginBottom: theme.spacing(2) },
-  link: { textDecoration: 'none' },
+    card: { height: '100%' },
+    stars: { marginBottom: theme.spacing(2) },
+    link: { textDecoration: 'none' },
 }));
 
-export type Props = {
+export type ProjectItemProps = {
+    id: string;
     name: string;
     note?: string;
     by: User;
-    project_id: string;
 }
 /**
  * Componenta pro zobrazeni jednoho projektu
  */
 // TODO: Editace projektu (passnuti "note", "name" a "by"? kvuli defaultnim hodnotam)
-const ProjectItem: FC<Props> = ({note, name, project_id, by}) => {
+const ProjectItem: FC<ProjectItemProps> = ({ note, name, id: projectId, by }) => {
     const [error, setError] = useState<string>();
-    /**
-     * Ziskani ID tasku
-     */
+
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [tasksID, setTasksID] = useState<string[]>([]);
     useEffect(() => {
-    tasksCollection.onSnapshot(
-        snapshot => {
-            setTasks(snapshot.docs.map(doc => doc.data()));
-            setTasksID(snapshot.docs.map(doc => doc.id));
-        },
-        err => setError(err.message),
-    );
+        tasksCollection.onSnapshot(
+            snapshot => {
+                const tasksFromFS: Task[] = snapshot.docs.map(doc => {
+                    const task: Task = doc.data();
+                    const id: string = doc.id;
+                    return { ...task, id: id }
+                });
+                setTasks(tasksFromFS);
+            },
+            err => setError(err.message),
+        );
     }, []);
-    
+
     /**
      * Ziskani ID kategorie
      */
     const [categories, setCategories] = useState<Category[]>([]);
-    const [categoriesID, setCategoriesID] = useState<string[]>([]);
     useEffect(() => {
-    categoriesCollection.onSnapshot(
-        snapshot => {
-            setCategories(snapshot.docs.map(doc => doc.data()));
-            setCategoriesID(snapshot.docs.map(doc => doc.id));
-        },
-        err => setError(err.message),
-    );
+        categoriesCollection.onSnapshot(
+            snapshot => {
+                const categoriesFromFS: Category[] = snapshot.docs.map(doc => {
+                    const cat: Category = doc.data();
+                    const id: string = doc.id;
+                    return { ...cat, id: id }
+                });
+                setCategories(categoriesFromFS);
+            },
+            err => setError(err.message),
+        );
     }, []);
 
     /**
@@ -75,15 +79,15 @@ const ProjectItem: FC<Props> = ({note, name, project_id, by}) => {
          * Pote smazu kategorie
          * Pote smazu projekt
          */
-        tasks.filter(item => item.project === project_id).map((r, i) => {
-            tasksCollection.doc(tasksID[i]).delete();
+        tasks.filter(item => item.project === projectId).map((task, i) => {
+            tasksCollection.doc(task.id).delete();
         });
 
-        categories.filter(item => item.project === project_id).map((r, i) => {
-            categoriesCollection.doc(categoriesID[i]).delete();
+        categories.filter(item => item.project === projectId).map((cat, i) => {
+            categoriesCollection.doc(cat.id).delete();
         });
 
-        projectsCollection.doc(project_id).delete();
+        projectsCollection.doc(projectId).delete();
     }
 
     return (
@@ -99,27 +103,27 @@ const ProjectItem: FC<Props> = ({note, name, project_id, by}) => {
                     <ReactMarkdown>
                         {note}
                     </ReactMarkdown>
-                )}     
-                
+                )}
+
             </CardContent>
-            <CardActions>   
+            <CardActions>
                 <Link to={{
                     pathname: '/project-scrum',
-                    state: project_id
+                    state: projectId
                 }}>
-                    <Button  variant='contained'>
-                        Show SCRUM    
-                    </Button>   
+                    <Button variant='contained'>
+                        Show SCRUM
+                    </Button>
                 </Link>
                 <Link to={{
                     pathname: '/project',
                     state: {
-                        project_id,
+                        projectId,
                         name,
                         note
                     }
-                    
-                }}>       
+
+                }}>
                     <IconButton>
                         <EditIcon />
                     </IconButton>
@@ -130,7 +134,7 @@ const ProjectItem: FC<Props> = ({note, name, project_id, by}) => {
             </CardActions>
         </Card>
     );
-        
+
 }
 
 export default ProjectItem;

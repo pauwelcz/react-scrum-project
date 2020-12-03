@@ -3,7 +3,6 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 
-// TODO: Add firebaseConfig and initialize the firebase app
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCvZiYImQuoE0Xgz1oSYiFCEy-7FbOoatw",
@@ -30,34 +29,35 @@ export type User = Pick<firebase.User, 'uid' | 'email'>;
 
 // Project
 export type Project = {
+  id: string;
   by: User;
   name: string;
   note: string;
 }
-
 export const projectsCollection = db.collection('projects') as firebase.firestore.CollectionReference<Project>;
 
 // Category
 export type Category = {
+  id: string;
   by: User;
   color: string;
-  project: string;
+  project: string; // Project#id
   name: string;
 }
-
 export const categoriesCollection = db.collection('categories') as firebase.firestore.CollectionReference<Category>;
 
 // Task
 export type Task = {
+  id: string;
   by: User;
   name: string;
-  category: string;
+  category: string; // Category#id
   project: string;
   phase: string;
   note: string;
 }
-
 export const tasksCollection = db.collection('tasks') as firebase.firestore.CollectionReference<Task>;
+
 // Helper to get current time in Timestamp
 export const timestampNow = firebase.firestore.Timestamp.now;
 
