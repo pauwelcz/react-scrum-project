@@ -81,16 +81,16 @@ const ProjectScrum: FC = () => {
     <div>
       <Grid container spacing={1}>
         <Grid item sm={3}>
-          <BoardColumn title={"TO DO"} tasks={filterTasksByPhase("TO DO")} />
+          <BoardColumn title={"TO DO"} tasks={filterTasksByPhase("TO DO")} categories={categories} />
         </Grid>
         <Grid item sm={3}>
-          <BoardColumn title={"IN PROGRESS"} tasks={filterTasksByPhase("IN PROGRESS")} />
+          <BoardColumn title={"IN PROGRESS"} tasks={filterTasksByPhase("IN PROGRESS")} categories={categories} />
         </Grid>
         <Grid item sm={3}>
-          <BoardColumn title={"TESTING"} tasks={filterTasksByPhase("TESTING")} />
+          <BoardColumn title={"TESTING"} tasks={filterTasksByPhase("TESTING")} categories={categories} />
         </Grid>
         <Grid item sm={3}>
-          <BoardColumn title={"DONE"} tasks={filterTasksByPhase("DONE")} />
+          <BoardColumn title={"DONE"} tasks={filterTasksByPhase("DONE")} categories={categories} />
         </Grid>
       </Grid>
 

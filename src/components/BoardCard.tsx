@@ -6,39 +6,48 @@ import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { Link } from 'react-router-dom';
-import { Chip } from '@material-ui/core';
+import { Chip, makeStyles, Theme } from '@material-ui/core';
 
-import { User } from '../utils/firebase';
+import { Category, Task } from '../utils/firebase';
 
-type TaskProps = {
-    id: string;
-    name: string;
-    note?: string;
-    by: User;
-    project: string;
-    phase: string;
-    category: string;
+type ColorProp = {
+    color: string,
 }
 
+const useStyles = makeStyles<Theme, ColorProp>({
+    colorPrimary: {
+        backgroundColor: ({ color }) => color,
+    },
+});
 
-const BoardCard: FC<TaskProps> = ({ id, name, note, project, phase, by, category }) => {
+type TaskProps = {
+    task: Task,
+    category?: Category
+}
+
+const BoardCard: FC<TaskProps> = ({ task, category }) => {
+    // override css property of Chip, otherwise only 'primary'|'secondary' is allowed
+    const classes = useStyles({ color: category?.color ?? 'primary' });
+
     return (
         <Card elevation={10}>
+
             <CardContent>
-                <Typography variant="h6">{name}</Typography>
-                {/* <Typography variant="caption" align="left">{by.email}</Typography> */}
-                <Chip size="medium" label="Kategorie" color="primary" />
+                <Typography variant="h6">{task.name}</Typography>
+                {/* <Typography variant="caption" align="left">{task.by.email}</Typography> */}
+                <Chip size="medium" label={category?.name ?? 'Category'} className={classes.colorPrimary} />
             </CardContent>
+
             <CardActions>
                 <Link to={{
                     pathname: '/task',
                     state: {
-                        "taskId": id,
-                        "project": project,
-                        "phase": phase,
-                        "note": note,
-                        "name": name,
-                        "category": category,
+                        "taskId": task.id,
+                        "project": task.project,
+                        "phase": task.phase,
+                        "note": task.note,
+                        "name": task.name,
+                        "category": task.category,
                     }
                 }}>
                     <IconButton>

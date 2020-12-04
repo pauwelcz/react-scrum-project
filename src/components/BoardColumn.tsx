@@ -1,12 +1,13 @@
 import { Grid, Paper, Typography } from "@material-ui/core"
 import React from "react"
-import { Task } from "../utils/firebase"
+import { Category, Task } from "../utils/firebase"
 import BoardCard from "./BoardCard"
 
 
 type BoardColumnProps = {
     title: string,
     tasks: Task[],
+    categories: Category[],
 }
 
 export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
@@ -17,22 +18,12 @@ export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
                     <Grid item>
                         <Typography variant="h6">{props.title}</Typography>
                     </Grid>
-                    {/* list of tasks */}
                     {
-                        props.tasks.map(task => {
-                            return <Grid container item direction="column">
-                                <BoardCard
-                                    id={task.id}
-                                    key={task.id}
-                                    name={task.name}
-                                    note={task.note}
-                                    project={task.project}
-                                    by={task.by}
-                                    category={task.category}
-                                    phase={task.phase}
-                                />
+                        props.tasks.map(task => (
+                            <Grid container item direction="column">
+                                <BoardCard task={task} category={props.categories.find(cat => cat.id === task.category)} />
                             </Grid>
-                        })
+                        ))
                     }
                 </Grid>
             </Paper>
