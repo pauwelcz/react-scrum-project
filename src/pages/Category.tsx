@@ -9,7 +9,7 @@ import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 // import ReactMarkdown from 'react-markdown';
 import { ColorPalette } from 'material-ui-color';
-
+import { PALLETE } from '../utils/constants';
 
 import { categoriesCollection, useLoggedInUser } from '../utils/firebase';
 import Chip from '@material-ui/core/Chip';
@@ -23,30 +23,16 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+
 /**
  * Stranka pro vytvareni kategorie
  */
 const CategoryForm: FC = () => {
   const location = useLocation<{ categoryId: string, project: string, name: string, color: string }>();
 
-  const [name, setName] = useState(location.state.name === undefined ? '' : location.state.name);
-  const [color, setColor] = useState(location.state.color === undefined ? 'white' : location.state.color);
+  const [name, setName] = useState(location.state.name ?? 'No name');
+  const [color, setColor] = useState(location.state.color ?? PALLETE.lightblue);
   const [error, setError] = useState<string>();
-
-  const palette = {
-    red: '#ff0000',
-    blue: '#0000ff',
-    green: '#00ff00',
-    yellow: 'yellow',
-    cyan: 'cyan',
-    lime: 'lime',
-    gray: 'gray',
-    orange: 'orange',
-    lightpurple: '#dd33fa',
-    white: 'white',
-    pink: 'pink',
-    lightblue: 'lightblue',
-  };
 
   const { push } = useHistory();
   const history = useHistory();
@@ -98,7 +84,7 @@ const CategoryForm: FC = () => {
         <Typography>
           Category color:
         </Typography>
-        <ColorPalette palette={palette} onSelect={(e) => setColor(palette[e])} />
+        <ColorPalette palette={PALLETE} onSelect={(e) => setColor(PALLETE[e])} />
 
         <Chip
           size="small"

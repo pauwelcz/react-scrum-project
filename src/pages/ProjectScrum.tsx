@@ -3,22 +3,27 @@ import Button from '@material-ui/core/Button';
 import React, { FC, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import { CardActions, CardContent, IconButton } from '@material-ui/core';
+import { CardActions, CardContent, Checkbox, IconButton, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { categoriesCollection, Category, Task, tasksCollection } from '../utils/firebase';
 import Card from '@material-ui/core/Card/Card';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { makeStyles } from '@material-ui/core/styles';
 import { BoardColumn } from '../components/BoardColumn';
-// import { Category as CategoryIcon } from '@material-ui/icons';
 
 const useStyles = makeStyles(theme => ({
   card: { height: '100%' },
+  listRoot: {
+    width: '100%',
+    minWidth: 120,
+    backgroundColor: theme.palette.background.paper,
+  }
 }));
+
 
 const ProjectScrum: FC = () => {
   const classes = useStyles();
-
+  const [checked, setChecked] = useState<Record<string, number>>({});
   let location = useLocation();
 
   const [error, setError] = useState<string>();
@@ -35,7 +40,7 @@ const ProjectScrum: FC = () => {
           const id: string = doc.id;
           return { ...cat, id: id }
         });
-        setCategories(categoriesFromFS);
+        setCategories(categoriesFromFS.filter(cat => cat.project === location.state));
       },
       err => setError(err.message),
     );
@@ -50,7 +55,10 @@ const ProjectScrum: FC = () => {
           const id: string = doc.id;
           return { ...task, id: id }
         });
-        setTasks(tasksFromFS);
+        const tasksOfProject = tasksFromFS.filter(task => task.project === location.state);
+        setTasks(tasksOfProject);
+        setFilteredTasks(tasksOfProject);
+        setChecked({});
       },
       err => setError(err.message),
     );
@@ -73,34 +81,78 @@ const ProjectScrum: FC = () => {
     categoriesCollection.doc(categoryId).delete();
   }
 
+  // tasks filtered with checkboxes
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
   const filterTasksByPhase = (phase: string) => {
-    return tasks.filter(task => task.phase === phase && task.project === location.state)
+    return filteredTasks.filter(task => task.phase === phase)
   };
+
+  const handleCheckboxToggle = (category: Category) => () => {
+    const currentValue: number = checked[category.id] ?? -1;
+    const newChecked: Record<string, number> = { ...checked };
+
+    newChecked[category.id] = currentValue === -1 ? 1 : -1;
+
+    setChecked(newChecked);
+
+    if (Object.entries(newChecked).filter((check: [string, number]) => check[1] === 1).length === 0) {
+      setFilteredTasks(tasks); // all checkboxes are unchecked -> display all tasks
+    } else {
+      setFilteredTasks(tasks.filter(task => task.category in newChecked && newChecked[task.category] === 1));
+    }
+  };
+
 
   return (
     <div>
-      <Grid container spacing={1}>
-        <Grid item sm={3}>
-          <BoardColumn title={"TO DO"} tasks={filterTasksByPhase("TO DO")} />
+      <Grid container direction="row" justify="space-evenly" alignItems="center" spacing={2}>
+        <Grid item xs={12} sm={3}>
+          <List className={classes.listRoot}>
+            {categories.map((category: Category) => {
+              const labelId = `checkbox-list-label-${category.name}`;
+
+              return (
+                <ListItem key={category.id} role={undefined} dense button onClick={handleCheckboxToggle(category)}>
+                  <ListItemIcon>
+                    <Checkbox
+                      color="primary"
+                      edge="start"
+                      checked={checked[category.id] === 1}
+                      tabIndex={-1}
+                      disableRipple
+                      inputProps={{ 'aria-labelledby': labelId }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText id={labelId} primary={<Typography color="textPrimary">{category.name}</Typography>} />
+                </ListItem>
+              );
+            })}
+          </List>
         </Grid>
-        <Grid item sm={3}>
-          <BoardColumn title={"IN PROGRESS"} tasks={filterTasksByPhase("IN PROGRESS")} />
-        </Grid>
-        <Grid item sm={3}>
-          <BoardColumn title={"TESTING"} tasks={filterTasksByPhase("TESTING")} />
-        </Grid>
-        <Grid item sm={3}>
-          <BoardColumn title={"DONE"} tasks={filterTasksByPhase("DONE")} />
+
+        <Grid container item xs={12} sm={9} spacing={1}>
+          <Grid item sm={3}>
+            <BoardColumn title={"TO DO"} tasks={filterTasksByPhase("TO DO")} categories={categories} />
+          </Grid>
+          <Grid item sm={3}>
+            <BoardColumn title={"IN PROGRESS"} tasks={filterTasksByPhase("IN PROGRESS")} categories={categories} />
+          </Grid>
+          <Grid item sm={3}>
+            <BoardColumn title={"TESTING"} tasks={filterTasksByPhase("TESTING")} categories={categories} />
+          </Grid>
+          <Grid item sm={3}>
+            <BoardColumn title={"DONE"} tasks={filterTasksByPhase("DONE")} categories={categories} />
+          </Grid>
         </Grid>
       </Grid>
 
-      <Typography>
+      <Typography variant="h3">
         Categories:
       </Typography>
 
       <Grid container spacing={1}>
-        {categories.filter(category => category.project === location.state).map((cat, i) => (
-          <Grid key={i} xs={4} item>
+        {categories.map((cat, i) => (
+          <Grid item key={i} xs={2} >
             <Card className={classes.card}>
               <CardContent>
                 <Typography>
