@@ -99,7 +99,19 @@ const ProjectScrum: FC = () => {
     if (Object.entries(newChecked).filter((check: [string, number]) => check[1] === 1).length === 0) {
       setFilteredTasks(tasks); // all checkboxes are unchecked -> display all tasks
     } else {
-      // setFilteredTasks(tasks.filter(task => task.category in newChecked && newChecked[task.category] === 1));
+      let newTasks: Task[] = []
+      for (const task of tasks) {
+        for (const categoryId of task.category) {
+          if (categoryId in newChecked && newChecked[categoryId] === 1) { 
+            newTasks.push(task) 
+            break; 
+          }
+        }
+      }
+
+      setFilteredTasks(newTasks)
+      //(newChecked)
+      //setFilteredTasks(tasks.filter(task => task.category in newChecked && newChecked[task.category] === 1));
     }
   };
 
