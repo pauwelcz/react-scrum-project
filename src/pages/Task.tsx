@@ -186,20 +186,7 @@ const TaskForm: FC = () => {
                 <MenuItem value={'DONE'}>DONE</MenuItem>
               </Select>
             </FormControl>
-
-            {/*<FormControl component="fieldset" fullWidth margin="normal" className={classes.categories}>
-               <FormLabel>Categories</FormLabel> 
-              <Typography variant='caption' color='textSecondary' align="left">
-                Categories
-                  </Typography>
-              <RadioGroup aria-label="gender" name="gender1" row
-                value={category} onChange={handleChangeCategory}>
-                {categories.filter(category => category.project === projectId).map((cat, i) => (
-                  <FormControlLabel value={cat.id} control={<Radio />} label={cat.name} />
-                ))}
-              </RadioGroup>
-            </FormControl>*/}
-
+            
             <FormControl margin="normal" fullWidth className={classes.categories}>
 
             <Typography variant='caption' color='textSecondary' align="left">
