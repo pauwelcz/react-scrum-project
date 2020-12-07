@@ -21,7 +21,7 @@ export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
                     {
                         props.tasks.map(task => (
                             <Grid container item direction="column">
-                                <BoardCard task={task} category={props.categories.find(cat => cat.id === task.category)} />
+                                <BoardCard task={task} category={task.category} />
                             </Grid>
                         ))
                     }

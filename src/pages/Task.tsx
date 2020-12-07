@@ -14,6 +14,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { FormControl, makeStyles, Radio, RadioGroup } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
+import Chip from '@material-ui/core/Chip/Chip';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -36,6 +37,9 @@ const useStyles = makeStyles((theme) => ({
   },
   categories: {
     marginLeft: '10px',
+  },
+  chip: {
+    margin: theme.spacing(0.5)
   }
 }));
 
@@ -43,13 +47,40 @@ const useStyles = makeStyles((theme) => ({
  * Stranka pro vytvareni tasku
  */
 const TaskForm: FC = () => {
-  const location = useLocation<{ taskId: string, project: string, category: string, name: string, note: string, phase: string }>();
+  const location = useLocation<{ taskId: string, project: string, category: string[], name: string, note: string, phase: string }>();
 
   const [name, setName] = useState(location.state.name === undefined ? '' : location.state.name);
   const [note, setNote] = useState(location.state.note === undefined ? '' : location.state.note);
   const [phase, setPhase] = useState(location.state.phase === undefined ? 'TO DO' : location.state.phase);
   const [error, setError] = useState<string>();
-  const [category, setCategory] = useState(location.state.category === undefined ? '' : location.state.category);
+  /**
+   * Vkladani kategorii do pole
+   */
+  const [category, setCategory] = useState<string[]>(location.state.category === undefined ? [] : location.state.category);
+  const handleTaskCategories = (category_item: string) => {
+    // nasla se kategorie
+    if (category.find(item => item === category_item) !== undefined) {
+      try {
+        setCategory(category.filter(item => item !== category_item))
+      } catch (err) {
+        setError(err.what);
+      }
+    } else {
+      try {
+        setCategory(category => [...category, category_item])
+      } catch (err) {
+        setError(err.what);
+      }
+    }
+  }
+
+  const changeChipColor = (category_item: Category) => {
+    if (category.find(item => item === category_item.id) !== undefined) {
+      return category_item.color;
+    }
+
+    return "gray";
+  }
 
   const classes = useStyles();
 
@@ -64,11 +95,6 @@ const TaskForm: FC = () => {
   const handleChangePhase = (event: React.ChangeEvent<{ value: unknown }>) => {
     setPhase(event.target.value as string);
   };
-
-  const handleChangeCategory = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setCategory(event.target.value as string);
-  };
-
 
   /**
    * Ulozeni tasku
@@ -161,8 +187,8 @@ const TaskForm: FC = () => {
               </Select>
             </FormControl>
 
-            <FormControl component="fieldset" fullWidth margin="normal" className={classes.categories}>
-              {/* <FormLabel>Categories</FormLabel> */}
+            {/*<FormControl component="fieldset" fullWidth margin="normal" className={classes.categories}>
+               <FormLabel>Categories</FormLabel> 
               <Typography variant='caption' color='textSecondary' align="left">
                 Categories
                   </Typography>
@@ -172,6 +198,25 @@ const TaskForm: FC = () => {
                   <FormControlLabel value={cat.id} control={<Radio />} label={cat.name} />
                 ))}
               </RadioGroup>
+            </FormControl>*/}
+
+            <FormControl margin="normal" fullWidth className={classes.categories}>
+
+            <Typography variant='caption' color='textSecondary' align="left">
+                Categories
+            </Typography>
+            <div>
+            {categories.filter(category => category.project === projectId).map((cat, i) => (
+              <Chip
+                size="small"
+                label={cat.name}
+                clickable
+                onClick={() => {handleTaskCategories(cat.id)}}
+                className={classes.chip}
+                style={{backgroundColor: `${changeChipColor(cat)}`}} 
+              />
+            ))}
+            </div>
             </FormControl>
 
             <TextField

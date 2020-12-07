@@ -53,7 +53,7 @@ export type Task = {
   id: string;
   by: User;
   name: string;
-  category: string; // Category#id
+  category: string[]; // Category#id
   project: string;
   phase: string;
   note: string;

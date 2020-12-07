@@ -72,11 +72,12 @@ const ProjectScrum: FC = () => {
     /**
      * Nejprve musim prepsat u tasku s danou kategorii polozku category na prazdny retezec
      */
-    tasks.filter(item => item.category === categoryId).forEach((task, i) => {
+    for (const task of tasks) {
+      const updatedCategory = task.category.filter(item => item !== categoryId)
       tasksCollection.doc(task.id).update({
-        category: ""
+        category: updatedCategory
       });
-    });
+    }
 
     categoriesCollection.doc(categoryId).delete();
   }
@@ -98,7 +99,7 @@ const ProjectScrum: FC = () => {
     if (Object.entries(newChecked).filter((check: [string, number]) => check[1] === 1).length === 0) {
       setFilteredTasks(tasks); // all checkboxes are unchecked -> display all tasks
     } else {
-      setFilteredTasks(tasks.filter(task => task.category in newChecked && newChecked[task.category] === 1));
+      // setFilteredTasks(tasks.filter(task => task.category in newChecked && newChecked[task.category] === 1));
     }
   };
 

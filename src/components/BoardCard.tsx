@@ -22,20 +22,20 @@ const useStyles = makeStyles<Theme, ColorProp>({
 
 type TaskProps = {
     task: Task,
-    category?: Category
+    category: string[]
 }
 
 const BoardCard: FC<TaskProps> = ({ task, category }) => {
     // override css property of Chip, otherwise only 'primary'|'secondary' is allowed
-    const classes = useStyles({ color: category?.color ?? 'primary' });
+    //const classes = useStyles({ color: category?.color ?? 'primary' });
 
     return (
         <Card elevation={10}>
 
             <CardContent>
                 <Typography variant="h6">{task.name}</Typography>
-                {/* <Typography variant="caption" align="left">{task.by.email}</Typography> */}
-                <Chip size="medium" label={category?.name ?? 'Category'} className={classes.colorPrimary} />
+                {/* <Typography variant="caption" align="left">{task.by.email}</Typography> 
+                <Chip size="medium" label={category?.name ?? 'Category'} className={classes.colorPrimary} />*/}
             </CardContent>
 
             <CardActions>
