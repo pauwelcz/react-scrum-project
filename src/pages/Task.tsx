@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 
 import { FC, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { categoriesCollection, Category, tasksCollection, useLoggedInUser } from '../utils/firebase';
+import { categoriesCollection, Category, TaskReference, tasksCollection, useLoggedInUser } from '../utils/firebase';
 
 import { Card, CardContent, CardActions } from '@material-ui/core';
 import { Typography, TextField } from '@material-ui/core';
@@ -12,7 +12,7 @@ import Button from '@material-ui/core/Button';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import { FormLabel, FormControl, makeStyles, Radio, RadioGroup } from '@material-ui/core';
+import { FormControl, makeStyles, Radio, RadioGroup } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
 
 const useStyles = makeStyles((theme) => ({
@@ -69,13 +69,16 @@ const TaskForm: FC = () => {
     setCategory(event.target.value as string);
   };
 
+
   /**
    * Ulozeni tasku
    */
   const handleTaskSubmit = async () => {
     try {
-      await tasksCollection.doc(taskId).set({
-        id: taskId,
+      const taskDoc: TaskReference = taskId ? tasksCollection.doc(taskId) : tasksCollection.doc();
+
+      await taskDoc.set({
+        id: taskDoc.id,
         name,
         category,
         phase,
@@ -99,6 +102,7 @@ const TaskForm: FC = () => {
       await tasksCollection.doc(taskId).delete();
       push('/project-scrum', projectId);
     } catch (err) {
+      console.log(`[Task submit] Error occurred ${err.message}`);
       setError(err.what);
     }
   };
@@ -123,8 +127,8 @@ const TaskForm: FC = () => {
 
 
   return (
-      <Card>
-        <CardContent>
+    <Card>
+      <CardContent>
         <Grid item lg={6} direction="row">
           <Typography variant='h4' gutterBottom>
             {taskId ? 'Update task' : 'Create task'}
@@ -132,86 +136,86 @@ const TaskForm: FC = () => {
         </Grid>
         <Grid container spacing={6} direction="row">
           <Grid item lg={6} direction="column" alignContent="flex-start">
-              <TextField
-                label='Task name'
-                name='name'
-                fullWidth
-                margin='normal'
-                variant='outlined'
-                value={name}
-                onChange={e => setName(e.target.value)}
-              />
+            <TextField
+              label='Task name'
+              name='name'
+              fullWidth
+              margin='normal'
+              variant='outlined'
+              value={name}
+              onChange={e => setName(e.target.value)}
+            />
 
-              <FormControl className={classes.formControl}>
-                <InputLabel id="demo-simple-select-label">Phase</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={phase}
-                  onChange={handleChangePhase}
-                >
-                  <MenuItem value={'TO DO'}>TO DO</MenuItem>
-                  <MenuItem value={'IN PROGRESS'}>IN PROGRESS</MenuItem>
-                  <MenuItem value={'TESTING'}>TESTING</MenuItem>
-                  <MenuItem value={'DONE'}>DONE</MenuItem>
-                </Select>
-              </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabel id="demo-simple-select-label">Phase</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={phase}
+                onChange={handleChangePhase}
+              >
+                <MenuItem value={'TO DO'}>TO DO</MenuItem>
+                <MenuItem value={'IN PROGRESS'}>IN PROGRESS</MenuItem>
+                <MenuItem value={'TESTING'}>TESTING</MenuItem>
+                <MenuItem value={'DONE'}>DONE</MenuItem>
+              </Select>
+            </FormControl>
 
-                <FormControl component="fieldset" fullWidth margin="normal" className={classes.categories}>
-                  {/* <FormLabel>Categories</FormLabel> */}
-                  <Typography variant='caption' color='textSecondary' align="left">
-                    Categories
+            <FormControl component="fieldset" fullWidth margin="normal" className={classes.categories}>
+              {/* <FormLabel>Categories</FormLabel> */}
+              <Typography variant='caption' color='textSecondary' align="left">
+                Categories
                   </Typography>
-                    <RadioGroup aria-label="gender" name="gender1" row
-                      value={category} onChange={handleChangeCategory}>
-                      {categories.filter(category => category.project === projectId).map((cat, i) => (
-                          <FormControlLabel value={cat.id} control={<Radio />} label={cat.name} />
-                      ))}
-                    </RadioGroup>
-                </FormControl>
+              <RadioGroup aria-label="gender" name="gender1" row
+                value={category} onChange={handleChangeCategory}>
+                {categories.filter(category => category.project === projectId).map((cat, i) => (
+                  <FormControlLabel value={cat.id} control={<Radio />} label={cat.name} />
+                ))}
+              </RadioGroup>
+            </FormControl>
 
-              <TextField
-                label='Note'
-                name='note'
-                fullWidth
-                multiline
-                margin='normal'
-                variant='outlined'
-                value={note}
-                onChange={e => setNote(e.target.value)}
-              />
-            </Grid>
+            <TextField
+              label='Note'
+              name='note'
+              fullWidth
+              multiline
+              margin='normal'
+              variant='outlined'
+              value={note}
+              onChange={e => setNote(e.target.value)}
+            />
+          </Grid>
 
-            <Grid container item lg={6} direction="column" alignItems="flex-start">
-              <Typography variant='caption' color='textSecondary'>
-                Note preview
+          <Grid container item lg={6} direction="column" alignItems="flex-start">
+            <Typography variant='caption' color='textSecondary'>
+              Note preview
               </Typography>
 
-              <ReactMarkdown children={note} className={classes.preview}/>
+            <ReactMarkdown children={note} className={classes.preview} />
 
-              {error && (
-                <Typography variant='subtitle2' align='left' color='error' paragraph>
-                  <b>{error}</b>
-                </Typography>
-              )}
-            </Grid>
+            {error && (
+              <Typography variant='subtitle2' align='left' color='error' paragraph>
+                <b>{error}</b>
+              </Typography>
+            )}
           </Grid>
-        </CardContent>
+        </Grid>
+      </CardContent>
 
-        <CardActions>
-          <Button className={classes.button} onClick={handleTaskSubmit}>
-            {taskId ? 'Update task' : 'Create task'}
-          </Button>
+      <CardActions>
+        <Button className={classes.button} onClick={handleTaskSubmit}>
+          {taskId ? 'Update task' : 'Create task'}
+        </Button>
 
-          {(taskId) && <Button className={classes.button} onClick={handleTaskDelete}>
-            Delete task
+        {(taskId) && <Button className={classes.button} onClick={handleTaskDelete}>
+          Delete task
           </Button>}
 
-          <Button className={classes.button} onClick={() => history.goBack()}>
-            Back
+        <Button className={classes.button} onClick={() => history.goBack()}>
+          Back
           </Button>
-        </CardActions>
-      </Card>
+      </CardActions>
+    </Card>
   );
 };
 

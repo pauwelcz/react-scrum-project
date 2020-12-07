@@ -9,7 +9,7 @@ import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 import ReactMarkdown from 'react-markdown';
 
-import { projectsCollection, useLoggedInUser, User } from '../utils/firebase';
+import { ProjectReference, projectsCollection, useLoggedInUser } from '../utils/firebase';
 
 const ProjectForm: FC = () => {
 
@@ -25,8 +25,9 @@ const ProjectForm: FC = () => {
   // TODO: potreba zobrazeni puvodnich hodnot v textfieldu v pripade updatu
   const handleProjectSubmit = async () => {
     try {
-      await projectsCollection.doc(projectId).set({
-        id: projectId,
+      const projectDoc: ProjectReference = projectId ? projectsCollection.doc(projectId) : projectsCollection.doc();
+      await projectDoc.set({
+        id: projectDoc.id,
         name,
         note,
         by: {
@@ -37,6 +38,7 @@ const ProjectForm: FC = () => {
 
       push('/my-projects');
     } catch (err) {
+      console.log(`[Project submit] Error occurred ${err.message}`);
       setError(err.what);
     }
   };

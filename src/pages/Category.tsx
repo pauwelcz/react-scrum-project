@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import { ColorPalette } from 'material-ui-color';
 import { PALLETE } from '../utils/constants';
 
-import { categoriesCollection, useLoggedInUser } from '../utils/firebase';
+import { categoriesCollection, CategoryReference, useLoggedInUser } from '../utils/firebase';
 import Chip from '@material-ui/core/Chip';
 import { makeStyles } from '@material-ui/core';
 
@@ -47,8 +47,10 @@ const CategoryForm: FC = () => {
    */
   const handleCategorySubmit = async () => {
     try {
-      await categoriesCollection.doc(categoryId).set({
-        id: categoryId,
+      const categoryDoc: CategoryReference = categoryId ? categoriesCollection.doc(categoryId) : categoriesCollection.doc();
+
+      await categoryDoc.set({
+        id: categoryDoc.id,
         name,
         color,
         project,
@@ -60,6 +62,7 @@ const CategoryForm: FC = () => {
 
       push('/project-scrum', project);
     } catch (err) {
+      console.log(`[Category submit] Error occurred ${err.message}`);
       setError(err.what);
     }
   };

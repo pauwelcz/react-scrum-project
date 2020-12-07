@@ -35,6 +35,7 @@ export type Project = {
   note: string;
 }
 export const projectsCollection = db.collection('projects') as firebase.firestore.CollectionReference<Project>;
+export type ProjectReference = firebase.firestore.DocumentReference<Project>;
 
 // Category
 export type Category = {
@@ -45,6 +46,7 @@ export type Category = {
   name: string;
 }
 export const categoriesCollection = db.collection('categories') as firebase.firestore.CollectionReference<Category>;
+export type CategoryReference = firebase.firestore.DocumentReference<Category>;
 
 // Task
 export type Task = {
@@ -57,6 +59,7 @@ export type Task = {
   note: string;
 }
 export const tasksCollection = db.collection('tasks') as firebase.firestore.CollectionReference<Task>;
+export type TaskReference = firebase.firestore.DocumentReference<Task>;
 
 // Helper to get current time in Timestamp
 export const timestampNow = firebase.firestore.Timestamp.now;
