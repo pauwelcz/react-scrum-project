@@ -1,15 +1,15 @@
-import Typography from '@material-ui/core/Typography';
+import { Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import React, { FC, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import { CardActions, CardContent, Checkbox, IconButton, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { categoriesCollection, Category, Task, tasksCollection } from '../utils/firebase';
-import Card from '@material-ui/core/Card/Card';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import { AddCircle } from '@material-ui/icons';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { FC, useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { BoardColumn } from '../components/BoardColumn';
+import { categoriesCollection, Category, Task, tasksCollection } from '../utils/firebase';
 
 const useStyles = makeStyles(theme => ({
   card: { height: '100%' },
@@ -24,6 +24,16 @@ const useStyles = makeStyles(theme => ({
 const ProjectScrum: FC = () => {
   const classes = useStyles();
   const [checked, setChecked] = useState<Record<string, number>>({});
+
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const handleOpenDialog = () => setDialogOpen(true);
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setCategoryToDelete(null);
+  }
+
   let location = useLocation();
 
   const [error, setError] = useState<string>();
@@ -44,7 +54,7 @@ const ProjectScrum: FC = () => {
       },
       err => setError(err.message),
     );
-  }, []);
+  }, [location.state]);
 
   const [tasks, setTasks] = useState<Task[]>([]);
   useEffect(() => {
@@ -62,7 +72,7 @@ const ProjectScrum: FC = () => {
       },
       err => setError(err.message),
     );
-  }, []);
+  }, [location.state]);
 
   /**
    * Funkce pro mazani kategorie
@@ -102,9 +112,9 @@ const ProjectScrum: FC = () => {
       let newTasks: Task[] = []
       for (const task of tasks) {
         for (const categoryId of task.category) {
-          if (categoryId in newChecked && newChecked[categoryId] === 1) { 
-            newTasks.push(task) 
-            break; 
+          if (categoryId in newChecked && newChecked[categoryId] === 1) {
+            newTasks.push(task)
+            break;
           }
         }
       }
@@ -121,6 +131,20 @@ const ProjectScrum: FC = () => {
       <Grid container direction="row" justify="space-evenly" alignItems="center" spacing={2}>
         <Grid item xs={12} sm={3}>
           <List className={classes.listRoot}>
+            <ListSubheader>
+              <Typography variant="h6">Categories</Typography>
+              <Link to={{
+                pathname: '/category',
+                state: {
+                  "project": location.state
+                }
+              }}>
+                <IconButton edge="end">
+                  <AddCircle />
+                </IconButton>
+              </Link>
+              <Divider variant="middle" />
+            </ListSubheader>
             {categories.map((category: Category) => {
               const labelId = `checkbox-list-label-${category.name}`;
 
@@ -137,6 +161,29 @@ const ProjectScrum: FC = () => {
                     />
                   </ListItemIcon>
                   <ListItemText id={labelId} primary={<Typography color="textPrimary">{category.name}</Typography>} />
+
+                  <ListItemSecondaryAction>
+                    <Link to={{
+                      pathname: '/category',
+                      state: {
+                        "categoryId": category.id,
+                        "project": location.state,
+                        "name": category.name,
+                        "color": category.color,
+                      }
+                    }}>
+                      <IconButton edge="end">
+                        <EditIcon />
+                      </IconButton>
+                    </Link>
+                    <IconButton edge="end" onClick={() => {
+                      setCategoryToDelete(category);
+                      handleOpenDialog();
+                    }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+
                 </ListItem>
               );
             })}
@@ -159,52 +206,32 @@ const ProjectScrum: FC = () => {
         </Grid>
       </Grid>
 
-      <Typography variant="h3">
-        Categories:
-      </Typography>
+      <Dialog
+        open={dialogOpen}
+        onClose={handleCloseDialog}
+      >
+        <DialogTitle id="alert-dialog-delete-category">{"Data deletion warning"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-delete-category-description">
+            This action will permanently delete category: <b>{categoryToDelete?.name}</b>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={() => {
+            deleteCategory(categoryToDelete?.id);
+            handleCloseDialog();
+          }}
+            color="primary" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
 
-      <Grid container spacing={1}>
-        {categories.map((cat, i) => (
-          <Grid item key={i} xs={2} >
-            <Card className={classes.card}>
-              <CardContent>
-                <Typography>
-                  {cat.name}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Link to={{
-                  pathname: '/category',
-                  state: {
-                    "categoryId": cat.id,
-                    "project": location.state,
-                    "name": cat.name,
-                    "color": cat.color,
-                  }
-                }}>
-                  <IconButton>
-                    <EditIcon />
-                  </IconButton>
-                </Link>
-                <IconButton onClick={() => deleteCategory(cat.id)}>
-                  <DeleteIcon />
-                </IconButton>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
 
-      <Link to={{
-        pathname: '/category',
-        state: {
-          "project": location.state
-        }
-      }}>
-        <Button variant='contained'>
-          Add category
-        </Button>
-      </Link>
+
 
       <Link to={{
         pathname: '/task',
