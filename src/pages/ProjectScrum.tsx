@@ -1,9 +1,9 @@
-import { Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader } from '@material-ui/core';
+import { Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Fab, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { AddCircle } from '@material-ui/icons';
+import AddCircleOutlinedIcon from '@material-ui/icons/AddCircleOutlined';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import React, { FC, useEffect, useState } from 'react';
@@ -17,7 +17,14 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     minWidth: 120,
     backgroundColor: theme.palette.background.paper,
-  }
+  },
+  fabStyle: {
+    minWidth: 350,
+    margin: theme.spacing(5),
+  },
+  extendedIcon: {
+    marginRight: theme.spacing(1),
+  },
 }));
 
 
@@ -140,7 +147,7 @@ const ProjectScrum: FC = () => {
                 }
               }}>
                 <IconButton edge="end">
-                  <AddCircle />
+                  <AddCircleOutlinedIcon />
                 </IconButton>
               </Link>
               <Divider variant="middle" />
@@ -230,18 +237,16 @@ const ProjectScrum: FC = () => {
         </DialogActions>
       </Dialog>
 
-
-
-
       <Link to={{
         pathname: '/task',
         state: {
           "project": location.state
         }
       }}>
-        <Button variant='contained'>
-          Add task
-        </Button>
+        <Fab size="large" variant="extended" color="primary" aria-label="add" className={classes.fabStyle}>
+          <AddCircleOutlinedIcon className={classes.extendedIcon} />
+          <Typography variant="h6">Add task</Typography>
+        </Fab>
       </Link>
     </div>
   );
