@@ -1,13 +1,12 @@
 import React, { FC, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import { Card, CardContent, CardActions } from '@material-ui/core';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
-// import ReactMarkdown from 'react-markdown';
 import { ColorPalette } from 'material-ui-color';
 import { PALLETE } from '../utils/constants';
 
@@ -20,7 +19,10 @@ const useStyles = makeStyles((theme) => ({
     variant: 'text',
     size: 'large',
     color: theme.palette.primary.main,
-  }
+  },
+  sectionTitle: {
+    marginLeft: '10px',
+  },
 }));
 
 
@@ -69,47 +71,58 @@ const CategoryForm: FC = () => {
 
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant='h4' gutterBottom>
-          Add category:
-        </Typography>
-        <TextField
-          label='Category name'
-          name='name'
-          fullWidth
-          margin='normal'
-          variant='outlined'
-          value={name}
-          onChange={e => setName(e.target.value)}
-        />
-
-        <Typography>
-          Category color:
-        </Typography>
-        <ColorPalette palette={PALLETE} onSelect={(e) => setColor(PALLETE[e])} />
-
-        <Chip
-          size="small"
-          label={name}
-          style={{ backgroundColor: color, fontWeight: "bold" }}
-        />
-        {error && (
-          <Typography variant='subtitle2' align='left' color='error' paragraph>
-            <b>{error}</b>
+    <Container maxWidth='sm'>
+      <Card>
+        <CardContent>
+          <Typography variant='h4' gutterBottom>
+            {categoryId ? 'Update category' : 'Create category'}
           </Typography>
-        )}
-      </CardContent>
+          <Grid container spacing={3} direction="column">
+            <Grid item>
+              <TextField
+                label='Category name'
+                name='name'
+                fullWidth
+                margin='normal'
+                variant='outlined'
+                value={name}
+                onChange={e => setName(e.target.value)}
+              />
+            </Grid>
 
-      <CardActions>
-        <Button className={classes.button} onClick={handleCategorySubmit}>
-          {categoryId ? 'Update category' : 'Create category'}
-        </Button>
-        <Button className={classes.button} onClick={() => history.goBack()}>
-          Back
-        </Button>
-      </CardActions>
-    </Card>
+            <Grid container item alignItems='flex-start' direction='column'>
+              <Typography variant='caption' color='textSecondary' className={classes.sectionTitle}>
+                Category color
+              </Typography>
+
+              <ColorPalette palette={PALLETE} onSelect={(e) => setColor(PALLETE[e])} />
+            </Grid>
+
+            <Grid item>
+              <Chip
+                size="small"
+                label={name}
+                style={{ backgroundColor: color }}
+              />
+            </Grid>
+            {error && (
+              <Typography variant='subtitle2' align='left' color='error' paragraph>
+                <b>{error}</b>
+              </Typography>
+            )}
+          </Grid>
+        </CardContent>
+
+        <CardActions>
+          <Button className={classes.button} onClick={handleCategorySubmit}>
+            {categoryId ? 'Update category' : 'Create category'}
+          </Button>
+          <Button className={classes.button} onClick={() => history.goBack()}>
+            Back
+          </Button>
+        </CardActions>
+      </Card>
+    </Container>
   );
 };
 

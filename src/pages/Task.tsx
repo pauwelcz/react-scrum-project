@@ -78,8 +78,7 @@ const TaskForm: FC = () => {
     if (category.find(item => item === category_item.id) !== undefined) {
       return category_item.color;
     }
-
-    return "gray";
+    return "#dfe6e9";
   }
 
   const classes = useStyles();
