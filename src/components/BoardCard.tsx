@@ -6,7 +6,8 @@ import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { Link } from 'react-router-dom';
-import { Chip, makeStyles, Theme } from '@material-ui/core';
+import ReactMarkdown from 'react-markdown';
+import { Chip, Grid, makeStyles, Theme } from '@material-ui/core';
 
 import { categoriesCollection, Category, Task } from '../utils/firebase';
 
@@ -14,11 +15,14 @@ type ColorProp = {
     color: string,
 }
 
-const useStyles = makeStyles<Theme, ColorProp>({
-    colorPrimary: {
-        backgroundColor: ({ color }) => color,
+const useStyles = makeStyles(theme => ({
+    preview: {
+      overflow: "hidden",
+      textAlign: 'left',
+      fontSize: "60%",
+      height: "3.5em",
     },
-});
+}));
 
 type TaskProps = {
     task: Task,
@@ -34,8 +38,9 @@ const BoardCard: FC<TaskProps> = ({ task, category }) => {
    * Ziskani pole kategorii pro zobrazeni
    */
     const [error, setError] = useState<string>();
-
     const [categories, setCategories] = useState<Category[]>([]);
+    const classes = useStyles();
+
     useEffect(() => {
         categoriesCollection.onSnapshot(
         snapshot => {
@@ -52,18 +57,26 @@ const BoardCard: FC<TaskProps> = ({ task, category }) => {
 
     return (
         <Card elevation={10}>
-
             <CardContent>
-                <Typography variant="h6">{task.name}</Typography>
-                {task.category.map((cat, i) => (
-                    <Chip 
-                    size="small" 
-                    label={categories.find(item => item.id === cat)?.name} 
-                    style={{backgroundColor: categories.find(item => item.id === cat)?.color }} 
-                    />
-                ))}
-                {/* <Typography variant="caption" align="left">{task.by.email}</Typography> 
-                <Chip size="medium" label={category?.name ?? 'Category'} className={classes.colorPrimary} />*/}
+              <Grid container item spacing={2} direction="column">
+                <Grid item>
+                  <Typography variant="h6">{task.name}</Typography>
+                </Grid>
+                <Grid container item justify="center">
+                  {task.category.map((cat, i) => (
+                      <Chip 
+                      size="small" 
+                      label={categories.find(item => item.id === cat)?.name} 
+                      style={{backgroundColor: categories.find(item => item.id === cat)?.color }} 
+                      />
+                  ))}
+                </Grid>
+                {task.note && (
+                    <ReactMarkdown className={classes.preview}>
+                        {task.note}
+                    </ReactMarkdown>
+                )}
+              </Grid>
             </CardContent>
 
             <CardActions>
