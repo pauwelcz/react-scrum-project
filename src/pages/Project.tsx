@@ -30,6 +30,7 @@ const ProjectForm: FC = () => {
         id: projectDoc.id,
         name,
         note,
+        users: [ user?.email ?? '' ],
         by: {
           uid: user?.uid ?? '',
           email: user?.email ?? '',

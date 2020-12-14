@@ -35,6 +35,7 @@ export type ProjectItemProps = {
  */
 // TODO: Editace projektu (passnuti "note", "name" a "by"? kvuli defaultnim hodnotam)
 const ProjectItem: FC<ProjectItemProps> = ({ note, name, id: projectId, by }) => {
+
     const [error, setError] = useState<string>();
 
     const [tasks, setTasks] = useState<Task[]>([]);

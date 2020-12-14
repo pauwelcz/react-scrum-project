@@ -39,6 +39,7 @@ export type Project = {
   id: string;
   by: User;
   name: string;
+  users: string[];
   note: string;
 }
 export const projectsCollection = db.collection('projects') as firebase.firestore.CollectionReference<Project>;
@@ -88,7 +89,7 @@ export const useLoggedInUser = () => {
 export const signUp = (email: string, password: string) =>
   firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
     if (user.user?.email !== null) {
-        db.collection("users").doc(user.user?.email).set({
+        db.collection("users").doc(user.user?.uid).set({
           uid: user.user?.uid,
           email: user.user?.email
         })
