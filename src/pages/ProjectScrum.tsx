@@ -237,6 +237,7 @@ const ProjectScrum: FC = () => {
         </DialogActions>
       </Dialog>
 
+
       <Link to={{
         pathname: '/task',
         state: {
@@ -248,6 +249,7 @@ const ProjectScrum: FC = () => {
           <Typography variant="h6">Add task</Typography>
         </Fab>
       </Link>
+
     </div>
   );
 };

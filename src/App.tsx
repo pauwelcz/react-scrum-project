@@ -19,7 +19,6 @@ import ProjectForm from './pages/Project';
 import ProjectScrum from './pages/ProjectScrum';
 import CategoryForm from './pages/Category';
 import TaskForm from './pages/Task';
-
 // MUI theme override
 const ourTheme = createMuiTheme({
   palette: {
@@ -51,7 +50,7 @@ const App: FC = () => {
   return (
     <MuiThemeProvider theme={ourTheme}>
       <Router>
-        <AppBar color='primary' position='static' variant='outlined'>
+        <AppBar color='primary' position='sticky' variant='outlined'>
           {/* Navigation rendered on all pages */}
           <Toolbar>
             <Link className={classes.link} to='/'>
