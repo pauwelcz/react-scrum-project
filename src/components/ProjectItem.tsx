@@ -29,13 +29,14 @@ export type ProjectItemProps = {
     name: string;
     note?: string;
     by: User;
+    users: string[];
 }
 /**
  * Componenta pro zobrazeni jednoho projektu
  */
 // TODO: Editace projektu (passnuti "note", "name" a "by"? kvuli defaultnim hodnotam)
-const ProjectItem: FC<ProjectItemProps> = ({ note, name, id: projectId, by }) => {
-
+const ProjectItem: FC<ProjectItemProps> = ({ note, name, id: projectId, by, users }) => {
+    const user = useLoggedInUser();
     const [error, setError] = useState<string>();
 
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -116,22 +117,27 @@ const ProjectItem: FC<ProjectItemProps> = ({ note, name, id: projectId, by }) =>
                         Show SCRUM
                     </Button>
                 </Link>
-                <Link to={{
-                    pathname: '/project',
-                    state: {
-                        projectId,
-                        name,
-                        note
-                    }
+                {(user?.uid === by.uid) && (
+                    <>
+                    <Link to={{
+                        pathname: '/project',
+                        state: {
+                            projectId,
+                            name,
+                            note,
+                            users
+                        }
 
-                }}>
-                    <IconButton>
-                        <EditIcon />
+                    }}>
+                        <IconButton>
+                            <EditIcon />
+                        </IconButton>
+                    </Link>
+                    <IconButton onClick={() => deleteProject()}>
+                        <DeleteIcon />
                     </IconButton>
-                </Link>
-                <IconButton onClick={() => deleteProject()}>
-                    <DeleteIcon />
-                </IconButton>
+                    </>
+                )}
             </CardActions>
         </Card>
     );

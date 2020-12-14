@@ -47,7 +47,7 @@ const MyProjects: FC = () => {
                      * Predavam komponente hodnoty hlavne pro zachovani id projektu, ktere
                      * se vyuziva pri vytvareni kategorii a tasku v komponente (prace s databazi)
                      */}
-                        <ProjectItem note={project.note} name={project.name} id={project.id} by={project.by} />
+                        <ProjectItem note={project.note} name={project.name} id={project.id} by={project.by} users={project.users}/>
                     </Grid>
                 ))}
             </Grid>
