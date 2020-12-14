@@ -57,22 +57,8 @@ const ProjectScrum: FC = () => {
     err => setError(err.message),
     );
   });
-
-  /**
-   * Naplnim
-   */
-  const getCheckedObject = () => {
-    const object: Record<string, number> = { };
-    if (project !== undefined) {
-      for (const item of project.users) {
-        alert(item)
-        object[item] = 1;
-      }
-    }
-    return object;
-  } 
   
-  const [checkedUser, setCheckedUser] = useState<Record<string, number>>(getCheckedObject);
+  const [checkedUser, setCheckedUser] = useState<Record<string, number>>({});
   /**
    * Ziskani pole users pro zobrazeni
    */
@@ -215,6 +201,7 @@ const ProjectScrum: FC = () => {
     for (const key in checkedUser) {
       if (checkedUser[key] === 1) newUsers.push(key)
     }
+    alert(JSON.stringify(checkedUser))
     await projectDoc.update({
         users: newUsers
     });
