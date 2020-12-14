@@ -12,6 +12,7 @@ import ProjectItem from '../components/ProjectItem';
  */
 const MyProjects: FC = () => {
     const user = useLoggedInUser();
+    const userId = user?.uid + "";
 
     const [error, setError] = useState<string>();
 
@@ -40,7 +41,7 @@ const MyProjects: FC = () => {
         </Typography>
 
             <Grid container spacing={1}>
-                {projects.map((project, i) => (
+                {projects.filter(item => item.users.indexOf(userId) > -1).map((project, i) => (
                     <Grid key={i} xs={12} item>
                         {/**
                      * Predavam komponente hodnoty hlavne pro zachovani id projektu, ktere
