@@ -19,9 +19,12 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 
 const useStyles = makeStyles(theme => ({
-    card: { height: '100%' },
-    stars: { marginBottom: theme.spacing(2) },
-    link: { textDecoration: 'none' },
+    preview: {
+      overflow: "hidden",
+      textAlign: 'left',
+      fontSize: "65%",
+      height: "10em",
+    }
 }));
 
 export type ProjectItemProps = {
@@ -38,8 +41,9 @@ export type ProjectItemProps = {
 const ProjectItem: FC<ProjectItemProps> = ({ note, name, id: projectId, by, users }) => {
     const user = useLoggedInUser();
     const [error, setError] = useState<string>();
-
     const [tasks, setTasks] = useState<Task[]>([]);
+    const classes = useStyles();
+
     useEffect(() => {
         tasksCollection.onSnapshot(
             snapshot => {
@@ -99,10 +103,10 @@ const ProjectItem: FC<ProjectItemProps> = ({ note, name, id: projectId, by, user
                     {name}
                 </Typography>
                 <Typography color='textSecondary'>
-                    {by.email}
+                    {`Last update by: ${by.email}`}
                 </Typography>
                 {note && (
-                    <ReactMarkdown>
+                    <ReactMarkdown className={classes.preview}>
                         {note}
                     </ReactMarkdown>
                 )}
