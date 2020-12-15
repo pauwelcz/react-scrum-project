@@ -35,10 +35,11 @@ const ProjectForm: FC = () => {
   const history = useHistory();
   const classes = useStyles();
   const user = useLoggedInUser();
-  const location = useLocation<{ projectId: string, name: string, note: string }>();
+  const location = useLocation<{ projectId: string, name: string, note: string, users: string[] }>();
   const projectId = location.state.projectId;
 
   const [name, setName] = useState(location.state.name ?? '');
+  const [users, setUsers] = useState(location.state.users ?? [ user?.uid ]);
   const [note, setNote] = useState(location.state.note ?? '');
   const [error, setError] = useState<string>();
 
@@ -49,6 +50,7 @@ const ProjectForm: FC = () => {
         id: projectDoc.id,
         name,
         note,
+        users,
         by: {
           uid: user?.uid ?? '',
           email: user?.email ?? '',

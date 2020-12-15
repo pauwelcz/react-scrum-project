@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
+import * as admin from 'firebase-admin';
+
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -26,12 +28,18 @@ const db = firebase.firestore();
  */
 // Simplified user type for referencing users
 export type User = Pick<firebase.User, 'uid' | 'email'>;
-
+export type UserItem = {
+  uid: string,
+  email: string,
+}
+export const usersColection = db.collection('users') as firebase.firestore.CollectionReference<UserItem>;
+export type UserRerefence = firebase.firestore.DocumentReference<UserItem>;
 // Project
 export type Project = {
   id: string;
   by: User;
   name: string;
+  users: string[];
   note: string;
 }
 export const projectsCollection = db.collection('projects') as firebase.firestore.CollectionReference<Project>;
@@ -79,7 +87,14 @@ export const useLoggedInUser = () => {
 
 // Sign up handler
 export const signUp = (email: string, password: string) =>
-  firebase.auth().createUserWithEmailAndPassword(email, password);
+  firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
+    if (user.user?.email !== null) {
+        db.collection("users").doc(user.user?.uid).set({
+          uid: user.user?.uid,
+          email: user.user?.email
+        })
+    }
+  });
 
 // Sign in handler
 export const signIn = (email: string, password: string) =>
