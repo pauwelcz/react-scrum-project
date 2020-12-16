@@ -39,18 +39,19 @@ const ProjectForm: FC = () => {
   const projectId = location.state.projectId;
 
   const [name, setName] = useState(location.state.name ?? '');
-  const [users, setUsers] = useState(location.state.users ?? [ user?.uid ]);
+  const [users, setUsers] = useState(location.state.users ?? []);
   const [note, setNote] = useState(location.state.note ?? '');
   const [error, setError] = useState<string>();
 
   const handleProjectSubmit = async () => {
     try {
       const projectDoc: ProjectReference = projectId ? projectsCollection.doc(projectId) : projectsCollection.doc();
+
       await projectDoc.set({
         id: projectDoc.id,
         name,
         note,
-        users,
+        users: [...users, user?.uid ?? ''],
         by: {
           uid: user?.uid ?? '',
           email: user?.email ?? '',
@@ -99,7 +100,7 @@ const ProjectForm: FC = () => {
               <Typography variant='caption' color='textSecondary'>
                 Note preview
               </Typography>
-              <ReactMarkdown children={note} className={classes.preview}/>
+              <ReactMarkdown children={note} className={classes.preview} />
               {error && (
                 <Typography variant='subtitle2' align='left' color='error' paragraph>
                   <b>{error}</b>
@@ -115,7 +116,7 @@ const ProjectForm: FC = () => {
           </Button>
 
           <Button className={classes.button} onClick={() => history.goBack()}>
-          Back
+            Back
           </Button>
         </CardActions>
       </Card>

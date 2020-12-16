@@ -51,13 +51,13 @@ const ProjectScrum: FC = () => {
    */
   const [project, setProject] = useState<Project>();
   useEffect(() => {
-    projectsCollection.doc(projectId).onSnapshot( doc => {
+    projectsCollection.doc(projectId).onSnapshot(doc => {
       setProject(doc.data());
     },
-    err => setError(err.message),
+      err => setError(err.message),
     );
   });
-  
+
   const [checkedUser, setCheckedUser] = useState<Record<string, number>>({});
   /**
    * Ziskani pole users pro zobrazeni
@@ -68,8 +68,8 @@ const ProjectScrum: FC = () => {
       snapshot => {
         const usersFromFS: UserItem[] = snapshot.docs.map(doc => {
           const user: UserItem = doc.data();
-          
-          return { ...user}
+
+          return { ...user }
         });
         setUsers(usersFromFS);
       },
@@ -186,8 +186,8 @@ const ProjectScrum: FC = () => {
     }
 
     setFilteredUsers(newUsers)
-      //(newChecked)
-      //setFilteredTasks(tasks.filter(task => task.category in newChecked && newChecked[task.category] === 1));
+    //(newChecked)
+    //setFilteredTasks(tasks.filter(task => task.category in newChecked && newChecked[task.category] === 1));
   };
 
   const projectId = location.state + "";
@@ -196,14 +196,14 @@ const ProjectScrum: FC = () => {
    * Update uzivatelu
    */
   const handleUsersSubmit = async () => {
-    const newUsers = [ user?.uid === undefined ? "" : user?.uid]
+    const newUsers = [user?.uid === undefined ? "" : user?.uid]
     // alert(JSON.stringify(checkedUser))
     for (const key in checkedUser) {
       if (checkedUser[key] === 1) newUsers.push(key)
     }
     alert(JSON.stringify(checkedUser))
     await projectDoc.update({
-        users: newUsers
+      users: newUsers
     });
   }
 
@@ -270,32 +270,32 @@ const ProjectScrum: FC = () => {
             })}
           </List>
           {(user?.uid === project?.by.uid) && (
-          <List className={classes.listRoot}>
-            <ListSubheader>
-              <Typography variant="h6">Users</Typography>
-              <IconButton edge="end" onClick={handleUsersSubmit}>
+            <List className={classes.listRoot}>
+              <ListSubheader>
+                <Typography variant="h6">Users</Typography>
+                <IconButton edge="end" onClick={handleUsersSubmit}>
                   <AddCircleOutlinedIcon />
                 </IconButton>
-            </ListSubheader>
-            {users.filter(item => item.uid !== user?.uid).map((user: UserItem) => {
-              const labelId = `checkbox-list-label-${user.uid}`;
-              return(
-                <ListItem key={user.uid} role={undefined} dense button onClick={handleCheckboxToggleUser(user)}>
-                  <ListItemIcon>
-                    <Checkbox
-                      color="primary"
-                      edge="start"
-                      checked={checkedUser[user.uid] === 1}
-                      tabIndex={-1}
-                      disableRipple
-                      inputProps={{ 'aria-labelledby': labelId }}
-                    />
-                  </ListItemIcon>
-                  <ListItemText id={labelId} primary={<Typography color="textPrimary">{user.email}</Typography>} />
-                </ListItem>
-              )
-            })};
-          </List>
+              </ListSubheader>
+              {users.filter(item => item.uid !== user?.uid).map((user: UserItem) => {
+                const labelId = `checkbox-list-label-${user.uid}`;
+                return (
+                  <ListItem key={user.uid} role={undefined} dense button onClick={handleCheckboxToggleUser(user)}>
+                    <ListItemIcon>
+                      <Checkbox
+                        color="primary"
+                        edge="start"
+                        checked={checkedUser[user.uid] === 1}
+                        tabIndex={-1}
+                        disableRipple
+                        inputProps={{ 'aria-labelledby': labelId }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText id={labelId} primary={<Typography color="textPrimary">{user.email}</Typography>} />
+                  </ListItem>
+                )
+              })};
+            </List>
           )}
         </Grid>
 
@@ -314,7 +314,7 @@ const ProjectScrum: FC = () => {
           </Grid>
         </Grid>
       </Grid>
-      
+
       <Dialog
         open={dialogOpen}
         onClose={handleCloseDialog}
