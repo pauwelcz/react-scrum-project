@@ -7,9 +7,10 @@ import AddCircleOutlinedIcon from '@material-ui/icons/AddCircleOutlined';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import React, { FC, useEffect, useState } from 'react';
+import { DragDropContext } from 'react-beautiful-dnd';
 import { Link, useLocation } from 'react-router-dom';
 import { BoardColumn } from '../components/BoardColumn';
-import { categoriesCollection, Category, Project, ProjectReference, projectsCollection, Task, tasksCollection, useLoggedInUser, UserItem, usersColection } from '../utils/firebase';
+import { categoriesCollection, Category, Project, ProjectReference, projectsCollection, Task, TaskReference, tasksCollection, useLoggedInUser, UserItem, usersColection } from '../utils/firebase';
 
 const useStyles = makeStyles(theme => ({
   card: { height: '100%' },
@@ -207,9 +208,34 @@ const ProjectScrum: FC = () => {
     });
   }
 
+  // Handle drag & drop
+  const onDragEnd = (result: any) => {
+      const { source, destination, draggableId } = result
+
+      // Do nothing if item is dropped outside the list
+      if (!destination) {
+        return
+      }
+  
+      // Do nothing if the item is dropped into the same place
+      if (destination.droppableId === source.droppableId) {
+        return
+      } else {
+        let taskToChange = tasks.find(task => task.id === draggableId); 
+        if (taskToChange) {
+          taskToChange.phase = destination.droppableId; 
+          try {
+            tasksCollection.doc(taskToChange.id).update({ phase: destination.droppableId });    
+          } catch (err) {
+            setError(err.what);
+          }
+        }
+      }
+    }
+
   return (
     <div>
-      <Grid container direction="row" justify="space-evenly" alignItems="center" spacing={2}>
+      <Grid container direction="row" justify="space-evenly" alignItems="flex-start" spacing={2}>
         <Grid item xs={12} sm={3}>
           <List className={classes.listRoot}>
             <ListSubheader>
@@ -299,21 +325,23 @@ const ProjectScrum: FC = () => {
           )}
         </Grid>
 
-        <Grid container item xs={12} sm={9} spacing={1}>
-          <Grid item sm={3}>
-            <BoardColumn title={"TO DO"} tasks={filterTasksByPhase("TO DO")} categories={categories} />
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Grid container item xs={12} sm={9} spacing={1}>
+            <Grid item sm={3}>
+              <BoardColumn title={"TO DO"} tasks={filterTasksByPhase("TO DO")} categories={categories} />
+            </Grid>
+            <Grid item sm={3}>
+              <BoardColumn title={"IN PROGRESS"} tasks={filterTasksByPhase("IN PROGRESS")} categories={categories} />
+            </Grid>
+            <Grid item sm={3}>
+              <BoardColumn title={"TESTING"} tasks={filterTasksByPhase("TESTING")} categories={categories} />
+            </Grid>
+            <Grid item sm={3}>
+              <BoardColumn title={"DONE"} tasks={filterTasksByPhase("DONE")} categories={categories} />
+            </Grid>
           </Grid>
-          <Grid item sm={3}>
-            <BoardColumn title={"IN PROGRESS"} tasks={filterTasksByPhase("IN PROGRESS")} categories={categories} />
-          </Grid>
-          <Grid item sm={3}>
-            <BoardColumn title={"TESTING"} tasks={filterTasksByPhase("TESTING")} categories={categories} />
-          </Grid>
-          <Grid item sm={3}>
-            <BoardColumn title={"DONE"} tasks={filterTasksByPhase("DONE")} categories={categories} />
-          </Grid>
+        </DragDropContext>
         </Grid>
-      </Grid>
       
       <Dialog
         open={dialogOpen}
