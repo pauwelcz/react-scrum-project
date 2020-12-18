@@ -236,7 +236,7 @@ const ProjectScrum: FC = () => {
   return (
     <div>
       <Grid container direction="row" justify="space-evenly" alignItems="flex-start" spacing={2}>
-        <Grid item xs={12} sm={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <List className={classes.listRoot}>
             <ListSubheader>
               <Typography variant="h6">Categories</Typography>
@@ -326,17 +326,17 @@ const ProjectScrum: FC = () => {
         </Grid>
 
         <DragDropContext onDragEnd={onDragEnd}>
-          <Grid container item xs={12} sm={9} spacing={1}>
-            <Grid item sm={3}>
+          <Grid container item xs={12} sm={12} md={9} spacing={1}>
+            <Grid item xs={12} sm={6} md={3}>
               <BoardColumn title={"TO DO"} tasks={filterTasksByPhase("TO DO")} categories={categories} />
             </Grid>
-            <Grid item sm={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <BoardColumn title={"IN PROGRESS"} tasks={filterTasksByPhase("IN PROGRESS")} categories={categories} />
             </Grid>
-            <Grid item sm={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <BoardColumn title={"TESTING"} tasks={filterTasksByPhase("TESTING")} categories={categories} />
             </Grid>
-            <Grid item sm={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <BoardColumn title={"DONE"} tasks={filterTasksByPhase("DONE")} categories={categories} />
             </Grid>
           </Grid>
