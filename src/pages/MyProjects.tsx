@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import { Project, projectsCollection, useLoggedInUser } from '../utils/firebase';
 import Grid from '@material-ui/core/Grid';
 import ProjectItem from '../components/ProjectItem';
+import Container from '@material-ui/core/Container';
 
 /**
  * Zobrazeni "seznamu projektu"
@@ -35,8 +36,8 @@ const MyProjects: FC = () => {
     }, []);
 
     return (
-        <div>
-            <Typography variant="h4">
+      <Container maxWidth='md'>
+        <Typography variant="h4">
                 My projects
         </Typography>
 
@@ -57,7 +58,7 @@ const MyProjects: FC = () => {
             }}>
                 <Button variant='contained'>Add new project</Button>
             </Link>
-        </div>
+        </Container>
     );
 };
 
