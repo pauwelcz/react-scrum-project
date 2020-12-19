@@ -1,10 +1,19 @@
 import { Grid, Paper, Typography } from "@material-ui/core"
 import React from "react"
-import { Droppable } from 'react-beautiful-dnd'
-import styled from 'styled-components'
 import { Category, Task } from "../utils/firebase"
 import BoardCard from "./BoardCard"
+import { Droppable } from 'react-beautiful-dnd'
+import styled from 'styled-components'
 
+type BoardColumnProps = {
+    title: string,
+    tasks: Task[],
+    categories: Category[],
+}
+
+type BoardColumnContentStylesProps = {
+  isDraggingOver: boolean
+}
 
 const ColumnWrapper = styled.div`
   flex: 1;
@@ -17,40 +26,30 @@ const ColumnContent = styled.div<BoardColumnContentStylesProps>`
   border-radius: 5px;
 `
 
-type BoardColumnContentStylesProps = {
-  isDraggingOver: boolean
-}
-
-type BoardColumnProps = {
-  title: string,
-  tasks: Task[],
-  categories: Category[],
-}
-
 export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
   return (
     <div>
       <ColumnWrapper>
         <Paper>
           <Grid container spacing={2} direction="column" justify="center" alignItems="center"
-            style={{ display: 'inline-block' }}>
+          style={{display: 'inline-block'}}>
             <Grid item>
               <Typography variant="h6">{props.title}</Typography>
             </Grid>
 
-            <Droppable droppableId={props.title} key={props.title}>
+            <Droppable droppableId={props.title}>
               {(provided, snapshot) => (
                 <ColumnContent
                   {...provided.droppableProps}
                   ref={provided.innerRef}
                   isDraggingOver={snapshot.isDraggingOver}
                 >
-                  {props.tasks.map((task, i) => (
-                    <Grid container item direction="column" style={{ display: 'inline-block' }}>
-                      <BoardCard task={task} allCategories={props.categories} index={i} key={task.id} />
+                {props.tasks.map((task, i) => (
+                    <Grid container item direction="column" style={{display: 'inline-block'}}>
+                      <BoardCard task={task} category={task.category} index={i} key={task.id}/>
                     </Grid>
-                  ))}
-                  {provided.placeholder}
+                ))}
+                {provided.placeholder}
                 </ColumnContent>
               )}
             </Droppable>

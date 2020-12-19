@@ -1,23 +1,25 @@
-import { CircularProgress, createMuiTheme, MuiThemeProvider } from '@material-ui/core';
-import AppBar from '@material-ui/core/AppBar';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import { makeStyles } from '@material-ui/core/styles';
-import Toolbar from '@material-ui/core/Toolbar';
 import React, { FC } from 'react';
-import { BrowserRouter as Router, Link, Redirect, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Link, Redirect, Route, Switch, } from 'react-router-dom';
+
+import Container from '@material-ui/core/Container';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
+import { CircularProgress, createMuiTheme, MuiThemeProvider, } from '@material-ui/core';
+
 import './App.css';
-import CategoryForm from './pages/Category';
-import Home from './pages/Home';
+
 import Login from './pages/Login';
-import ManageUsersForm from './pages/ManageUsers';
-import MyProjects from './pages/MyProjects';
 import Notfound from './pages/NotFound';
+import Home from './pages/Home';
+import MyProjects from './pages/MyProjects';
+import { signOut, useLoggedInUser } from './utils/firebase';
 import ProjectForm from './pages/Project';
 import ProjectScrum from './pages/ProjectScrum';
+import CategoryForm from './pages/Category';
 import TaskForm from './pages/Task';
-import { signOut, useLoggedInUser } from './utils/firebase';
-
+import ManageUsersForm from './pages/ManageUsers';
 
 // MUI theme override
 const ourTheme = createMuiTheme({
@@ -41,7 +43,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const App: FC = () => {
+  // Styles
   const classes = useStyles();
+
+  // Login state
   const user = useLoggedInUser();
 
   return (

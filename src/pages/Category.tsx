@@ -1,17 +1,18 @@
-import { Card, CardActions, CardContent, makeStyles } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import { ColorPalette } from 'material-ui-color';
 import React, { FC, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { PALLETE } from '../utils/constants';
-import { categoriesCollection, Category, CategoryReference, useLoggedInUser } from '../utils/firebase';
-import * as FirestoreService from '../utils/firestore';
 
+import { Card, CardContent, CardActions } from '@material-ui/core';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import { ColorPalette } from 'material-ui-color';
+import { PALLETE } from '../utils/constants';
+
+import { categoriesCollection, CategoryReference, useLoggedInUser } from '../utils/firebase';
+import Chip from '@material-ui/core/Chip';
+import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -29,30 +30,52 @@ const useStyles = makeStyles((theme) => ({
  * Stranka pro vytvareni kategorie
  */
 const CategoryForm: FC = () => {
-  const classes = useStyles();
-  const history = useHistory();
   const location = useLocation<{ categoryId: string, project: string, name: string, color: string }>();
 
   const [name, setName] = useState(location.state.name ?? 'No name');
   const [color, setColor] = useState(location.state.color ?? PALLETE.lightblue);
+  const [error, setError] = useState<string>();
 
+  const { push } = useHistory();
+  const history = useHistory();
+  const classes = useStyles();
   const user = useLoggedInUser();
+  // Vicemene prevadim type "unknown" do stringu, aby jsem mohl dale pracovat s id projektu
+  const project = location.state.project
+  const categoryId = location.state.categoryId;
 
+  /**
+   * Ulozeni kategorie
+   */
   const handleCategorySubmit = async () => {
-    if (user) {
-      const categoryDoc: CategoryReference = location.state.categoryId ? categoriesCollection.doc(location.state.categoryId) : categoriesCollection.doc();
-      const categoryToSave: Category = { id: categoryDoc.id, name, color, project: location.state.project, by: { uid: user.uid, email: user.email } };
-      await FirestoreService.saveCategory(categoryToSave, user);
-      history.push('/project-scrum', location.state.project);
+    try {
+      const categoryDoc: CategoryReference = categoryId ? categoriesCollection.doc(categoryId) : categoriesCollection.doc();
+
+      await categoryDoc.set({
+        id: categoryDoc.id,
+        name,
+        color,
+        project,
+        by: {
+          uid: user?.uid ?? '',
+          email: user?.email ?? '',
+        },
+      });
+
+      push('/project-scrum', project);
+    } catch (err) {
+      console.log(`[Category submit] Error occurred ${err.message}`);
+      setError(err.what);
     }
   };
+
 
   return (
     <Container maxWidth='sm'>
       <Card>
         <CardContent>
           <Typography variant='h4' gutterBottom>
-            {location.state.categoryId ? 'Update category' : 'Create category'}
+            {categoryId ? 'Update category' : 'Create category'}
           </Typography>
           <Grid container spacing={3} direction="column">
             <Grid item>
@@ -63,13 +86,7 @@ const CategoryForm: FC = () => {
                 margin='normal'
                 variant='outlined'
                 value={name}
-                onChange={e => {
-                  const newValue: string = e.target.value;
-                  if (newValue.length < 30) {
-                    setName(newValue)
-                  }
-                }
-                }
+                onChange={e => setName(e.target.value)}
               />
             </Grid>
 
@@ -83,17 +100,22 @@ const CategoryForm: FC = () => {
 
             <Grid item>
               <Chip
-                size="medium"
+                size="small"
                 label={name}
-                style={{ backgroundColor: color, minWidth: 100 }}
+                style={{ backgroundColor: color }}
               />
             </Grid>
+            {error && (
+              <Typography variant='subtitle2' align='left' color='error' paragraph>
+                <b>{error}</b>
+              </Typography>
+            )}
           </Grid>
         </CardContent>
 
         <CardActions>
           <Button className={classes.button} onClick={handleCategorySubmit}>
-            {location.state.categoryId ? 'Update category' : 'Create category'}
+            {categoryId ? 'Update category' : 'Create category'}
           </Button>
           <Button className={classes.button} onClick={() => history.goBack()}>
             Back

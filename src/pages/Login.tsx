@@ -85,7 +85,9 @@ const Login: FC = () => {
             size='large'
             color='primary'
             // Handling promise with chained handlers
-            onClick={() => signIn(user, password).catch(err => setError(err.message))}
+            onClick={() =>
+              signIn(user, password).catch(err => setError(err.message))
+            }
           >
             Login
           </Button>
