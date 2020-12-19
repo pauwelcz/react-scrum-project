@@ -46,7 +46,6 @@ const ProjectForm: FC = () => {
   const handleProjectSubmit = async () => {
     try {
       const projectDoc: ProjectReference = projectId ? projectsCollection.doc(projectId) : projectsCollection.doc();
-
       await projectDoc.set({
         id: projectDoc.id,
         name,
@@ -60,6 +59,7 @@ const ProjectForm: FC = () => {
 
       push('/my-projects');
     } catch (err) {
+      alert(err)
       console.log(`[Project submit] Error occurred ${err.message}`);
       setError(err.what);
     }
