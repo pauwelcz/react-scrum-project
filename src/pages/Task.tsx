@@ -147,10 +147,11 @@ const TaskForm: FC = () => {
               <div>
                 {categories.map((cat, i) => (
                   <Chip
+                    key={i}
                     size="small"
                     label={cat.name}
                     clickable
-                    onClick={() => { handleTaskCategories(cat.id) }}
+                    onClick={() => handleTaskCategories(cat.id)}
                     className={classes.chip}
                     style={{ backgroundColor: `${changeChipColor(cat)}` }}
                   />
@@ -181,11 +182,11 @@ const TaskForm: FC = () => {
       </CardContent>
 
       <CardActions>
-        <Button className={classes.button} onClick={() => handleTaskSubmit()}>
+        <Button className={classes.button} onClick={handleTaskSubmit}>
           {taskId ? 'Update task' : 'Create task'}
         </Button>
 
-        {(taskId) && <Button className={classes.button} onClick={() => handleTaskDelete()}>
+        {(taskId) && <Button className={classes.button} onClick={handleTaskDelete}>
           Delete task
           </Button>}
 

@@ -84,7 +84,7 @@ const ProjectItem: FC<ProjectItemProps> = ({ project }) => {
                 <EditIcon />
               </IconButton>
             </Link>
-            <IconButton onClick={() => onDelete()}>
+            <IconButton onClick={onDelete}>
               <DeleteIcon />
             </IconButton>
           </div>

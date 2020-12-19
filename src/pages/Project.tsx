@@ -88,7 +88,7 @@ const ProjectForm: FC = () => {
         </CardContent>
 
         <CardActions>
-          <Button className={classes.button} onClick={() => handleProjectSubmit()}>
+          <Button className={classes.button} onClick={handleProjectSubmit}>
             {location.state.projectId ? 'Update project' : 'Create project'}
           </Button>
 

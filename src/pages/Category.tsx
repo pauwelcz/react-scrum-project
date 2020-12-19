@@ -92,7 +92,7 @@ const CategoryForm: FC = () => {
         </CardContent>
 
         <CardActions>
-          <Button className={classes.button} onClick={() => handleCategorySubmit()}>
+          <Button className={classes.button} onClick={handleCategorySubmit}>
             {location.state.categoryId ? 'Update category' : 'Create category'}
           </Button>
           <Button className={classes.button} onClick={() => history.goBack()}>

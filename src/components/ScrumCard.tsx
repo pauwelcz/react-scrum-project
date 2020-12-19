@@ -71,7 +71,7 @@ const ScrumCard: FC<ScrumProps> = ({ note, name, projectId: projectId, by }) => 
             <EditIcon />
           </IconButton>
         </Link>
-        <IconButton onClick={() => onDelete()}>
+        <IconButton onClick={onDelete}>
           <DeleteIcon />
         </IconButton>
       </CardActions>

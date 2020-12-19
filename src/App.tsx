@@ -41,10 +41,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const App: FC = () => {
-  // Styles
   const classes = useStyles();
-
-  // Login state
   const user = useLoggedInUser();
 
   return (
@@ -66,7 +63,7 @@ const App: FC = () => {
                 <Link className={classes.link} to='/my-projects'>
                   <Button className={classes.menuButton}>My Projects</Button>
                 </Link>
-                <Button className={classes.menuButton} onClick={() => signOut()}>
+                <Button className={classes.menuButton} onClick={signOut}>
                   Logout
                 </Button>
               </>

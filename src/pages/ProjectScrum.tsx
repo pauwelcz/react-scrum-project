@@ -42,6 +42,7 @@ const ProjectScrum: FC = () => {
 
   const [checked, setChecked] = useState<Record<string, number>>({});
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const handleOpenDialog = () => setDialogOpen(true);
   const handleCloseDialog = () => {
@@ -174,9 +175,8 @@ const ProjectScrum: FC = () => {
             </ListSubheader>
             {categories.map((category: Category) => {
               const labelId = `checkbox-list-label-${category.name}`;
-
               return (
-                <ListItem key={category.id} role={undefined} dense button onClick={() => handleCheckboxToggle(category)}>
+                <ListItem key={category.id} role={undefined} dense button onClick={handleCheckboxToggle(category)}>
                   <ListItemIcon>
                     <Checkbox
                       color="primary"
