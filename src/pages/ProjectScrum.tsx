@@ -6,13 +6,14 @@ import Typography from '@material-ui/core/Typography';
 import AddCircleOutlinedIcon from '@material-ui/icons/AddCircleOutlined';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import PersonAddOutlinedIcon from '@material-ui/icons/PersonAddOutlined';
 import React, { FC, useEffect, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { Link, useLocation } from 'react-router-dom';
 import { BoardColumn } from '../components/BoardColumn';
+import useFetchProject from '../hooks/useFetchProject';
+import { categoriesCollection, Category, Project, ProjectReference, projectsCollection, Task, tasksCollection, useLoggedInUser, UserItem } from '../utils/firebase';
 
-import { categoriesCollection, Category, Project, ProjectReference, projectsCollection, Task, TaskReference, tasksCollection, useLoggedInUser, UserItem, usersColection } from '../utils/firebase';
-import PersonAddOutlinedIcon from '@material-ui/icons/PersonAddOutlined';
 
 
 const useStyles = makeStyles(theme => ({
@@ -53,18 +54,7 @@ const ProjectScrum: FC = () => {
   const projectId = location.state ?? '';
   const projectDoc: ProjectReference = projectId ? projectsCollection.doc(projectId) : projectsCollection.doc();
 
-
-  /**
-   * Fetch current project
-   */
-  const [project, setProject] = useState<Project>();
-  useEffect(() => {
-    projectsCollection.doc(projectId).onSnapshot(doc => {
-      setProject(doc.data());
-    },
-      err => setError(err.message),
-    );
-  }, [projectId]);
+  const project: Project | undefined = useFetchProject(projectId);
 
   const [checkedUser, setCheckedUser] = useState<Record<string, number>>({});
 
@@ -162,28 +152,28 @@ const ProjectScrum: FC = () => {
 
   // Handle drag & drop
   const onDragEnd = (result: any) => {
-      const { source, destination, draggableId } = result
+    const { source, destination, draggableId } = result
 
-      // Do nothing if item is dropped outside the list
-      if (!destination) {
-        return
-      }
-  
-      // Do nothing if the item is dropped into the same place
-      if (destination.droppableId === source.droppableId) {
-        return
-      } else {
-        let taskToChange = tasks.find(task => task.id === draggableId); 
-        if (taskToChange) {
-          taskToChange.phase = destination.droppableId; 
-          try {
-            tasksCollection.doc(taskToChange.id).update({ phase: destination.droppableId });    
-          } catch (err) {
-            setError(err.what);
-          }
+    // Do nothing if item is dropped outside the list
+    if (!destination) {
+      return
+    }
+
+    // Do nothing if the item is dropped into the same place
+    if (destination.droppableId === source.droppableId) {
+      return
+    } else {
+      let taskToChange = tasks.find(task => task.id === draggableId);
+      if (taskToChange) {
+        taskToChange.phase = destination.droppableId;
+        try {
+          tasksCollection.doc(taskToChange.id).update({ phase: destination.droppableId });
+        } catch (err) {
+          setError(err.what);
         }
       }
     }
+  }
 
   return (
     <div>
@@ -248,7 +238,7 @@ const ProjectScrum: FC = () => {
             })}
           </List>
         </Grid>
-        
+
         <DragDropContext onDragEnd={onDragEnd}>
           <Grid container item xs={12} sm={12} md={9} spacing={1}>
             <Grid item xs={12} sm={6} md={3}>
@@ -265,8 +255,8 @@ const ProjectScrum: FC = () => {
             </Grid>
           </Grid>
         </DragDropContext>
-        </Grid>
-      
+      </Grid>
+
       <Dialog
         open={dialogOpen}
         onClose={handleCloseDialog}
@@ -304,6 +294,7 @@ const ProjectScrum: FC = () => {
         </Fab>
       </Link>
 
+      {/* Link to: ManageUsers, state type: ManageUsersFormProps  */}
       {user && project && user.uid === project.by.uid && <Link to={{
         pathname: '/manage-users',
         state: {

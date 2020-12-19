@@ -1,45 +1,18 @@
-import React from 'react';
-import ReactMarkdown from 'react-markdown';
-
-import { FC, useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import { categoriesCollection, Category, Project, ProjectReference, projectsCollection, TaskReference, tasksCollection, useLoggedInUser, UserItem, usersColection } from '../utils/firebase';
-
-import { Card, CardContent, CardActions, List, ListSubheader, IconButton, ListItem, ListItemIcon, Checkbox, ListItemText } from '@material-ui/core';
-import { Typography, TextField } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import { Card, CardActions, CardContent, Checkbox, List, ListItem, ListItemIcon, ListItemText, makeStyles, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { FormControl, makeStyles, Radio, RadioGroup } from '@material-ui/core';
-import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
-import Chip from '@material-ui/core/Chip/Chip';
+import React, { FC, useEffect, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import useFetchAllUsers from '../hooks/useFetchAllUsers';
+import useFetchProject from '../hooks/useFetchProject';
+import { ProjectReference, projectsCollection, UserItem } from '../utils/firebase';
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 50,
-    fullWidth: 'true',
-    display: 'flex',
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
+
+
+const useStyles = makeStyles(theme => ({
   button: {
     variant: 'text',
     size: 'large',
     color: theme.palette.primary.main,
-  },
-  preview: {
-    textAlign: 'left',
-    fontSize: "65%",
-  },
-  categories: {
-    marginLeft: '10px',
-  },
-  chip: {
-    margin: theme.spacing(0.5)
   },
   listRoot: {
     width: '100%',
@@ -48,61 +21,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export type ManageUsersFormProps = {
+
+export type ManageUsersStateProps = {
   owner: UserItem,
   projectId: string,
 }
 
 const ManageUsersForm: FC = () => {
   const classes = useStyles();
-  const [error, setError] = useState<string>();
-
   const history = useHistory();
-  const location = useLocation<ManageUsersFormProps>();
+  const location = useLocation<ManageUsersStateProps>();
 
-  // { id1: 1/-1,  id2: 1/-1  ... }
+  const project = useFetchProject(location.state.projectId);
+  const users = useFetchAllUsers();
   const [checkedUsers, setCheckedUsers] = useState<Record<string, number>>({});
-
-
-  /**
-   * Fetch current project
-   */
-  const [project, setProject] = useState<Project>();
-  useEffect(() => {
-    projectsCollection.doc(location.state.projectId).onSnapshot(doc => {
-      setProject(doc.data());
-    },
-      err => setError(err.message),
-    );
-  }, [location.state]);
-
-  /**
-   * Fetch all users
-   */
-  const [users, setUsers] = useState<UserItem[]>([]);
-  useEffect(() => {
-    usersColection.onSnapshot(
-      snapshot => {
-        const usersFromFS: UserItem[] = snapshot.docs.map(doc => {
-          const user: UserItem = doc.data();
-          return { ...user }
-        });
-        setUsers(usersFromFS);
-      },
-      err => setError(err.message),
-    );
-  }, [location.state]);
 
   /**
    * Prepopulate checkedUsers
    */
   useEffect(() => {
-    const newChecked: Record<string, number> = { ...checkedUsers };
+    const newChecked: Record<string, number> = {};
     project?.users.forEach(projectMemberId => {
       newChecked[projectMemberId] = 1;
     })
-    setCheckedUsers(newChecked);
-  }, [project, users, checkedUsers]);
+    setCheckedUsers((oldValue) => ({ ...oldValue, ...newChecked }));
+  }, [project]);
 
   /**
    * Handle change in checkbox status

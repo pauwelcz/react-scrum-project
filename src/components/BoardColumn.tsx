@@ -6,9 +6,9 @@ import { Droppable } from 'react-beautiful-dnd'
 import styled from 'styled-components'
 
 type BoardColumnProps = {
-    title: string,
-    tasks: Task[],
-    categories: Category[],
+  title: string,
+  tasks: Task[],
+  categories: Category[],
 }
 
 type BoardColumnContentStylesProps = {
@@ -32,7 +32,7 @@ export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
       <ColumnWrapper>
         <Paper>
           <Grid container spacing={2} direction="column" justify="center" alignItems="center"
-          style={{display: 'inline-block'}}>
+            style={{ display: 'inline-block' }}>
             <Grid item>
               <Typography variant="h6">{props.title}</Typography>
             </Grid>
@@ -44,12 +44,12 @@ export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
                   ref={provided.innerRef}
                   isDraggingOver={snapshot.isDraggingOver}
                 >
-                {props.tasks.map((task, i) => (
-                    <Grid container item direction="column" style={{display: 'inline-block'}}>
-                      <BoardCard task={task} category={task.category} index={i} key={task.id}/>
+                  {props.tasks.map((task, i) => (
+                    <Grid container item direction="column" style={{ display: 'inline-block' }}>
+                      <BoardCard task={task} category={task.category} index={i} key={task.id} />
                     </Grid>
-                ))}
-                {provided.placeholder}
+                  ))}
+                  {provided.placeholder}
                 </ColumnContent>
               )}
             </Droppable>
