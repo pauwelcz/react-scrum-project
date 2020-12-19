@@ -18,12 +18,7 @@ const MyProjects: FC = () => {
             <Grid container spacing={2}>
                 {projects.map((project, i) => (
                     <Grid key={i} xs={12} item>
-                        <ProjectItem
-                            note={project.note}
-                            name={project.name}
-                            id={project.id}
-                            by={project.by}
-                            users={project.users} />
+                        <ProjectItem project={project} />
                     </Grid>
                 ))}
             </Grid>

@@ -3,22 +3,17 @@ import 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { categoriesCollection, Category } from '../utils/firebase';
 
-export const useFetchCategoriesForProject = (taskId: string): Category[] => {
+export const useFetchCategoriesForProject = (projectId: string): Category[] => {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    const unsubscribe = categoriesCollection.where("project", "==", taskId).onSnapshot(
-      snapshot => {
-        const categoriesFromFS = snapshot.docs.map(doc => doc.data());
-        console.log("Found categories:");
-        console.log(categoriesFromFS);
-        setCategories(categoriesFromFS);
-      },
+    const unsubscribe = categoriesCollection.where("project", "==", projectId).onSnapshot(
+      snapshot => setCategories(snapshot.docs.map(doc => doc.data())),
       err => console.log(err.message),
     );
 
     return () => unsubscribe();
-  }, [taskId]);
+  }, [projectId]);
 
   return categories;
 }

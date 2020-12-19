@@ -8,12 +8,7 @@ export const useFetchProjectsForUser = (userId: string): Project[] => {
 
   useEffect(() => {
     const unsubscribe = projectsCollection.where("users", "array-contains", userId).onSnapshot(
-      snapshot => {
-        const projectsFromFS = snapshot.docs.map(doc => doc.data());
-        console.log("Found projects:");
-        console.log(projectsFromFS);
-        setProjects(projectsFromFS);
-      },
+      snapshot => setProjects(snapshot.docs.map(doc => doc.data())),
       err => console.log(err.message),
     );
 
