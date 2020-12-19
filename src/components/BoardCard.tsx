@@ -85,7 +85,6 @@ const BoardCard: FC<TaskProps> = ({ task, category, index }) => {
               "note": task.note,
               "name": task.name,
               "category": task.category,
-              "order": task.order,
             }}}>
           <Card elevation={10}>
             <CardContent>

@@ -64,7 +64,6 @@ export type Task = {
   project: string;
   phase: string;
   note: string;
-  order: number;
 }
 export const tasksCollection = db.collection('tasks') as firebase.firestore.CollectionReference<Task>;
 export type TaskReference = firebase.firestore.DocumentReference<Task>;
