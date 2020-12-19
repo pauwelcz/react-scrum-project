@@ -4,7 +4,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import useFetchAllUsers from '../hooks/useFetchAllUsers';
 import useFetchProject from '../hooks/useFetchProject';
-import { ProjectReference, projectsCollection, UserItem } from '../utils/firebase';
+import { projectsCollection, UserItem } from '../utils/firebase';
 
 
 const useStyles = makeStyles(theme => ({
@@ -58,15 +58,16 @@ const ManageUsersForm: FC = () => {
   /**
    * Handle form submit
    */
-  const projectDoc: ProjectReference = location.state.projectId ? projectsCollection.doc(location.state.projectId) : projectsCollection.doc();
   const handleUsersSubmit = async () => {
-    const newUsers = []
-    for (const key in checkedUsers) {
-      if (checkedUsers[key] === 1) newUsers.push(key)
+    if (location.state.projectId) {
+      const newUsers = []
+      for (const key in checkedUsers) {
+        if (checkedUsers[key] === 1) newUsers.push(key)
+      }
+      await projectsCollection.doc(location.state.projectId).update({
+        users: newUsers
+      });
     }
-    await projectDoc.update({
-      users: newUsers
-    });
   }
 
   return (

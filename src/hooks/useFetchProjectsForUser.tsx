@@ -3,7 +3,7 @@ import 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { projectsCollection, Project } from '../utils/firebase';
 
-export const useFetchCategoriesForProject = (userId: string): Project[] => {
+export const useFetchProjectsForUser = (userId: string): Project[] => {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
@@ -23,4 +23,4 @@ export const useFetchCategoriesForProject = (userId: string): Project[] => {
   return projects;
 }
 
-export default useFetchCategoriesForProject;
+export default useFetchProjectsForUser;

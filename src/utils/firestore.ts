@@ -1,6 +1,6 @@
 import 'firebase/auth';
 import 'firebase/firestore';
-import { categoriesCollection, projectsCollection, Category, User, Project } from '../utils/firebase';
+import { categoriesCollection, projectsCollection, Category, User, Project, Task, tasksCollection } from '../utils/firebase';
 
 export const saveCategory = async (category: Category, owner: User) => {
   try {
@@ -34,5 +34,34 @@ export const saveProject = async (project: Project, owner: User) => {
     });
   } catch (err) {
     console.log(`[Project save] Error occurred: ${err.message}`);
+  }
+};
+
+
+export const saveTask = async (task: Task, owner: User) => {
+  try {
+    await tasksCollection.doc(task.id).set({
+      id: task.id,
+      name: task.name,
+      note: task.note,
+      phase: task.phase,
+      category: task.category,
+      project: task.project,
+      by: {
+        uid: owner.uid,
+        email: owner.email,
+      },
+    });
+  } catch (err) {
+    console.log(`[Task save] Error occurred: ${err.message}`);
+  }
+};
+
+
+export const deleteTask = async (taskId: string) => {
+  try {
+    await tasksCollection.doc(taskId).delete();
+  } catch (err) {
+    console.log(`[Task delete] Error occurred ${err.message}`);
   }
 };

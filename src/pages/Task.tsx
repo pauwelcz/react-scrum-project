@@ -5,10 +5,12 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useHistory, useLocation } from 'react-router-dom';
-import { categoriesCollection, Category, TaskReference, tasksCollection, useLoggedInUser } from '../utils/firebase';
+import useFetchCategoriesForProject from '../hooks/useFetchCategoriesForProject';
+import { Category, Task, TaskReference, tasksCollection, useLoggedInUser } from '../utils/firebase';
+import * as FirestoreService from '../utils/firestore';
 
 
 
@@ -39,110 +41,68 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-/**
- * Stranka pro vytvareni tasku
- */
+export type TaskStateProps = {
+  taskId: string,
+  project: string,
+  category: string[],
+  name: string,
+  note: string,
+  phase: string
+}
+
 const TaskForm: FC = () => {
   const classes = useStyles();
   const history = useHistory();
-  const location = useLocation<{ taskId: string, project: string, category: string[], name: string, note: string, phase: string }>();
+  const location = useLocation<TaskStateProps>();
+  const projectId = location.state.project;
+  const taskId = location.state.taskId;
 
-  const [name, setName] = useState(location.state.name === undefined ? '' : location.state.name);
-  const [note, setNote] = useState(location.state.note === undefined ? '' : location.state.note);
-  const [phase, setPhase] = useState(location.state.phase === undefined ? 'TO DO' : location.state.phase);
-  const [error, setError] = useState<string>();
+  const user = useLoggedInUser();
+  const categories: Category[] = useFetchCategoriesForProject(projectId);
+
+  const [name, setName] = useState<string>(location.state.name ?? '');
+  const [note, setNote] = useState<string>(location.state.note ?? '');
+  const [phase, setPhase] = useState<string>(location.state.phase ?? 'TO DO');
+  const [categoryIds, setCategoryIds] = useState<string[]>(location.state.category ?? []);
+
 
   /**
-   * Vkladani kategorii do pole
+   * Select/unselect category
    */
-  const [category, setCategory] = useState<string[]>(location.state.category === undefined ? [] : location.state.category);
-  const handleTaskCategories = (category_item: string) => {
-    // nasla se kategorie
-    if (category.find(item => item === category_item) !== undefined) {
-      try {
-        setCategory(category.filter(item => item !== category_item))
-      } catch (err) {
-        setError(err.what);
-      }
+  const handleTaskCategories = (catId: string) => {
+    // category is not yet selected => insert into selected categories
+    if (categoryIds.find(id => id === catId) === undefined) {
+      setCategoryIds(oldIds => [...oldIds, catId])
     } else {
-      try {
-        setCategory(category => [...category, category_item])
-      } catch (err) {
-        setError(err.what);
-      }
+      // else remove it from selected categories
+      setCategoryIds(selectedCategories => selectedCategories.filter(cat => cat !== catId))
+
     }
   }
 
-  const changeChipColor = (category_item: Category) => {
-    if (category.find(item => item === category_item.id) !== undefined) {
-      return category_item.color;
+  const changeChipColor = (cat: Category) => {
+    if (categoryIds.find(item => item === cat.id) !== undefined) {
+      return cat.color;
     }
     return "#dfe6e9";
   }
 
-  const user = useLoggedInUser();
 
-  const taskId = location.state.taskId;
-  const projectId = location.state.project;
-
-  const handleChangePhase = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setPhase(event.target.value as string);
-  };
-
-  /**
-   * Ulozeni tasku
-   */
   const handleTaskSubmit = async () => {
-    try {
+    if (user) {
       const taskDoc: TaskReference = taskId ? tasksCollection.doc(taskId) : tasksCollection.doc();
-
-      await taskDoc.set({
-        id: taskDoc.id,
-        name,
-        category,
-        phase,
-        project: projectId,
-        by: {
-          uid: user?.uid ?? '',
-          email: user?.email ?? '',
-        },
-        note,
-      });
-
+      const taskToSave: Task = { id: taskDoc.id, name, note, phase, category: categoryIds, project: projectId, by: { uid: user.uid, email: user.email } };
+      await FirestoreService.saveTask(taskToSave, user);
       history.push('/project-scrum', projectId);
-    } catch (err) {
-
-      setError(err.what);
     }
   };
 
   const handleTaskDelete = async () => {
-    try {
-      await tasksCollection.doc(taskId).delete();
+    if (taskId) {
+      FirestoreService.deleteTask(taskId);
       history.push('/project-scrum', projectId);
-    } catch (err) {
-      console.log(`[Task submit] Error occurred ${err.message}`);
-      setError(err.what);
     }
   };
-
-  /**
-   * Zobrazeni kategorii
-   */
-  const [categories, setCategories] = useState<Category[]>([]);
-  useEffect(() => {
-    categoriesCollection.onSnapshot(
-      snapshot => {
-        const categoriesFromFS: Category[] = snapshot.docs.map(doc => {
-          const cat: Category = doc.data();
-          const id: string = doc.id;
-          return { ...cat, id: id }
-        });
-        setCategories(categoriesFromFS);
-      },
-      err => setError(err.message),
-    );
-  }, []);
 
 
   return (
@@ -171,7 +131,7 @@ const TaskForm: FC = () => {
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 value={phase}
-                onChange={handleChangePhase}
+                onChange={e => setPhase(e.target.value as string)}
               >
                 <MenuItem value={'TO DO'}>TO DO</MenuItem>
                 <MenuItem value={'IN PROGRESS'}>IN PROGRESS</MenuItem>
@@ -181,12 +141,11 @@ const TaskForm: FC = () => {
             </FormControl>
 
             <FormControl margin="normal" fullWidth className={classes.categories}>
-
               <Typography variant='caption' color='textSecondary' align="left">
                 Categories
-            </Typography>
+              </Typography>
               <div>
-                {categories.filter(category => category.project === projectId).map((cat, i) => (
+                {categories.map((cat, i) => (
                   <Chip
                     size="small"
                     label={cat.name}
@@ -217,12 +176,6 @@ const TaskForm: FC = () => {
               </Typography>
 
             <ReactMarkdown children={note} className={classes.preview} />
-
-            {error && (
-              <Typography variant='subtitle2' align='left' color='error' paragraph>
-                <b>{error}</b>
-              </Typography>
-            )}
           </Grid>
         </Grid>
       </CardContent>
