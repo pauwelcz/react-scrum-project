@@ -1,20 +1,16 @@
-import React from 'react';
-import ReactMarkdown from 'react-markdown';
-
-import { FC, useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import { categoriesCollection, Category, TaskReference, tasksCollection, useLoggedInUser } from '../utils/firebase';
-
-import { Card, CardContent, CardActions } from '@material-ui/core';
-import { Typography, TextField } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import { Card, CardActions, CardContent, FormControl, makeStyles, TextField, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import Chip from '@material-ui/core/Chip/Chip';
+import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import { FormControl, makeStyles, Radio, RadioGroup } from '@material-ui/core';
-import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
-import Chip from '@material-ui/core/Chip/Chip';
+import React, { FC, useEffect, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import { useHistory, useLocation } from 'react-router-dom';
+import { categoriesCollection, Category, TaskReference, tasksCollection, useLoggedInUser } from '../utils/firebase';
+
+
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -232,11 +228,11 @@ const TaskForm: FC = () => {
       </CardContent>
 
       <CardActions>
-        <Button className={classes.button} onClick={handleTaskSubmit}>
+        <Button className={classes.button} onClick={() => handleTaskSubmit()}>
           {taskId ? 'Update task' : 'Create task'}
         </Button>
 
-        {(taskId) && <Button className={classes.button} onClick={handleTaskDelete}>
+        {(taskId) && <Button className={classes.button} onClick={() => handleTaskDelete()}>
           Delete task
           </Button>}
 

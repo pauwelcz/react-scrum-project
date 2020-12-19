@@ -1,10 +1,10 @@
+import { makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import example from '../images/example_image.jpg'
+import example from '../images/example_image.jpg';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
     link: { textDecoration: 'none' },
 }));
 

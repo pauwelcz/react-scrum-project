@@ -1,12 +1,12 @@
-import React, { FC, useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
-import { Link } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
-import { Project, projectsCollection, useLoggedInUser } from '../utils/firebase';
-import Grid from '@material-ui/core/Grid';
-import ProjectItem from '../components/ProjectItem';
 import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import React, { FC } from 'react';
+import { Link } from 'react-router-dom';
+import ProjectItem from '../components/ProjectItem';
 import useFetchProjectsForUsers from '../hooks/useFetchProjectsForUser';
+import { Project, useLoggedInUser } from '../utils/firebase';
 
 const MyProjects: FC = () => {
     const user = useLoggedInUser();

@@ -77,7 +77,7 @@ const ManageUsersForm: FC = () => {
           {users.filter(item => item.uid !== location.state.owner.uid).map((user: UserItem) => {
             const labelId = `checkbox-list-label-${user.uid}`;
             return (
-              <ListItem key={user.uid} role={undefined} dense button onClick={handleCheckboxToggleUser(user)}>
+              <ListItem key={user.uid} role={undefined} dense button onClick={() => handleCheckboxToggleUser(user)}>
                 <ListItemIcon>
                   <Checkbox
                     color="primary"
@@ -96,7 +96,7 @@ const ManageUsersForm: FC = () => {
       </CardContent>
 
       <CardActions>
-        <Button className={classes.button} onClick={handleUsersSubmit}>
+        <Button className={classes.button} onClick={() => handleUsersSubmit()}>
           Save changes
         </Button>
 

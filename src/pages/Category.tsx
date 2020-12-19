@@ -41,8 +41,8 @@ const CategoryForm: FC = () => {
   const handleCategorySubmit = async () => {
     if (user) {
       const categoryDoc: CategoryReference = location.state.categoryId ? categoriesCollection.doc(location.state.categoryId) : categoriesCollection.doc();
-      const categoryToSave: Category = { id: categoryDoc.id, name, color, project: location.state.project, by: { uid: user.uid, email: user.email } }
-      await FirestoreService.saveCategory(categoryToSave, user)
+      const categoryToSave: Category = { id: categoryDoc.id, name, color, project: location.state.project, by: { uid: user.uid, email: user.email } };
+      await FirestoreService.saveCategory(categoryToSave, user);
       history.push('/project-scrum', location.state.project);
     }
   };
@@ -92,7 +92,7 @@ const CategoryForm: FC = () => {
         </CardContent>
 
         <CardActions>
-          <Button className={classes.button} onClick={handleCategorySubmit}>
+          <Button className={classes.button} onClick={() => handleCategorySubmit()}>
             {location.state.categoryId ? 'Update category' : 'Create category'}
           </Button>
           <Button className={classes.button} onClick={() => history.goBack()}>

@@ -180,7 +180,7 @@ const ProjectScrum: FC = () => {
               const labelId = `checkbox-list-label-${category.name}`;
 
               return (
-                <ListItem key={category.id} role={undefined} dense button onClick={handleCheckboxToggle(category)}>
+                <ListItem key={category.id} role={undefined} dense button onClick={() => handleCheckboxToggle(category)}>
                   <ListItemIcon>
                     <Checkbox
                       color="primary"
@@ -250,7 +250,7 @@ const ProjectScrum: FC = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
+          <Button onClick={() => handleCloseDialog()} color="primary">
             Cancel
           </Button>
           <Button onClick={() => {
