@@ -10,7 +10,10 @@ import React, { FC, useEffect, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { Link, useLocation } from 'react-router-dom';
 import { BoardColumn } from '../components/BoardColumn';
+
 import { categoriesCollection, Category, Project, ProjectReference, projectsCollection, Task, TaskReference, tasksCollection, useLoggedInUser, UserItem, usersColection } from '../utils/firebase';
+import PersonAddOutlinedIcon from '@material-ui/icons/PersonAddOutlined';
+
 
 const useStyles = makeStyles(theme => ({
   card: { height: '100%' },
@@ -28,7 +31,9 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+
 const ProjectScrum: FC = () => {
+  const [error, setError] = useState<string>();
 
   const user = useLoggedInUser();
   const classes = useStyles();
@@ -43,39 +48,26 @@ const ProjectScrum: FC = () => {
     setCategoryToDelete(null);
   }
 
-  const location = useLocation();
+  // location.state: string === projectId
+  const location = useLocation<string>();
+  const projectId = location.state ?? '';
+  const projectDoc: ProjectReference = projectId ? projectsCollection.doc(projectId) : projectsCollection.doc();
 
-  const [error, setError] = useState<string>();
+
   /**
-   * Ziskani pole users pro zobrazeni, pouze jednou se udela
+   * Fetch current project
    */
   const [project, setProject] = useState<Project>();
   useEffect(() => {
-    projectsCollection.doc(projectId).onSnapshot( doc => {
+    projectsCollection.doc(projectId).onSnapshot(doc => {
       setProject(doc.data());
     },
-    err => setError(err.message),
-    );
-  });
-  
-  const [checkedUser, setCheckedUser] = useState<Record<string, number>>({});
-  /**
-   * Ziskani pole users pro zobrazeni
-   */
-  const [users, setUsers] = useState<UserItem[]>([]);
-  useEffect(() => {
-    usersColection.onSnapshot(
-      snapshot => {
-        const usersFromFS: UserItem[] = snapshot.docs.map(doc => {
-          const user: UserItem = doc.data();
-          
-          return { ...user}
-        });
-        setUsers(usersFromFS);
-      },
       err => setError(err.message),
     );
-  }, [location.state]);
+  }, [projectId]);
+
+  const [checkedUser, setCheckedUser] = useState<Record<string, number>>({});
+
   /**
    * Ziskani pole kategorii pro zobrazeni
    */
@@ -94,9 +86,6 @@ const ProjectScrum: FC = () => {
     );
   }, [location.state]);
 
-  /**
-   * Tasky se budou hodit
-   */
   const [tasks, setTasks] = useState<Task[]>([]);
   useEffect(() => {
     tasksCollection.onSnapshot(
@@ -136,9 +125,10 @@ const ProjectScrum: FC = () => {
   // tasks filtered with checkboxes
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
   const filterTasksByPhase = (phase: string) => {
-    return filteredTasks.filter(task => task.phase === phase).sort((a, b) => a.order > b.order ? 1 : -1)
+    return filteredTasks.filter(task => task.phase === phase)
   };
 
+  // tasks filtered with checkboxes
   const [filteredUsers, setFilteredUsers] = useState<UserItem[]>([]);
 
   const handleCheckboxToggle = (category: Category) => () => {
@@ -168,46 +158,7 @@ const ProjectScrum: FC = () => {
     }
   };
 
-  /**
-   * Handling kategorii
-   */
-  const handleCheckboxToggleUser = (user: UserItem) => () => {
-    const currentValue: number = checkedUser[user.uid] ?? -1;
-    const newChecked: Record<string, number> = { ...checkedUser };
 
-    newChecked[user.uid] = currentValue === -1 ? 1 : -1;
-
-    setCheckedUser(newChecked);
-
-    let newUsers: UserItem[] = []
-    for (const user of users) {
-      if (user.uid in newChecked && newChecked[user.uid] === 1) {
-        newUsers.push(user)
-        break;
-      }
-    }
-
-    setFilteredUsers(newUsers)
-      //(newChecked)
-      //setFilteredTasks(tasks.filter(task => task.category in newChecked && newChecked[task.category] === 1));
-  };
-
-  const projectId = location.state + "";
-  const projectDoc: ProjectReference = projectId ? projectsCollection.doc(projectId) : projectsCollection.doc();
-  /**
-   * Update uzivatelu
-   */
-  const handleUsersSubmit = async () => {
-    const newUsers = [ user?.uid === undefined ? "" : user?.uid]
-    // alert(JSON.stringify(checkedUser))
-    for (const key in checkedUser) {
-      if (checkedUser[key] === 1) newUsers.push(key)
-    }
-    alert(JSON.stringify(checkedUser))
-    await projectDoc.update({
-        users: newUsers
-    });
-  }
 
   // Handle drag & drop
   const onDragEnd = (result: any) => {
@@ -219,68 +170,14 @@ const ProjectScrum: FC = () => {
       }
   
       // Do nothing if the item is dropped into the same place
-
       if (destination.droppableId === source.droppableId) {
-        const sourceToChange = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order === source.index + 1)[0];
-        const destinationToChange = tasks.filter(task => task.project === projectId && task.phase === destination.droppableId && task.order === destination.index + 1)[0];
-        /**
-         * V podstate vymenim hodnoty, funguje
-         */
-        try {
-          // tasksCollection.doc(sourceToChange.id).update({ order: destinationToChange.order });    
-          if (source.index > destination.index) {
-            //alert(`${destinationToChange.order}, ${sourceToChange.order}`)
-            const sourceTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order >= destinationToChange.order && task.order < sourceToChange.order)
-            sourceTasksToUpdate.map((task, i) => {
-              //alert(`Upravuji ${task.name} na pozici ${task.order + 1 }`)
-              tasksCollection.doc(task.id).update({ order: task.order + 1 });
-            })
-            tasksCollection.doc(sourceToChange.id).update({ order: destinationToChange.order });
-            //alert(`Upravuji ${sourceToChange.name} na pozici ${destinationToChange.order}`)
-            // nejprve upravim index tasku
-          } else if (destination.index > source.index) {
-            const sourceTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order > sourceToChange.order && task.order <= destinationToChange.order)
-            sourceTasksToUpdate.map((task, i) => {
-              //alert(`Upravuji ${task.name} na pozici ${task.order - 1 }`)
-              tasksCollection.doc(task.id).update({ order: task.order - 1 });
-            })
-            tasksCollection.doc(sourceToChange.id).update({ order: destinationToChange.order });
-            //alert(`Upravuji ${sourceToChange.name} na pozici ${destinationToChange.order}`)
-            //alert(`${sourceToChange.name}, ${sourceToChange.order}, ${destinationToChange.order}`)
-            //alert("jedu z vrchu dolu")
-          }
-        } catch (err) {
-          setError(err.what);
-        }
-        // return
+        return
       } else {
-        /**
-         * Je potreba zmenit indexy jak v source tak v destination
-         */
-        /**
-         * Upravim source
-         */
-        const sourceTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order > source.index + 1)
-        sourceTasksToUpdate.map((task, i) => {
-          //alert(`Upravuji ${task.name}, na pozici ${task.order - 1} ve ${task.phase}`)
-          tasksCollection.doc(task.id).update({ order: task.order - 1 });
-        })
-        /**
-         * Upravim destination
-         */
-        const destinationTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === destination.droppableId && task.order > destination.index)
-        destinationTasksToUpdate.map((task, i) => {
-          //alert(`Upravuji ${task.name}, na pozici ${task.order + 1} ve ${task.phase}`)
-          tasksCollection.doc(task.id).update({ order: task.order + 1 });
-        })
-
-        //alert(sourceToChange.order)
         let taskToChange = tasks.find(task => task.id === draggableId); 
         if (taskToChange) {
           taskToChange.phase = destination.droppableId; 
           try {
-            //alert(`Upravuji ${taskToChange.name}, na pozici ${destination.index + 1} ve ${destination.droppableId}`)
-            tasksCollection.doc(taskToChange.id).update({ phase: destination.droppableId, order: destination.index + 1});    
+            tasksCollection.doc(taskToChange.id).update({ phase: destination.droppableId });    
           } catch (err) {
             setError(err.what);
           }
@@ -291,7 +188,7 @@ const ProjectScrum: FC = () => {
   return (
     <div>
       <Grid container direction="row" justify="space-evenly" alignItems="flex-start" spacing={2}>
-        <Grid item xs={12} sm={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <List className={classes.listRoot}>
             <ListSubheader>
               <Typography variant="h6">Categories</Typography>
@@ -350,48 +247,20 @@ const ProjectScrum: FC = () => {
               );
             })}
           </List>
-          {(user?.uid === project?.by.uid) && (
-          <List className={classes.listRoot}>
-            <ListSubheader>
-              <Typography variant="h6">Users</Typography>
-              <IconButton edge="end" onClick={handleUsersSubmit}>
-                  <AddCircleOutlinedIcon />
-                </IconButton>
-            </ListSubheader>
-            {users.filter(item => item.uid !== user?.uid).map((user: UserItem) => {
-              const labelId = `checkbox-list-label-${user.uid}`;
-              return(
-                <ListItem key={user.uid} role={undefined} dense button onClick={handleCheckboxToggleUser(user)}>
-                  <ListItemIcon>
-                    <Checkbox
-                      color="primary"
-                      edge="start"
-                      checked={checkedUser[user.uid] === 1}
-                      tabIndex={-1}
-                      disableRipple
-                      inputProps={{ 'aria-labelledby': labelId }}
-                    />
-                  </ListItemIcon>
-                  <ListItemText id={labelId} primary={<Typography color="textPrimary">{user.email}</Typography>} />
-                </ListItem>
-              )
-            })};
-          </List>
-          )}
         </Grid>
-
+        
         <DragDropContext onDragEnd={onDragEnd}>
-          <Grid container item xs={12} sm={9} spacing={1}>
-            <Grid item sm={3}>
+          <Grid container item xs={12} sm={12} md={9} spacing={1}>
+            <Grid item xs={12} sm={6} md={3}>
               <BoardColumn title={"TO DO"} tasks={filterTasksByPhase("TO DO")} categories={categories} />
             </Grid>
-            <Grid item sm={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <BoardColumn title={"IN PROGRESS"} tasks={filterTasksByPhase("IN PROGRESS")} categories={categories} />
             </Grid>
-            <Grid item sm={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <BoardColumn title={"TESTING"} tasks={filterTasksByPhase("TESTING")} categories={categories} />
             </Grid>
-            <Grid item sm={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <BoardColumn title={"DONE"} tasks={filterTasksByPhase("DONE")} categories={categories} />
             </Grid>
           </Grid>
@@ -426,15 +295,31 @@ const ProjectScrum: FC = () => {
       <Link to={{
         pathname: '/task',
         state: {
-          "project": location.state,
+          "project": location.state
         }
       }}>
-        <Fab size="large" variant="extended" color="primary" aria-label="add" className={classes.fabStyle}>
+        <Fab size="large" variant="extended" color="primary" aria-label="add task" className={classes.fabStyle}>
           <AddCircleOutlinedIcon className={classes.extendedIcon} />
           <Typography variant="h6">Add task</Typography>
         </Fab>
       </Link>
 
+      {user && project && user.uid === project.by.uid && <Link to={{
+        pathname: '/manage-users',
+        state: {
+          "projectId": location.state,
+          "owner": {
+            "uid": user.uid,
+            "email": user.email
+          }
+        }
+      }}>
+        <Fab size="large" variant="extended" color="secondary" aria-label="add users" className={classes.fabStyle}>
+          <PersonAddOutlinedIcon className={classes.extendedIcon} />
+          <Typography variant="h6">Manage project members</Typography>
+        </Fab>
+      </Link>
+      }
     </div>
   );
 };
