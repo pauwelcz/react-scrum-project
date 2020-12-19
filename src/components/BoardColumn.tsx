@@ -38,7 +38,7 @@ export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
               <Typography variant="h6">{props.title}</Typography>
             </Grid>
 
-            <Droppable droppableId={props.title}>
+            <Droppable droppableId={props.title} key={props.title}>
               {(provided, snapshot) => (
                 <ColumnContent
                   {...provided.droppableProps}

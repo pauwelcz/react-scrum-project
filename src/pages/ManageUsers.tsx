@@ -7,7 +7,6 @@ import useFetchProject from '../hooks/useFetchProject';
 import { ProjectReference, projectsCollection, UserItem } from '../utils/firebase';
 
 
-
 const useStyles = makeStyles(theme => ({
   button: {
     variant: 'text',
@@ -20,7 +19,6 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.paper,
   },
 }));
-
 
 export type ManageUsersStateProps = {
   owner: UserItem,
@@ -63,16 +61,13 @@ const ManageUsersForm: FC = () => {
   const projectDoc: ProjectReference = location.state.projectId ? projectsCollection.doc(location.state.projectId) : projectsCollection.doc();
   const handleUsersSubmit = async () => {
     const newUsers = []
-    // alert(JSON.stringify(checkedUser))
     for (const key in checkedUsers) {
       if (checkedUsers[key] === 1) newUsers.push(key)
     }
-    // alert(JSON.stringify(checkedUsers))
     await projectDoc.update({
       users: newUsers
     });
   }
-
 
   return (
     <Card>

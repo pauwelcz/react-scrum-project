@@ -16,7 +16,7 @@ export const useFetchProject = (projectId: string): Project | undefined => {
 
     );
 
-    return unsubscribe;
+    return () => unsubscribe();
   }, [projectId]);
 
 

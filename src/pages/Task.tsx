@@ -55,6 +55,7 @@ const TaskForm: FC = () => {
   const [note, setNote] = useState(location.state.note === undefined ? '' : location.state.note);
   const [phase, setPhase] = useState(location.state.phase === undefined ? 'TO DO' : location.state.phase);
   const [error, setError] = useState<string>();
+
   /**
    * Vkladani kategorii do pole
    */

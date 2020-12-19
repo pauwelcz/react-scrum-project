@@ -9,15 +9,15 @@ export const useFetchCategoriesForProject = (taskId: string): Category[] => {
   useEffect(() => {
     const unsubscribe = categoriesCollection.where("project", "==", taskId).onSnapshot(
       snapshot => {
-        const categories = snapshot.docs.map(doc => doc.data());
+        const categoriesFromFS = snapshot.docs.map(doc => doc.data());
         console.log("Found categories:");
-        console.log(categories);
-        setCategories(categories);
+        console.log(categoriesFromFS);
+        setCategories(categoriesFromFS);
       },
       err => console.log(err.message),
     );
 
-    return unsubscribe;
+    return () => unsubscribe();
   }, [taskId]);
 
   return categories;

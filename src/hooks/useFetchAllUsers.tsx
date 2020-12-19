@@ -12,7 +12,7 @@ export const useFetchAllUsers = (): UserItem[] => {
       err => console.log(err.message),
     );
 
-    return unsubscribe;
+    return () => unsubscribe();
   }, []);
 
   return users;

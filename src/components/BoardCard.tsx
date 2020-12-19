@@ -49,7 +49,7 @@ const BoardCard: FC<TaskProps> = ({ task, allCategories, index }) => {
 
 
   return (
-    <Draggable draggableId={task.id} index={index}>
+    <Draggable draggableId={task.id} index={index} key={index}>
       {(provided, snapshot) => (
         <CardElement
           {...provided.draggableProps}
