@@ -66,6 +66,7 @@ const BoardCard: FC<TaskProps> = ({ task, allCategories, index }) => {
               "note": task.note,
               "name": task.name,
               "category": task.category,
+              "order": task.order,
             }
           }}>
             <Card elevation={10}>
@@ -87,6 +88,7 @@ const BoardCard: FC<TaskProps> = ({ task, allCategories, index }) => {
                       />
                     ))}
                   </Grid>
+
                   {task.note && (
                     <ReactMarkdown className={classes.preview}>
                       {task.note}

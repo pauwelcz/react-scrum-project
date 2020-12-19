@@ -65,6 +65,8 @@ const TaskForm: FC = () => {
   const [phase, setPhase] = useState<string>(location.state.phase ?? 'TO DO');
   const [categoryIds, setCategoryIds] = useState<string[]>(location.state.category ?? []);
 
+  const location = useLocation<{ taskId: string, project: string, category: string[], name: string, note: string, phase: string, order: number }>();
+
 
   /**
    * Select/unselect category
@@ -91,19 +93,95 @@ const TaskForm: FC = () => {
   const handleTaskSubmit = async () => {
     if (user) {
       const taskDoc: TaskReference = taskId ? tasksCollection.doc(taskId) : tasksCollection.doc();
-      const taskToSave: Task = { id: taskDoc.id, name, note, phase, category: categoryIds, project: projectId, by: { uid: user.uid, email: user.email } };
-      await FirestoreService.saveTask(taskToSave, user);
-      history.push('/project-scrum', projectId);
+      let taskOrder = taskId ?  location.state.order : tasks.filter(task => task.project === projectId && task.phase === phase).length + 1; 
+
+      if (location.state.phase !== phase) {
+        let taskOrderOriginal = taskOrder; // ulozeni puvodniho task orderu
+        taskOrder = tasks.filter(task => task.project === projectId && task.phase === phase).length + 1;
+        /**
+         * Pri presunu do jine faze je potreba take updatnout poradi prvku, ktere za nimi, tudis dekrementovat o 1
+         */
+        const tasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === location.state.phase && task.order > taskOrderOriginal)
+        tasksToUpdate.map((task, i) => {
+          tasksCollection.doc(task.id).update({ order: task.order - 1 });
+        })
+      }
+
+      await taskDoc.set({
+        id: taskDoc.id,
+        name,
+        category,
+        phase,
+        project: projectId,
+        by: {
+          uid: user?.uid ?? '',
+          email: user?.email ?? '',
+        },
+        note,
+        order: taskOrder,
+      });
+
+      push('/project-scrum', projectId);
+    } catch (err) {
+
+      setError(err.what);
+
     }
   };
 
   const handleTaskDelete = async () => {
-    if (taskId) {
-      FirestoreService.deleteTask(taskId);
-      history.push('/project-scrum', projectId);
+    try {
+      /**
+       * Pri presunu do jine faze je potreba take updatnout poradi prvku, ktere za nimi, tudis dekrementovat o 1
+       */
+      let taskOrder = taskId ?  location.state.order : tasks.filter(task => task.project === projectId && task.phase === phase).length + 1;
+      const tasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === location.state.phase && task.order > taskOrder)
+      tasksToUpdate.map((task, i) => {
+        tasksCollection.doc(task.id).update({ order: task.order - 1 });
+      })
+      await tasksCollection.doc(taskId).delete();
+      push('/project-scrum', projectId);
+    } catch (err) {
+      console.log(`[Task submit] Error occurred ${err.message}`);
+      setError(err.what);
     }
   };
 
+  /**
+   * Zobrazeni kategorii
+   */
+  const [categories, setCategories] = useState<Category[]>([]);
+  useEffect(() => {
+    categoriesCollection.onSnapshot(
+      snapshot => {
+        const categoriesFromFS: Category[] = snapshot.docs.map(doc => {
+          const cat: Category = doc.data();
+          const id: string = doc.id;
+          return { ...cat, id: id }
+        });
+        setCategories(categoriesFromFS);
+      },
+      err => setError(err.message),
+    );
+  }, []);
+
+/**
+   * Zobrazeni tasku
+   */
+  const [tasks, setTasks] = useState<Task[]>([]);
+  useEffect(() => {
+    tasksCollection.onSnapshot(
+      snapshot => {
+        const taskFromFS: Task[] = snapshot.docs.map(doc => {
+          const task: Task = doc.data();
+          const id: string = doc.id;
+          return { ...task, id: id }
+        });
+        setTasks(taskFromFS);
+      },
+      err => setError(err.message),
+    );
+  }, []);
 
   return (
     <Card>
