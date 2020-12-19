@@ -1,19 +1,10 @@
 import { Grid, Paper, Typography } from "@material-ui/core"
 import React from "react"
-import { Category, Task } from "../utils/firebase"
-import BoardCard from "./BoardCard"
 import { Droppable } from 'react-beautiful-dnd'
 import styled from 'styled-components'
+import { Category, Task } from "../utils/firebase"
+import BoardCard from "./BoardCard"
 
-type BoardColumnProps = {
-  title: string,
-  tasks: Task[],
-  categories: Category[],
-}
-
-type BoardColumnContentStylesProps = {
-  isDraggingOver: boolean
-}
 
 const ColumnWrapper = styled.div`
   flex: 1;
@@ -25,6 +16,16 @@ const ColumnContent = styled.div<BoardColumnContentStylesProps>`
   background-color: ${props => props.isDraggingOver ? '#ebebeb' : null};
   border-radius: 5px;
 `
+
+type BoardColumnContentStylesProps = {
+  isDraggingOver: boolean
+}
+
+type BoardColumnProps = {
+  title: string,
+  tasks: Task[],
+  categories: Category[],
+}
 
 export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
   return (
@@ -46,7 +47,7 @@ export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
                 >
                   {props.tasks.map((task, i) => (
                     <Grid container item direction="column" style={{ display: 'inline-block' }}>
-                      <BoardCard task={task} category={task.category} index={i} key={task.id} />
+                      <BoardCard task={task} allCategories={props.categories} index={i} key={task.id} />
                     </Grid>
                   ))}
                   {provided.placeholder}

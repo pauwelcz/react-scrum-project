@@ -11,6 +11,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { Link, useLocation } from 'react-router-dom';
 import { BoardColumn } from '../components/BoardColumn';
+import { useFetchCategoriesForProject } from '../hooks/useFetchCategoriesForProject';
 import useFetchProject from '../hooks/useFetchProject';
 import { categoriesCollection, Category, Project, ProjectReference, projectsCollection, Task, tasksCollection, useLoggedInUser, UserItem } from '../utils/firebase';
 
@@ -55,23 +56,7 @@ const ProjectScrum: FC = () => {
 
   const project: Project | undefined = useFetchProject(projectId);
 
-  /**
-   * Ziskani pole kategorii pro zobrazeni
-   */
-  const [categories, setCategories] = useState<Category[]>([]);
-  useEffect(() => {
-    categoriesCollection.onSnapshot(
-      snapshot => {
-        const categoriesFromFS: Category[] = snapshot.docs.map(doc => {
-          const cat: Category = doc.data();
-          const id: string = doc.id;
-          return { ...cat, id: id }
-        });
-        setCategories(categoriesFromFS.filter(cat => cat.project === location.state));
-      },
-      err => setError(err.message),
-    );
-  }, [location.state]);
+  const categories: Category[] = useFetchCategoriesForProject(projectId);
 
   const [tasks, setTasks] = useState<Task[]>([]);
   useEffect(() => {

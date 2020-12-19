@@ -12,9 +12,8 @@ export const useFetchProject = (projectId: string): Project | undefined => {
         console.log(`Fetching project: ${projectId}`);
         setProject(doc.data())
       },
-      (error) => {
-        console.log(error.message)
-      }
+      error => console.log(error.message)
+
     );
 
     return unsubscribe;
