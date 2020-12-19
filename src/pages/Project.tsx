@@ -30,13 +30,12 @@ const useStyles = makeStyles((theme) => ({
 
 
 const ProjectForm: FC = () => {
-
-  const { push } = useHistory();
-  const history = useHistory();
   const classes = useStyles();
-  const user = useLoggedInUser();
+  const history = useHistory();
   const location = useLocation<{ projectId: string, name: string, note: string, users: string[] }>();
   const projectId = location.state.projectId;
+
+  const user = useLoggedInUser();
 
   const [name, setName] = useState(location.state.name ?? '');
   const [users, setUsers] = useState(location.state.users ?? []);
@@ -58,7 +57,7 @@ const ProjectForm: FC = () => {
         },
       });
 
-      push('/my-projects');
+      history.push('/my-projects');
     } catch (err) {
       console.log(`[Project submit] Error occurred ${err.message}`);
       setError(err.what);

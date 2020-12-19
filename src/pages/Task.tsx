@@ -47,6 +47,8 @@ const useStyles = makeStyles((theme) => ({
  * Stranka pro vytvareni tasku
  */
 const TaskForm: FC = () => {
+  const classes = useStyles();
+  const history = useHistory();
   const location = useLocation<{ taskId: string, project: string, category: string[], name: string, note: string, phase: string }>();
 
   const [name, setName] = useState(location.state.name === undefined ? '' : location.state.name);
@@ -81,11 +83,6 @@ const TaskForm: FC = () => {
     return "#dfe6e9";
   }
 
-  const classes = useStyles();
-
-  const { push } = useHistory();
-  const history = useHistory();
-
   const user = useLoggedInUser();
 
   const taskId = location.state.taskId;
@@ -115,7 +112,7 @@ const TaskForm: FC = () => {
         note,
       });
 
-      push('/project-scrum', projectId);
+      history.push('/project-scrum', projectId);
     } catch (err) {
 
       setError(err.what);
@@ -125,7 +122,7 @@ const TaskForm: FC = () => {
   const handleTaskDelete = async () => {
     try {
       await tasksCollection.doc(taskId).delete();
-      push('/project-scrum', projectId);
+      history.push('/project-scrum', projectId);
     } catch (err) {
       console.log(`[Task submit] Error occurred ${err.message}`);
       setError(err.what);
@@ -185,24 +182,24 @@ const TaskForm: FC = () => {
                 <MenuItem value={'DONE'}>DONE</MenuItem>
               </Select>
             </FormControl>
-            
+
             <FormControl margin="normal" fullWidth className={classes.categories}>
 
-            <Typography variant='caption' color='textSecondary' align="left">
+              <Typography variant='caption' color='textSecondary' align="left">
                 Categories
             </Typography>
-            <div>
-            {categories.filter(category => category.project === projectId).map((cat, i) => (
-              <Chip
-                size="small"
-                label={cat.name}
-                clickable
-                onClick={() => {handleTaskCategories(cat.id)}}
-                className={classes.chip}
-                style={{backgroundColor: `${changeChipColor(cat)}`}} 
-              />
-            ))}
-            </div>
+              <div>
+                {categories.filter(category => category.project === projectId).map((cat, i) => (
+                  <Chip
+                    size="small"
+                    label={cat.name}
+                    clickable
+                    onClick={() => { handleTaskCategories(cat.id) }}
+                    className={classes.chip}
+                    style={{ backgroundColor: `${changeChipColor(cat)}` }}
+                  />
+                ))}
+              </div>
             </FormControl>
 
             <TextField

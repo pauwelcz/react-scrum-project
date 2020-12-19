@@ -34,14 +34,13 @@ const useStyles = makeStyles(theme => ({
 
 
 const ProjectScrum: FC = () => {
+  const classes = useStyles();
   const [error, setError] = useState<string>();
 
   const user = useLoggedInUser();
-  const classes = useStyles();
+
   const [checked, setChecked] = useState<Record<string, number>>({});
-
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
-
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const handleOpenDialog = () => setDialogOpen(true);
   const handleCloseDialog = () => {
@@ -55,8 +54,6 @@ const ProjectScrum: FC = () => {
   const projectDoc: ProjectReference = projectId ? projectsCollection.doc(projectId) : projectsCollection.doc();
 
   const project: Project | undefined = useFetchProject(projectId);
-
-  const [checkedUser, setCheckedUser] = useState<Record<string, number>>({});
 
   /**
    * Ziskani pole kategorii pro zobrazeni
