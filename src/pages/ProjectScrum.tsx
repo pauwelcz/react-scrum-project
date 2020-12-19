@@ -31,6 +31,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+
 const ProjectScrum: FC = () => {
   const [error, setError] = useState<string>();
 
@@ -85,9 +86,6 @@ const ProjectScrum: FC = () => {
     );
   }, [location.state]);
 
-  /**
-   * Tasky se budou hodit
-   */
   const [tasks, setTasks] = useState<Task[]>([]);
   useEffect(() => {
     tasksCollection.onSnapshot(
@@ -127,9 +125,10 @@ const ProjectScrum: FC = () => {
   // tasks filtered with checkboxes
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
   const filterTasksByPhase = (phase: string) => {
-    return filteredTasks.filter(task => task.phase === phase).sort((a, b) => a.order > b.order ? 1 : -1)
+    return filteredTasks.filter(task => task.phase === phase)
   };
 
+  // tasks filtered with checkboxes
   const [filteredUsers, setFilteredUsers] = useState<UserItem[]>([]);
 
   const handleCheckboxToggle = (category: Category) => () => {
@@ -171,68 +170,14 @@ const ProjectScrum: FC = () => {
       }
   
       // Do nothing if the item is dropped into the same place
-
       if (destination.droppableId === source.droppableId) {
-        const sourceToChange = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order === source.index + 1)[0];
-        const destinationToChange = tasks.filter(task => task.project === projectId && task.phase === destination.droppableId && task.order === destination.index + 1)[0];
-        /**
-         * V podstate vymenim hodnoty, funguje
-         */
-        try {
-          // tasksCollection.doc(sourceToChange.id).update({ order: destinationToChange.order });    
-          if (source.index > destination.index) {
-            //alert(`${destinationToChange.order}, ${sourceToChange.order}`)
-            const sourceTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order >= destinationToChange.order && task.order < sourceToChange.order)
-            sourceTasksToUpdate.map((task, i) => {
-              //alert(`Upravuji ${task.name} na pozici ${task.order + 1 }`)
-              tasksCollection.doc(task.id).update({ order: task.order + 1 });
-            })
-            tasksCollection.doc(sourceToChange.id).update({ order: destinationToChange.order });
-            //alert(`Upravuji ${sourceToChange.name} na pozici ${destinationToChange.order}`)
-            // nejprve upravim index tasku
-          } else if (destination.index > source.index) {
-            const sourceTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order > sourceToChange.order && task.order <= destinationToChange.order)
-            sourceTasksToUpdate.map((task, i) => {
-              //alert(`Upravuji ${task.name} na pozici ${task.order - 1 }`)
-              tasksCollection.doc(task.id).update({ order: task.order - 1 });
-            })
-            tasksCollection.doc(sourceToChange.id).update({ order: destinationToChange.order });
-            //alert(`Upravuji ${sourceToChange.name} na pozici ${destinationToChange.order}`)
-            //alert(`${sourceToChange.name}, ${sourceToChange.order}, ${destinationToChange.order}`)
-            //alert("jedu z vrchu dolu")
-          }
-        } catch (err) {
-          setError(err.what);
-        }
-        // return
+        return
       } else {
-        /**
-         * Je potreba zmenit indexy jak v source tak v destination
-         */
-        /**
-         * Upravim source
-         */
-        const sourceTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order > source.index + 1)
-        sourceTasksToUpdate.map((task, i) => {
-          //alert(`Upravuji ${task.name}, na pozici ${task.order - 1} ve ${task.phase}`)
-          tasksCollection.doc(task.id).update({ order: task.order - 1 });
-        })
-        /**
-         * Upravim destination
-         */
-        const destinationTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === destination.droppableId && task.order > destination.index)
-        destinationTasksToUpdate.map((task, i) => {
-          //alert(`Upravuji ${task.name}, na pozici ${task.order + 1} ve ${task.phase}`)
-          tasksCollection.doc(task.id).update({ order: task.order + 1 });
-        })
-
-        //alert(sourceToChange.order)
         let taskToChange = tasks.find(task => task.id === draggableId); 
         if (taskToChange) {
           taskToChange.phase = destination.droppableId; 
           try {
-            //alert(`Upravuji ${taskToChange.name}, na pozici ${destination.index + 1} ve ${destination.droppableId}`)
-            tasksCollection.doc(taskToChange.id).update({ phase: destination.droppableId, order: destination.index + 1});    
+            tasksCollection.doc(taskToChange.id).update({ phase: destination.droppableId });    
           } catch (err) {
             setError(err.what);
           }
@@ -350,7 +295,7 @@ const ProjectScrum: FC = () => {
       <Link to={{
         pathname: '/task',
         state: {
-          "project": location.state,
+          "project": location.state
         }
       }}>
         <Fab size="large" variant="extended" color="primary" aria-label="add task" className={classes.fabStyle}>
