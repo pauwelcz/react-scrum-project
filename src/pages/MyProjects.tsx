@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import { Project, projectsCollection, useLoggedInUser } from '../utils/firebase';
 import Grid from '@material-ui/core/Grid';
 import ProjectItem from '../components/ProjectItem';
+import Container from '@material-ui/core/Container';
 
 /**
  * Zobrazeni "seznamu projektu"
@@ -35,8 +36,11 @@ const MyProjects: FC = () => {
     }, []);
 
     return (
-        <div>
-            <Typography variant="h4">My projects</Typography>
+
+      <Container maxWidth='md'>
+        <Typography variant="h4">
+                My projects
+        </Typography>
             <Grid container spacing={1}>
                 {projects.filter(item => item.users.indexOf(userId) > -1).map((project, i) => (
                     <Grid key={i} xs={12} item>
@@ -54,7 +58,7 @@ const MyProjects: FC = () => {
             }}>
                 <Button variant='contained'>Add new project</Button>
             </Link>
-        </div>
+        </Container>
     );
 };
 
