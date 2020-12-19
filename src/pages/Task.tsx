@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 
 import { FC, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { categoriesCollection, Category, TaskReference, tasksCollection, useLoggedInUser } from '../utils/firebase';
+import { categoriesCollection, Category, Task, TaskReference, tasksCollection, useLoggedInUser } from '../utils/firebase';
 
 import { Card, CardContent, CardActions } from '@material-ui/core';
 import { Typography, TextField } from '@material-ui/core';
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
  * Stranka pro vytvareni tasku
  */
 const TaskForm: FC = () => {
-  const location = useLocation<{ taskId: string, project: string, category: string[], name: string, note: string, phase: string }>();
+  const location = useLocation<{ taskId: string, project: string, category: string[], name: string, note: string, phase: string, order: number }>();
 
   const [name, setName] = useState(location.state.name === undefined ? '' : location.state.name);
   const [note, setNote] = useState(location.state.note === undefined ? '' : location.state.note);
@@ -102,6 +102,20 @@ const TaskForm: FC = () => {
     try {
       const taskDoc: TaskReference = taskId ? tasksCollection.doc(taskId) : tasksCollection.doc();
 
+      let taskOrder = taskId ?  location.state.order : tasks.filter(task => task.project === projectId && task.phase === phase).length + 1; 
+
+      if (location.state.phase !== phase) {
+        let taskOrderOriginal = taskOrder; // ulozeni puvodniho task orderu
+        taskOrder = tasks.filter(task => task.project === projectId && task.phase === phase).length + 1;
+        /**
+         * Pri presunu do jine faze je potreba take updatnout poradi prvku, ktere za nimi, tudis dekrementovat o 1
+         */
+        const tasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === location.state.phase && task.order > taskOrderOriginal)
+        tasksToUpdate.map((task, i) => {
+          tasksCollection.doc(task.id).update({ order: task.order - 1 });
+        })
+      }
+
       await taskDoc.set({
         id: taskDoc.id,
         name,
@@ -113,6 +127,7 @@ const TaskForm: FC = () => {
           email: user?.email ?? '',
         },
         note,
+        order: taskOrder,
       });
 
       push('/project-scrum', projectId);
@@ -124,6 +139,14 @@ const TaskForm: FC = () => {
 
   const handleTaskDelete = async () => {
     try {
+      /**
+       * Pri presunu do jine faze je potreba take updatnout poradi prvku, ktere za nimi, tudis dekrementovat o 1
+       */
+      let taskOrder = taskId ?  location.state.order : tasks.filter(task => task.project === projectId && task.phase === phase).length + 1;
+      const tasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === location.state.phase && task.order > taskOrder)
+      tasksToUpdate.map((task, i) => {
+        tasksCollection.doc(task.id).update({ order: task.order - 1 });
+      })
       await tasksCollection.doc(taskId).delete();
       push('/project-scrum', projectId);
     } catch (err) {
@@ -150,7 +173,24 @@ const TaskForm: FC = () => {
     );
   }, []);
 
-
+/**
+   * Zobrazeni tasku
+   */
+  const [tasks, setTasks] = useState<Task[]>([]);
+  useEffect(() => {
+    tasksCollection.onSnapshot(
+      snapshot => {
+        const taskFromFS: Task[] = snapshot.docs.map(doc => {
+          const task: Task = doc.data();
+          const id: string = doc.id;
+          return { ...task, id: id }
+        });
+        setTasks(taskFromFS);
+      },
+      err => setError(err.message),
+    );
+  }, []);
+  
   return (
     <Card>
       <CardContent>
