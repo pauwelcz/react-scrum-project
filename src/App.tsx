@@ -19,6 +19,8 @@ import ProjectForm from './pages/Project';
 import ProjectScrum from './pages/ProjectScrum';
 import CategoryForm from './pages/Category';
 import TaskForm from './pages/Task';
+import ManageUsersForm from './pages/ManageUsers';
+
 // MUI theme override
 const ourTheme = createMuiTheme({
   palette: {
@@ -89,6 +91,7 @@ const App: FC = () => {
                   <Route path='/project' exact component={ProjectForm} />
                   <Route path='/category' exact component={CategoryForm} />
                   <Route path='/task' exact component={TaskForm} />
+                  <Route path='/manage-users' exact component={ManageUsersForm} />
                   <Route path='/project-scrum' exact component={ProjectScrum} />
                   <Route component={Notfound} />
                 </Switch>

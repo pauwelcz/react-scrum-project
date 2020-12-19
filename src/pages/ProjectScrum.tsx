@@ -10,6 +10,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { BoardColumn } from '../components/BoardColumn';
 import { categoriesCollection, Category, Project, ProjectReference, projectsCollection, Task, tasksCollection, useLoggedInUser, UserItem, usersColection } from '../utils/firebase';
+import PersonAddOutlinedIcon from '@material-ui/icons/PersonAddOutlined';
 
 const useStyles = makeStyles(theme => ({
   card: { height: '100%' },
@@ -29,6 +30,7 @@ const useStyles = makeStyles(theme => ({
 
 
 const ProjectScrum: FC = () => {
+  const [error, setError] = useState<string>();
 
   const user = useLoggedInUser();
   const classes = useStyles();
@@ -43,11 +45,14 @@ const ProjectScrum: FC = () => {
     setCategoryToDelete(null);
   }
 
-  const location = useLocation();
+  // location.state: string === projectId
+  const location = useLocation<string>();
+  const projectId = location.state ?? '';
+  const projectDoc: ProjectReference = projectId ? projectsCollection.doc(projectId) : projectsCollection.doc();
 
-  const [error, setError] = useState<string>();
+
   /**
-   * Ziskani pole users pro zobrazeni, pouze jednou se udela
+   * Fetch current project
    */
   const [project, setProject] = useState<Project>();
   useEffect(() => {
@@ -56,26 +61,10 @@ const ProjectScrum: FC = () => {
     },
       err => setError(err.message),
     );
-  });
+  }, [projectId]);
 
   const [checkedUser, setCheckedUser] = useState<Record<string, number>>({});
-  /**
-   * Ziskani pole users pro zobrazeni
-   */
-  const [users, setUsers] = useState<UserItem[]>([]);
-  useEffect(() => {
-    usersColection.onSnapshot(
-      snapshot => {
-        const usersFromFS: UserItem[] = snapshot.docs.map(doc => {
-          const user: UserItem = doc.data();
 
-          return { ...user }
-        });
-        setUsers(usersFromFS);
-      },
-      err => setError(err.message),
-    );
-  }, [location.state]);
   /**
    * Ziskani pole kategorii pro zobrazeni
    */
@@ -166,46 +155,7 @@ const ProjectScrum: FC = () => {
     }
   };
 
-  /**
-   * Handling kategorii
-   */
-  const handleCheckboxToggleUser = (user: UserItem) => () => {
-    const currentValue: number = checkedUser[user.uid] ?? -1;
-    const newChecked: Record<string, number> = { ...checkedUser };
 
-    newChecked[user.uid] = currentValue === -1 ? 1 : -1;
-
-    setCheckedUser(newChecked);
-
-    let newUsers: UserItem[] = []
-    for (const user of users) {
-      if (user.uid in newChecked && newChecked[user.uid] === 1) {
-        newUsers.push(user)
-        break;
-      }
-    }
-
-    setFilteredUsers(newUsers)
-    //(newChecked)
-    //setFilteredTasks(tasks.filter(task => task.category in newChecked && newChecked[task.category] === 1));
-  };
-
-  const projectId = location.state + "";
-  const projectDoc: ProjectReference = projectId ? projectsCollection.doc(projectId) : projectsCollection.doc();
-  /**
-   * Update uzivatelu
-   */
-  const handleUsersSubmit = async () => {
-    const newUsers = [user?.uid === undefined ? "" : user?.uid]
-    // alert(JSON.stringify(checkedUser))
-    for (const key in checkedUser) {
-      if (checkedUser[key] === 1) newUsers.push(key)
-    }
-    alert(JSON.stringify(checkedUser))
-    await projectDoc.update({
-      users: newUsers
-    });
-  }
 
   return (
     <div>
@@ -269,49 +219,22 @@ const ProjectScrum: FC = () => {
               );
             })}
           </List>
-          {(user?.uid === project?.by.uid) && (
-            <List className={classes.listRoot}>
-              <ListSubheader>
-                <Typography variant="h6">Users</Typography>
-                <IconButton edge="end" onClick={handleUsersSubmit}>
-                  <AddCircleOutlinedIcon />
-                </IconButton>
-              </ListSubheader>
-              {users.filter(item => item.uid !== user?.uid).map((user: UserItem) => {
-                const labelId = `checkbox-list-label-${user.uid}`;
-                return (
-                  <ListItem key={user.uid} role={undefined} dense button onClick={handleCheckboxToggleUser(user)}>
-                    <ListItemIcon>
-                      <Checkbox
-                        color="primary"
-                        edge="start"
-                        checked={checkedUser[user.uid] === 1}
-                        tabIndex={-1}
-                        disableRipple
-                        inputProps={{ 'aria-labelledby': labelId }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText id={labelId} primary={<Typography color="textPrimary">{user.email}</Typography>} />
-                  </ListItem>
-                )
-              })};
-            </List>
-          )}
         </Grid>
-
         <Grid container item xs={12} sm={9} spacing={1}>
-          <Grid item sm={3}>
-            <BoardColumn title={"TO DO"} tasks={filterTasksByPhase("TO DO")} categories={categories} />
-          </Grid>
-          <Grid item sm={3}>
-            <BoardColumn title={"IN PROGRESS"} tasks={filterTasksByPhase("IN PROGRESS")} categories={categories} />
-          </Grid>
-          <Grid item sm={3}>
-            <BoardColumn title={"TESTING"} tasks={filterTasksByPhase("TESTING")} categories={categories} />
-          </Grid>
-          <Grid item sm={3}>
-            <BoardColumn title={"DONE"} tasks={filterTasksByPhase("DONE")} categories={categories} />
-          </Grid>
+          <>
+            <Grid item sm={3}>
+              <BoardColumn title={"TO DO"} tasks={filterTasksByPhase("TO DO")} categories={categories} />
+            </Grid>
+            <Grid item sm={3}>
+              <BoardColumn title={"IN PROGRESS"} tasks={filterTasksByPhase("IN PROGRESS")} categories={categories} />
+            </Grid>
+            <Grid item sm={3}>
+              <BoardColumn title={"TESTING"} tasks={filterTasksByPhase("TESTING")} categories={categories} />
+            </Grid>
+            <Grid item sm={3}>
+              <BoardColumn title={"DONE"} tasks={filterTasksByPhase("DONE")} categories={categories} />
+            </Grid>
+          </>
         </Grid>
       </Grid>
 
@@ -346,12 +269,28 @@ const ProjectScrum: FC = () => {
           "project": location.state
         }
       }}>
-        <Fab size="large" variant="extended" color="primary" aria-label="add" className={classes.fabStyle}>
+        <Fab size="large" variant="extended" color="primary" aria-label="add task" className={classes.fabStyle}>
           <AddCircleOutlinedIcon className={classes.extendedIcon} />
           <Typography variant="h6">Add task</Typography>
         </Fab>
       </Link>
 
+      {user && project && user.uid === project.by.uid && <Link to={{
+        pathname: '/manage-users',
+        state: {
+          "projectId": location.state,
+          "owner": {
+            "uid": user.uid,
+            "email": user.email
+          }
+        }
+      }}>
+        <Fab size="large" variant="extended" color="secondary" aria-label="add users" className={classes.fabStyle}>
+          <PersonAddOutlinedIcon className={classes.extendedIcon} />
+          <Typography variant="h6">Manage project members</Typography>
+        </Fab>
+      </Link>
+      }
     </div>
   );
 };
