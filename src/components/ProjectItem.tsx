@@ -34,11 +34,10 @@ const ProjectItem: FC<ProjectItemProps> = ({ project }) => {
 
   const categories: Category[] = useFetchCategoriesForProject(project.id);
   const tasks: Task[] = useFetchTasksForProject(project.id);
-
   /**
    * Delete iteratively because for collection delete, we would need to implement Cloud Functions
    */
-  const deleteProject = () => {
+  const onDelete = () => {
     tasks.map(task => tasksCollection.doc(task.id).delete());
     categories.map(cat => categoriesCollection.doc(cat.id).delete());
     projectsCollection.doc(project.id).delete();
@@ -85,7 +84,7 @@ const ProjectItem: FC<ProjectItemProps> = ({ project }) => {
                 <EditIcon />
               </IconButton>
             </Link>
-            <IconButton onClick={() => deleteProject()}>
+            <IconButton onClick={() => onDelete()}>
               <DeleteIcon />
             </IconButton>
           </div>

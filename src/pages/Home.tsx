@@ -14,15 +14,14 @@ const Home: FC = () => {
     return (
         <div>
             <Typography variant="body1" paragraph={true}>
-                <p>
+                
                     We would like to introduce you to our website with which
                     you can conveniently create a SCRUM table so that
                     you have an overview when developing your projects.
-                </p>
-                <p>
+                
                     If you are interested, please continue to the
                     <Link className={classes.link} to='/my-projects'>MY PROJECTS</Link> page.
-                </p>
+                
             </Typography>
             <img src={example} alt="Example image" />
             <Typography variant="body2" paragraph={true}>

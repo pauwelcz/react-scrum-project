@@ -101,8 +101,6 @@ const ProjectScrum: FC = () => {
   };
 
   // tasks filtered with checkboxes
-  const [filteredUsers, setFilteredUsers] = useState<UserItem[]>([]);
-
   const handleCheckboxToggle = (category: Category) => () => {
     const currentValue: number = checked[category.id] ?? -1;
     const newChecked: Record<string, number> = { ...checked };
@@ -129,8 +127,6 @@ const ProjectScrum: FC = () => {
       //setFilteredTasks(tasks.filter(task => task.category in newChecked && newChecked[task.category] === 1));
     }
   };
-
-
 
   // Handle drag & drop
   const onDragEnd = (result: any) => {

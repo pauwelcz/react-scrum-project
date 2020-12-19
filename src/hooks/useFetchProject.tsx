@@ -7,10 +7,12 @@ export const useFetchProject = (projectId: string): Project | undefined => {
   const [project, setProject] = useState<Project>();
 
   useEffect(() => {
-    const unsubscribe = projectsCollection.doc(projectId).onSnapshot(
-      doc => setProject(doc.data()),
-      error => console.log(error.message)
-    );
+    const unsubscribe = projectsCollection
+      .doc(projectId)
+      .onSnapshot(
+        doc => setProject(doc.data()),
+        error => console.log(error.message)
+      );
 
     return () => unsubscribe();
   }, [projectId]);

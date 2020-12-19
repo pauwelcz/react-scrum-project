@@ -7,10 +7,12 @@ export const useFetchProjectsForUser = (userId: string): Project[] => {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
-    const unsubscribe = projectsCollection.where("users", "array-contains", userId).onSnapshot(
-      snapshot => setProjects(snapshot.docs.map(doc => doc.data())),
-      err => console.log(err.message),
-    );
+    const unsubscribe = projectsCollection
+      .where("users", "array-contains", userId)
+      .onSnapshot(
+        snapshot => setProjects(snapshot.docs.map(doc => doc.data())),
+        err => console.log(err.message),
+      );
 
     return () => unsubscribe();
   }, [userId]);

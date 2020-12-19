@@ -7,10 +7,11 @@ export const useFetchAllUsers = (): UserItem[] => {
   const [users, setUsers] = useState<UserItem[]>([]);
 
   useEffect(() => {
-    const unsubscribe = usersColection.onSnapshot(
-      snapshot => setUsers(snapshot.docs.map(doc => doc.data())),
-      err => console.log(err.message),
-    );
+    const unsubscribe = usersColection
+      .onSnapshot(
+        snapshot => setUsers(snapshot.docs.map(doc => doc.data())),
+        err => console.log(err.message),
+      );
 
     return () => unsubscribe();
   }, []);

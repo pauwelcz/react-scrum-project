@@ -7,10 +7,12 @@ export const useFetchTasksForProject = (taskId: string): Task[] => {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   useEffect(() => {
-    const unsubscribe = tasksCollection.where("project", "==", taskId).onSnapshot(
-      snapshot => setTasks(snapshot.docs.map(doc => doc.data())),
-      err => console.log(err.message),
-    );
+    const unsubscribe = tasksCollection
+      .where("project", "==", taskId)
+      .onSnapshot(
+        snapshot => setTasks(snapshot.docs.map(doc => doc.data())),
+        err => console.log(err.message),
+      );
 
     return () => unsubscribe();
   }, [taskId]);

@@ -7,10 +7,12 @@ export const useFetchCategoriesForProject = (projectId: string): Category[] => {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    const unsubscribe = categoriesCollection.where("project", "==", projectId).onSnapshot(
-      snapshot => setCategories(snapshot.docs.map(doc => doc.data())),
-      err => console.log(err.message),
-    );
+    const unsubscribe = categoriesCollection
+      .where("project", "==", projectId)
+      .onSnapshot(
+        snapshot => setCategories(snapshot.docs.map(doc => doc.data())),
+        err => console.log(err.message),
+      );
 
     return () => unsubscribe();
   }, [projectId]);
