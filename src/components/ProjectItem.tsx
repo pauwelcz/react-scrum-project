@@ -113,11 +113,11 @@ const ProjectItem: FC<ProjectItemProps> = ({ note, name, id: projectId, by, user
 
             </CardContent>
             <CardActions>
-                <Link to={{
+                <Link style={{ textDecoration: 'none' }} to={{
                     pathname: '/project-scrum',
                     state: projectId
                 }}>
-                    <Button variant='contained'>
+                    <Button>
                         Show SCRUM
                     </Button>
                 </Link>
