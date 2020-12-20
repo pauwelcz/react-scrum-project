@@ -1,20 +1,20 @@
-import { Checkbox, Divider, Fab, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader } from '@material-ui/core';
+import {Checkbox, Chip, Divider, Fab, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListSubheader} from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import AddCircleOutlinedIcon from '@material-ui/icons/AddCircleOutlined';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import PersonAddOutlinedIcon from '@material-ui/icons/PersonAddOutlined';
-import React, { FC, useEffect, useState } from 'react';
-import { DragDropContext } from 'react-beautiful-dnd';
-import { Link, useLocation } from 'react-router-dom';
-import { BoardColumn } from '../components/BoardColumn';
+import React, {FC, useEffect, useState} from 'react';
+import {DragDropContext} from 'react-beautiful-dnd';
+import {Link, useLocation} from 'react-router-dom';
+import {BoardColumn} from '../components/BoardColumn';
 import DialogOpennerWrapper from '../components/DialogPopper';
-import { useFetchCategoriesForProject } from '../hooks/useFetchCategoriesForProject';
+import {useFetchCategoriesForProject} from '../hooks/useFetchCategoriesForProject';
 import useFetchProject from '../hooks/useFetchProject';
 import useFetchTasksForProject from '../hooks/useFetchTasksForProject';
-import { categoriesCollection, Category, Project, Task, tasksCollection, useLoggedInUser } from '../utils/firebase';
+import {categoriesCollection, Category, Project, Task, tasksCollection, useLoggedInUser} from '../utils/firebase';
 
 
 const useStyles = makeStyles(theme => ({
@@ -182,7 +182,7 @@ const ProjectScrum: FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <List className={classes.listRoot}>
             <ListSubheader>
-              <Typography variant="h6">Categories</Typography>
+              <Typography variant="h6" color="textPrimary">CATEGORIES</Typography>
               <Link to={{
                 pathname: '/category',
                 state: {
@@ -209,7 +209,17 @@ const ProjectScrum: FC = () => {
                       inputProps={{ 'aria-labelledby': labelId }}
                     />
                   </ListItemIcon>
-                  <ListItemText id={labelId} primary={<Typography color="textPrimary">{category.name}</Typography>} />
+                  {/* <ListItemText id={labelId} primary={<Typography color="textPrimary">{category.name}</Typography>} /> */}
+                  <Chip
+                    size="small"
+                    label={category.name}
+                    style={{
+                      backgroundColor: category.color,
+                      margin: 2,
+                      padding: 5,
+                      maxWidth: "50%",
+                    }}
+                  />
 
                   <ListItemSecondaryAction>
                     <Link to={{

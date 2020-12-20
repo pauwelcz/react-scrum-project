@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
     overflow: "hidden",
     textAlign: 'left',
     fontSize: "65%",
-    height: "10em",
+    maxHeight: "9em",
   }
 }));
 

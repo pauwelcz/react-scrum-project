@@ -84,7 +84,8 @@ const BoardCard: FC<BoardCardProps> = ({ task, allCategories, index }) => {
                         style={{
                           backgroundColor: allCategories.find(item => item.id === cat)?.color,
                           margin: 2,
-                          padding: 5
+                          padding: 5,
+                          maxWidth: "90%",
                         }}
                       />
                     ))}
