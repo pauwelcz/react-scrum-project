@@ -4,14 +4,9 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
 import example from '../images/example_image.png';
 
 const useStyles = makeStyles((theme) => ({
-    link: { 
-        textDecoration: 'none',
-        color: theme.palette.primary.contrastText,
-    },
     typography: {
         color: theme.palette.primary.contrastText,
         textAlign: 'left',
@@ -32,10 +27,11 @@ const Home: FC = () => {
                 <Typography variant="body1" paragraph={true} className={classes.typography}>
                 
                     We would like to introduce you to our website with which
-                    you can conveniently create a SCRUM table so that
-                    you have an overview when developing your projects.
-                
-                    If you are interested, please continue to the <Link className={classes.link} to='/my-projects'>MY PROJECTS</Link> page.
+                    you can conveniently create a SCRUM board so that
+                    you have an overview when developing your projects, also with your colleagues.
+                </Typography>
+                <Typography variant="body1" paragraph={true} className={classes.typography}>
+                    If you are interested, please register or log in (if you are not logged in) and then continue to the MY PROJECTS page for creating your SCRUM boards.
                 
                 </Typography>
                 <div style={{ display:'flex', justifyContent:'center' }}>
