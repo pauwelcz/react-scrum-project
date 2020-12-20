@@ -1,4 +1,4 @@
-import { Card, CardActions, CardContent, Checkbox, List, ListItem, ListItemIcon, ListItemText, makeStyles, Typography } from '@material-ui/core';
+import { Card, CardActions, CardContent, Checkbox, Container, List, ListItem, ListItemIcon, ListItemText, makeStyles, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import React, { FC, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -72,41 +72,43 @@ const ManageUsersForm: FC = () => {
   }
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant='h4' gutterBottom>Project members</Typography>
-        <List className={classes.listRoot}>
-          {users.filter(item => item.uid !== location.state.owner.uid).map((user: UserItem) => {
-            const labelId = `checkbox-list-label-${user.uid}`;
-            return (
-              <ListItem key={user.uid} role={undefined} dense button onClick={handleCheckboxToggleUser(user)}>
-                <ListItemIcon>
-                  <Checkbox
-                    color="primary"
-                    edge="start"
-                    checked={checkedUsers[user.uid] === 1}
-                    tabIndex={-1}
-                    disableRipple
-                    inputProps={{ 'aria-labelledby': labelId }}
-                  />
-                </ListItemIcon>
-                <ListItemText id={labelId} primary={<Typography color="textPrimary">{user.email}</Typography>} />
-              </ListItem>
-            )
-          })}
-        </List>
-      </CardContent>
+    <Container maxWidth="sm">
+      <Card>
+        <CardContent>
+          <Typography variant='h4' gutterBottom>Project members</Typography>
+          <List className={classes.listRoot}>
+            {users.filter(item => item.uid !== location.state.owner.uid).map((user: UserItem) => {
+              const labelId = `checkbox-list-label-${user.uid}`;
+              return (
+                <ListItem key={user.uid} role={undefined} dense button onClick={handleCheckboxToggleUser(user)}>
+                  <ListItemIcon>
+                    <Checkbox
+                      color="primary"
+                      edge="start"
+                      checked={checkedUsers[user.uid] === 1}
+                      tabIndex={-1}
+                      disableRipple
+                      inputProps={{ 'aria-labelledby': labelId }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText id={labelId} primary={<Typography color="textPrimary">{user.email}</Typography>} />
+                </ListItem>
+              )
+            })}
+          </List>
+        </CardContent>
 
-      <CardActions>
-        <Button className={classes.button} onClick={handleUsersSubmit}>
-          Save changes
-        </Button>
+        <CardActions>
+          <Button className={classes.button} onClick={handleUsersSubmit}>
+            Save changes
+          </Button>
 
-        <Button className={classes.button} onClick={() => history.goBack()}>
-          Back
-        </Button>
-      </CardActions>
-    </Card>
+          <Button className={classes.button} onClick={() => history.goBack()}>
+            Back
+          </Button>
+        </CardActions>
+      </Card>
+    </Container>
   );
 };
 
