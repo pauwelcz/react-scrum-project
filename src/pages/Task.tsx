@@ -21,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
   button: {
     variant: 'text',
     size: 'large',
-    color: theme.palette.primary.main,
   },
   preview: {
     textAlign: 'left',
@@ -32,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
   chip: {
     margin: theme.spacing(0.5)
-  }
+  },
 }));
 
 export type TaskStateProps = {
@@ -191,7 +190,13 @@ const TaskForm: FC = () => {
                     clickable
                     onClick={() => handleCategoriesSelection(cat.id)}
                     className={classes.chip}
-                    style={{ backgroundColor: `${changeChipColor(cat)}` }}
+                    style={{
+                      backgroundColor:`${changeChipColor(cat)}`,
+                      color: 'black',
+                      margin: 2,
+                      padding: 5,
+                      maxWidth: "50%",
+                    }}
                   />
                 ))}
               </div>
@@ -209,11 +214,10 @@ const TaskForm: FC = () => {
             />
           </Grid>
 
-          <Grid container item lg={6} direction="column" alignItems="flex-start">
+          <Grid container item lg={6} direction="row" alignItems="flex-start">
             <Typography variant='caption' color='textSecondary'>
               Note preview
             </Typography>
-
             <ReactMarkdown children={note} className={classes.preview} />
           </Grid>
         </Grid>

@@ -19,15 +19,16 @@ import TaskForm from './pages/Task';
 import { signOut, useLoggedInUser } from './utils/firebase';
 import { Switch as SwitchButton} from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 const useStyles = makeStyles(theme => ({
   menuButton: {
     marginRight: theme.spacing(2),
     variant: 'outlined',
-    color: 'secondary',
+    color: 'primary',
   },
   switch: {
-    color: 'secondary',
+    color: 'primary',
     marginLeft: "auto",
     marginRight: -12
   },
@@ -47,10 +48,16 @@ const App: FC = () => {
   const ourTheme = createMuiTheme({
     palette: {
       primary: {
-        main: '#84c1ff',
+        main: darkMode ? "#424242" : '#84c1ff',
+        dark: darkMode ? "#3b5998" : '#3b5998',
+        contrastText: darkMode ? "#ffffff" : '#000000',
       },
       secondary: {
         main: '#f7b668',
+      },
+      background: {
+        default: darkMode ? "#303030" : '#d6eaff',
+        paper: darkMode ? "#424242" : '#ffffff',
       },
       type: darkMode ? "dark" : "light",
     },
@@ -61,6 +68,7 @@ const App: FC = () => {
 
   return (
     <MuiThemeProvider theme={ourTheme}>
+      <CssBaseline />
       <Router>
         <AppBar color='primary' position='sticky' variant='outlined'>
           {/* Navigation rendered on all pages */}

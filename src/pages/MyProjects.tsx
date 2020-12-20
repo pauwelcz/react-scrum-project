@@ -22,31 +22,31 @@ const useStyles = makeStyles(theme => ({
 
 const MyProjects: FC = () => {
   const classes = useStyles();
-  const user = useLoggedInUser();
-  const projects: Project[] = useFetchProjectsForUsers(user?.uid ?? '');
+    const user = useLoggedInUser();
+    const projects: Project[] = useFetchProjectsForUsers(user?.uid ?? '');
 
-  return (
-    <Container maxWidth='md'>
-      <Grid container direction="column">
-        <Grid item>
-          <Typography variant="h4">My projects </Typography>
-        </Grid>
+    return (
+        <Container maxWidth='md'>
+            <Grid container direction="column">
 
-        <Grid item>
-          <Link to={{ pathname: '/project', state: '' }} style={{ textDecoration: 'none' }}>
-            {/* <Button variant='contained'>Add new project</Button> */}
-            <Fab size="large" variant="extended" color="primary"
-              aria-label="add project" className={classes.fabStyle}>
-              <AddCircleOutlinedIcon className={classes.extendedIcon} />
-              <Typography variant="h6">Add project</Typography>
-            </Fab>
-          </Link>
-        </Grid>
+              <Grid item>
+                <Link to={{ pathname: '/project', state: '' }} style={{ textDecoration: 'none' }}>
+                  {/* <Button variant='contained'>Add new project</Button> */}
+                  <Fab size="large" variant="extended" color="primary"
+                    aria-label="add project" className={classes.fabStyle}>
+                    <AddCircleOutlinedIcon className={classes.extendedIcon} />
+                    <Typography variant="h6">Add project</Typography>
+                  </Fab>
+                </Link>
+              </Grid>
 
-        <Grid container item spacing={2}>
-          {projects.map((project, i) => (
-            <Grid item key={i} xs={12}>
-              <ProjectItem project={project} />
+                   <Grid container item spacing={2}>
+                    {projects.map((project, i) => (
+                      <Grid item key={i} xs={12}>
+                        <ProjectItem project={project} />
+                    </Grid>
+                ))}
+              </Grid>
             </Grid>
           ))}
         </Grid>

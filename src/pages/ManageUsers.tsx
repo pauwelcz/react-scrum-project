@@ -11,7 +11,6 @@ const useStyles = makeStyles(theme => ({
   button: {
     variant: 'text',
     size: 'large',
-    color: theme.palette.primary.main,
   },
   listRoot: {
     width: '100%',
