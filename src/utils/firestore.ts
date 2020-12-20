@@ -47,6 +47,7 @@ export const saveTask = async (task: Task, owner: User) => {
       phase: task.phase,
       category: task.category,
       project: task.project,
+      order: task.order,
       by: {
         uid: owner.uid,
         email: owner.email,

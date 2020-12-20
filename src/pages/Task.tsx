@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useHistory, useLocation } from 'react-router-dom';
 import useFetchCategoriesForProject from '../hooks/useFetchCategoriesForProject';
@@ -47,7 +47,8 @@ export type TaskStateProps = {
   category: string[],
   name: string,
   note: string,
-  phase: string
+  phase: string,
+  order: number
 }
 
 const TaskForm: FC = () => {
@@ -66,10 +67,7 @@ const TaskForm: FC = () => {
   const [categoryIds, setCategoryIds] = useState<string[]>(location.state.category ?? []);
 
 
-  /**
-   * Select/unselect category
-   */
-  const handleTaskCategories = (catId: string) => {
+  const handleCategoriesSelection = (catId: string) => {
     // category is not yet selected => insert into selected categories
     if (categoryIds.find(id => id === catId) === undefined) {
       setCategoryIds(oldIds => [...oldIds, catId])
@@ -87,23 +85,70 @@ const TaskForm: FC = () => {
     return "#dfe6e9";
   }
 
-
   const handleTaskSubmit = async () => {
     if (user) {
-      const taskDoc: TaskReference = taskId ? tasksCollection.doc(taskId) : tasksCollection.doc();
-      const taskToSave: Task = { id: taskDoc.id, name, note, phase, category: categoryIds, project: projectId, by: { uid: user.uid, email: user.email } };
-      await FirestoreService.saveTask(taskToSave, user);
-      history.push('/project-scrum', projectId);
+      try {
+
+        let taskOrder = taskId ? location.state.order : tasks.filter(task => task.project === projectId && task.phase === phase).length + 1;
+
+        if (location.state.phase !== phase) {
+          let taskOrderOriginal = taskOrder; // ulozeni puvodniho task orderu
+          taskOrder = tasks.filter(task => task.project === projectId && task.phase === phase).length + 1;
+          /**
+           * Pri presunu do jine faze je potreba take updatnout poradi prvku, ktere za nimi, tudis dekrementovat o 1
+           */
+          const tasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === location.state.phase && task.order > taskOrderOriginal)
+          tasksToUpdate.map((task, i) => {
+            tasksCollection.doc(task.id).update({ order: task.order - 1 });
+          })
+        }
+
+        const taskDoc: TaskReference = taskId ? tasksCollection.doc(taskId) : tasksCollection.doc();
+        const taskToSave: Task = { id: taskDoc.id, name, note, phase, category: categoryIds, project: projectId, order: taskOrder, by: { uid: user.uid, email: user.email } };
+        await FirestoreService.saveTask(taskToSave, user);
+        history.push('/project-scrum', projectId);
+      } catch (err) {
+        console.log(err.message);
+      }
     }
   };
 
   const handleTaskDelete = async () => {
     if (taskId) {
+      try {
+        /**
+         * Pri presunu do jine faze je potreba take updatnout poradi prvku, ktere za nimi, tudis dekrementovat o 1
+         */
+        let taskOrder = taskId ? location.state.order : tasks.filter(task => task.project === projectId && task.phase === phase).length + 1;
+        const tasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === location.state.phase && task.order > taskOrder)
+        tasksToUpdate.map((task, i) =>
+          tasksCollection.doc(task.id).update({ order: task.order - 1 })
+        )
+      } catch (err) {
+        console.log(`[Task delete] Error occurred ${err.message}`);
+      }
       FirestoreService.deleteTask(taskId);
       history.push('/project-scrum', projectId);
     }
   };
 
+  /**
+   * Zobrazeni tasku
+   */
+  const [tasks, setTasks] = useState<Task[]>([]);
+  useEffect(() => {
+    tasksCollection.onSnapshot(
+      snapshot => {
+        const taskFromFS: Task[] = snapshot.docs.map(doc => {
+          const task: Task = doc.data();
+          const id: string = doc.id;
+          return { ...task, id: id }
+        });
+        setTasks(taskFromFS);
+      },
+      err => console.log(err.message),
+    );
+  }, []);
 
   return (
     <Card>
@@ -151,7 +196,7 @@ const TaskForm: FC = () => {
                     size="small"
                     label={cat.name}
                     clickable
-                    onClick={() => handleTaskCategories(cat.id)}
+                    onClick={() => handleCategoriesSelection(cat.id)}
                     className={classes.chip}
                     style={{ backgroundColor: `${changeChipColor(cat)}` }}
                   />
@@ -174,7 +219,7 @@ const TaskForm: FC = () => {
           <Grid container item lg={6} direction="column" alignItems="flex-start">
             <Typography variant='caption' color='textSecondary'>
               Note preview
-              </Typography>
+            </Typography>
 
             <ReactMarkdown children={note} className={classes.preview} />
           </Grid>
@@ -188,11 +233,11 @@ const TaskForm: FC = () => {
 
         {(taskId) && <Button className={classes.button} onClick={handleTaskDelete}>
           Delete task
-          </Button>}
+        </Button>}
 
         <Button className={classes.button} onClick={() => history.goBack()}>
           Back
-          </Button>
+        </Button>
       </CardActions>
     </Card>
   );

@@ -23,7 +23,7 @@ const Home: FC = () => {
                     <Link className={classes.link} to='/my-projects'>MY PROJECTS</Link> page.
                 
             </Typography>
-            <img src={example} alt="Example image" />
+            <img src={example} alt="example" />
             <Typography variant="body2" paragraph={true}>
                 Authors: Sedlář Pavel, Daša Kušniráková, Adam Radvan
         </Typography>

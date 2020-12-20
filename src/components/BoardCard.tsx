@@ -38,13 +38,13 @@ const CardElement = styled.div<CardStylesProps>`
   }
 `
 
-type TaskProps = {
+type BoardCardProps = {
   task: Task,
   allCategories: Category[],
   index: number,
 }
 
-const BoardCard: FC<TaskProps> = ({ task, allCategories, index }) => {
+const BoardCard: FC<BoardCardProps> = ({ task, allCategories, index }) => {
   const classes = useStyles();
 
 
@@ -66,6 +66,7 @@ const BoardCard: FC<TaskProps> = ({ task, allCategories, index }) => {
               "note": task.note,
               "name": task.name,
               "category": task.category,
+              "order": task.order,
             }
           }}>
             <Card elevation={10}>
