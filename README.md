@@ -2,6 +2,8 @@
 
 This project is an implementation of an arbitraty number of Scrum boards - stored as projects, used for organizing tasks in software development. 
 
+The application is available on page https://scrum-project-c5327.web.app
+
 ## Design
 Users need to log in in order to be able to create and manage projects and tasks.
 
