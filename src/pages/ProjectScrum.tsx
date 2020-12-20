@@ -1,5 +1,4 @@
-import { Checkbox, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Fab, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
+import { Checkbox, Chip, Divider, Fab, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListSubheader } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -11,6 +10,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { Link, useLocation } from 'react-router-dom';
 import { BoardColumn } from '../components/BoardColumn';
+import DialogOpennerWrapper from '../components/DialogPopper';
 import { useFetchCategoriesForProject } from '../hooks/useFetchCategoriesForProject';
 import useFetchProject from '../hooks/useFetchProject';
 import useFetchTasksForProject from '../hooks/useFetchTasksForProject';
@@ -41,7 +41,6 @@ const ProjectScrum: FC = () => {
   const classes = useStyles();
   const location = useLocation<string>();
   const projectId = location.state ?? '';
-  const [error, setError] = useState<string>();
 
   const user = useLoggedInUser();
   const tasks = useFetchTasksForProject(location.state);
@@ -49,14 +48,6 @@ const ProjectScrum: FC = () => {
   const project: Project | undefined = useFetchProject(projectId);
 
   const [checked, setChecked] = useState<Record<string, number>>({});
-  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
-
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const handleOpenDialog = () => setDialogOpen(true);
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
-    setCategoryToDelete(null);
-  }
 
   // tasks filtered with checkboxes
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
@@ -66,7 +57,7 @@ const ProjectScrum: FC = () => {
   /**
    * Funkce pro mazani kategorie
    */
-  const deleteCategory = (categoryId: string | undefined) => {
+  const handleDeleteCategory = (categoryId: string | undefined) => {
     if (!categoryId) return;
     /**
      * Nejprve musim prepsat u tasku s danou kategorii polozku category na prazdny retezec
@@ -148,7 +139,7 @@ const ProjectScrum: FC = () => {
           //alert("jedu z vrchu dolu")
         }
       } catch (err) {
-        setError(err.what);
+        console.log(err.message);
       }
     } else {
       /**
@@ -179,7 +170,7 @@ const ProjectScrum: FC = () => {
           //alert(`Upravuji ${taskToChange.name}, na pozici ${destination.index + 1} ve ${destination.droppableId}`)
           tasksCollection.doc(taskToChange.id).update({ phase: destination.droppableId, order: destination.index + 1 });
         } catch (err) {
-          setError(err.what);
+          console.log(err.message);
         }
       }
     }
@@ -244,12 +235,16 @@ const ProjectScrum: FC = () => {
                         <EditIcon />
                       </IconButton>
                     </Link>
-                    <IconButton edge="end" onClick={() => {
-                      setCategoryToDelete(category);
-                      handleOpenDialog();
-                    }}>
-                      <DeleteIcon />
-                    </IconButton>
+                    <DialogOpennerWrapper
+                      message={<Typography>This action will permanently delete category: <b>{category.name}</b></Typography>}
+                      deleteCallback={() => handleDeleteCategory(category.id)}
+                      openComponent={
+                        (openCallback) => (
+                          <IconButton edge="end" onClick={() => openCallback()}>
+                            <DeleteIcon />
+                          </IconButton>
+                        )}
+                    />
                   </ListItemSecondaryAction>
 
                 </ListItem>
@@ -276,29 +271,7 @@ const ProjectScrum: FC = () => {
         </DragDropContext>
       </Grid>
 
-      <Dialog
-        open={dialogOpen}
-        onClose={handleCloseDialog}
-      >
-        <DialogTitle id="alert-dialog-delete-category">{"Data deletion warning"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-delete-category-description">
-            This action will permanently delete category: <b>{categoryToDelete?.name}</b>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={() => {
-            deleteCategory(categoryToDelete?.id);
-            handleCloseDialog();
-          }}
-            color="primary" autoFocus>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+
 
 
       <Link to={{

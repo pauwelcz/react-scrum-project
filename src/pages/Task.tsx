@@ -8,6 +8,7 @@ import Select from '@material-ui/core/Select';
 import React, { FC, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useHistory, useLocation } from 'react-router-dom';
+import DialogOpennerWrapper from '../components/DialogPopper';
 import useFetchCategoriesForProject from '../hooks/useFetchCategoriesForProject';
 import { Category, Task, TaskReference, tasksCollection, useLoggedInUser } from '../utils/firebase';
 import * as FirestoreService from '../utils/firestore';
@@ -112,23 +113,20 @@ const TaskForm: FC = () => {
     }
   };
 
-  const handleTaskDelete = async () => {
-    if (taskId) {
-      try {
-        /**
-         * Pri presunu do jine faze je potreba take updatnout poradi prvku, ktere za nimi, tudis dekrementovat o 1
-         */
-        let taskOrder = taskId ? location.state.order : tasks.filter(task => task.project === projectId && task.phase === phase).length + 1;
-        const tasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === location.state.phase && task.order > taskOrder)
-        tasksToUpdate.map((task, i) =>
-          tasksCollection.doc(task.id).update({ order: task.order - 1 })
-        )
-      } catch (err) {
-        console.log(`[Task delete] Error occurred ${err.message}`);
-      }
-      FirestoreService.deleteTask(taskId);
-      history.push('/project-scrum', projectId);
+  const handleTaskDelete = (id: string | undefined) => {
+    if (!id) return;
+    try {
+      /**
+       * Pri presunu do jine faze je potreba take updatnout poradi prvku, ktere za nimi, tudis dekrementovat o 1
+       */
+      let taskOrder = id ? location.state.order : tasks.filter(task => task.project === projectId && task.phase === phase).length + 1;
+      const tasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === location.state.phase && task.order > taskOrder)
+      tasksToUpdate.map((task, i) => tasksCollection.doc(task.id).update({ order: task.order - 1 }))
+    } catch (err) {
+      console.log(`[Task delete] Error occurred ${err.message}`);
     }
+    FirestoreService.deleteTask(id);
+    history.push('/project-scrum', projectId);
   };
 
   /**
@@ -152,13 +150,13 @@ const TaskForm: FC = () => {
   return (
     <Card>
       <CardContent>
-        <Grid item lg={6} direction="row">
+        <Grid item lg={6}>
           <Typography variant='h4' gutterBottom>
             {taskId ? 'Update task' : 'Create task'}
           </Typography>
         </Grid>
         <Grid container spacing={6} direction="row">
-          <Grid item lg={6} direction="column" alignContent="flex-start">
+          <Grid item lg={6}>
             <TextField
               label='Task name'
               name='name'
@@ -230,9 +228,16 @@ const TaskForm: FC = () => {
           {taskId ? 'Update task' : 'Create task'}
         </Button>
 
-        {(taskId) && <Button className={classes.button} onClick={handleTaskDelete}>
-          Delete task
-        </Button>}
+        {(taskId) && <DialogOpennerWrapper
+          message={<Typography>This action will permanently delete task: <b>{name}</b></Typography>}
+          deleteCallback={() => handleTaskDelete(taskId)}
+          openComponent={
+            (openCallback) => (
+              <Button className={classes.button} onClick={() => openCallback()}>
+                Delete task
+              </Button>
+            )}
+        />}
 
         <Button className={classes.button} onClick={() => history.goBack()}>
           Back

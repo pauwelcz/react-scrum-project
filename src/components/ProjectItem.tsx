@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import useFetchCategoriesForProject from '../hooks/useFetchCategoriesForProject';
 import useFetchTasksForProject from '../hooks/useFetchTasksForProject';
 import { categoriesCollection, Category, Project, projectsCollection, Task, tasksCollection, useLoggedInUser } from '../utils/firebase';
+import DialogOpennerWrapper from './DialogPopper';
 
 
 const useStyles = makeStyles(() => ({
@@ -37,7 +38,7 @@ const ProjectItem: FC<ProjectItemProps> = ({ project }) => {
   /**
    * Delete iteratively because for collection delete, we would need to implement Cloud Functions
    */
-  const onDelete = () => {
+  const onProjectDelete = () => {
     tasks.map(task => tasksCollection.doc(task.id).delete());
     categories.map(cat => categoriesCollection.doc(cat.id).delete());
     projectsCollection.doc(project.id).delete();
@@ -89,9 +90,16 @@ const ProjectItem: FC<ProjectItemProps> = ({ project }) => {
               </IconButton>
             </Link>
 
-            <IconButton onClick={onDelete}>
-              <DeleteIcon />
-            </IconButton>
+            <DialogOpennerWrapper
+              message={<Typography >This action will permanently delete project: <b>{project.name}</b></Typography>}
+              deleteCallback={() => onProjectDelete()}
+              openComponent={
+                (openCallback) => (
+                  <IconButton edge="end" onClick={() => openCallback()}>
+                    <DeleteIcon />
+                  </IconButton>
+                )}
+            />
           </div>
         )}
       </CardActions>

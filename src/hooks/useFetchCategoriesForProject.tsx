@@ -8,7 +8,7 @@ export const useFetchCategoriesForProject = (projectId: string): Category[] => {
 
   useEffect(() => {
     const unsubscribe = categoriesCollection
-      .where("project", "==", projectId)
+      .where("project", "==", projectId ?? '')
       .onSnapshot(
         snapshot => setCategories(snapshot.docs
           .map(doc => doc.data())

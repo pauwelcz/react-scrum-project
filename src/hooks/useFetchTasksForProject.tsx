@@ -8,7 +8,7 @@ export const useFetchTasksForProject = (taskId: string): Task[] => {
 
   useEffect(() => {
     const unsubscribe = tasksCollection
-      .where("project", "==", taskId)
+      .where("project", "==", taskId ?? '')
       .onSnapshot(
         snapshot => setTasks(snapshot.docs
           .map(doc => doc.data())

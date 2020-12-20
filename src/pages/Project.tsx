@@ -57,13 +57,13 @@ const ProjectForm: FC = () => {
     <>
       <Card>
         <CardContent>
-          <Grid item lg={6} direction="row">
+          <Grid item lg={6}>
             <Typography variant='h4' gutterBottom>
               {location.state.id ? 'Update project' : 'Create project'}
             </Typography>
           </Grid>
           <Grid container spacing={6} direction="row">
-            <Grid item lg={6} direction="column" alignContent="flex-start">
+            <Grid item lg={6}>
               <TextField
                 label='Project name'
                 name='name'
