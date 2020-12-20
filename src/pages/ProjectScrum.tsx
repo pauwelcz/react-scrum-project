@@ -25,12 +25,16 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.paper,
   },
   fabStyle: {
-    minWidth: 350,
-    margin: theme.spacing(5),
+    width: "90%",
+    height: "3em",
+    background: "#d6eaff",
   },
   extendedIcon: {
     marginRight: theme.spacing(1),
   },
+  link: {
+    textDecoration: "none",
+  }
 }));
 
 const filterTasksByPhase = (tasks: Task[], phase: string) => {
@@ -182,19 +186,59 @@ const ProjectScrum: FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <List className={classes.listRoot}>
             <ListSubheader>
-              <Typography variant="h6" color="textPrimary">CATEGORIES</Typography>
-              <Link to={{
-                pathname: '/category',
-                state: {
-                  "project": location.state
-                }
-              }}>
-                <IconButton edge="end">
-                  <AddCircleOutlinedIcon />
-                </IconButton>
-              </Link>
+              <Grid container item spacing={2} direction="column">
+                <Grid item>
+                  <Link className={classes.link} to={{
+                        pathname: '/task',
+                        state: {
+                          "project": location.state
+                        }
+                      }}>
+                      <Fab variant="extended" aria-label="add task" className={classes.fabStyle}>
+                        <AddCircleOutlinedIcon className={classes.extendedIcon} />
+                        <Typography>Add task</Typography>
+                      </Fab>
+                    </Link>
+                </Grid>
 
-              <Divider variant="middle" />
+                <Grid item>
+                  <Link className={classes.link} to={{
+                    pathname: '/category',
+                    state: {
+                      "project": location.state
+                    }
+                  }}>
+                    <Fab variant="extended" aria-label="add category" 
+                        className={classes.fabStyle}>
+                      <AddCircleOutlinedIcon className={classes.extendedIcon} />
+                      <Typography>Add category</Typography>
+                    </Fab>
+                  </Link>
+                </Grid>
+                <Grid item>
+                  {user && project && user.uid === project.by.uid && <Link className={classes.link} to={{
+                    pathname: '/manage-users',
+                    state: {
+                      "projectId": location.state,
+                      "owner": {
+                        "uid": user.uid,
+                        "email": user.email
+                      }
+                    }
+                  }}>
+                    <Fab variant="extended" aria-label="add users" className={classes.fabStyle}>
+                      <PersonAddOutlinedIcon className={classes.extendedIcon} />
+                      <Typography>Manage users</Typography>
+                    </Fab>
+                  </Link>
+                  }
+                </Grid>
+              </Grid>
+
+              <Grid item>
+                <Typography variant="h6" color="textPrimary" style={{ marginTop: 40 }}>CATEGORIES</Typography>
+                <Divider variant="middle" />
+              </Grid>
             </ListSubheader>
 
             {categories.map((category: Category) => {
@@ -211,6 +255,7 @@ const ProjectScrum: FC = () => {
                       inputProps={{ 'aria-labelledby': labelId }}
                     />
                   </ListItemIcon>
+
                   <Chip
                     size="small"
                     label={category.name}
@@ -272,39 +317,6 @@ const ProjectScrum: FC = () => {
           </Grid>
         </DragDropContext>
       </Grid>
-
-
-
-
-      <Link to={{
-        pathname: '/task',
-        state: {
-          "project": location.state
-        }
-      }}>
-        <Fab size="large" variant="extended" color="primary" aria-label="add task" className={classes.fabStyle}>
-          <AddCircleOutlinedIcon className={classes.extendedIcon} />
-          <Typography variant="h6">Add task</Typography>
-        </Fab>
-      </Link>
-
-      {/* Link to: ManageUsers, state type: ManageUsersFormProps  */}
-      {user && project && user.uid === project.by.uid && <Link to={{
-        pathname: '/manage-users',
-        state: {
-          "projectId": location.state,
-          "owner": {
-            "uid": user.uid,
-            "email": user.email
-          }
-        }
-      }}>
-        <Fab size="large" variant="extended" color="secondary" aria-label="add users" className={classes.fabStyle}>
-          <PersonAddOutlinedIcon className={classes.extendedIcon} />
-          <Typography variant="h6">Manage project members</Typography>
-        </Fab>
-      </Link>
-      }
     </div>
   );
 };
