@@ -23,11 +23,12 @@ import { signOut, useLoggedInUser } from './utils/firebase';
 const ourTheme = createMuiTheme({
   palette: {
     primary: {
-      main: '#9B61FF',
+      main: '#84c1ff',
     },
     secondary: {
-      main: '#F5A442',
+      main: '#f7b668',
     },
+
   },
 });
 

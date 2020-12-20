@@ -191,7 +191,7 @@ const ProjectScrum: FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <List className={classes.listRoot}>
             <ListSubheader>
-              <Typography variant="h6">Categories</Typography>
+              <Typography variant="h6" color="textPrimary">CATEGORIES</Typography>
               <Link to={{
                 pathname: '/category',
                 state: {
