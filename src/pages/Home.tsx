@@ -8,9 +8,10 @@ const useStyles = makeStyles(() => ({
     link: { textDecoration: 'none' },
 }));
 
+
 const Home: FC = () => {
     const classes = useStyles();
-
+    document.title = 'Home';
     return (
         <div>
             <Typography variant="body1" paragraph={true}>

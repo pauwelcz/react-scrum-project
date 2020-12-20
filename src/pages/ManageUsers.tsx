@@ -26,6 +26,7 @@ export type ManageUsersStateProps = {
 }
 
 const ManageUsersForm: FC = () => {
+  document.title = 'Manage users';
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation<ManageUsersStateProps>();

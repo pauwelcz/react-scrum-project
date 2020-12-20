@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 const ProjectForm: FC = () => {
+  document.title = 'Project editor';
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation<{ projectId: string, name: string, note: string, users: string[] }>();

@@ -52,6 +52,7 @@ export type TaskStateProps = {
 }
 
 const TaskForm: FC = () => {
+  document.title = 'Task editor';
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation<TaskStateProps>();

@@ -35,6 +35,7 @@ const useStyles = makeStyles(theme => ({
 
 
 const ProjectScrum: FC = () => {
+  document.title = 'SCRUM';
   const classes = useStyles();
   const location = useLocation<string>();
   const projectId = location.state ?? '';

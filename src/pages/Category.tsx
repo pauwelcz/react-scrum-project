@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
  * Stranka pro vytvareni kategorie
  */
 const CategoryForm: FC = () => {
+  document.title = 'Category editor';
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation<{ categoryId: string, project: string, name: string, color: string }>();

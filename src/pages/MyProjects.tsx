@@ -9,6 +9,7 @@ import useFetchProjectsForUsers from '../hooks/useFetchProjectsForUser';
 import { Project, useLoggedInUser } from '../utils/firebase';
 
 const MyProjects: FC = () => {
+    document.title = 'My projects';
     const user = useLoggedInUser();
     const projects: Project[] = useFetchProjectsForUsers(user?.uid ?? '');
 

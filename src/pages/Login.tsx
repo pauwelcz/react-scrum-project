@@ -7,6 +7,7 @@ import { ReactComponent as Logo } from './logo.svg';
 import { signIn, signUp, useLoggedInUser } from '../utils/firebase';
 
 const Login: FC = () => {
+  document.title = 'Login';
   const [user, setUser] = useState('');
   const [password, setPassword] = useState('');
 
