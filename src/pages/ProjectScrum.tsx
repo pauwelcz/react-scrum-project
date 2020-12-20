@@ -215,6 +215,7 @@ const ProjectScrum: FC = () => {
                     label={category.name}
                     style={{
                       backgroundColor: category.color,
+                      color: 'black',
                       margin: 2,
                       padding: 5,
                       maxWidth: "50%",
