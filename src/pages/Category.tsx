@@ -83,9 +83,15 @@ const CategoryForm: FC = () => {
 
             <Grid item>
               <Chip
-                size="medium"
+                size="small"
                 label={name}
-                style={{ backgroundColor: color, minWidth: 100 }}
+                style={{
+                  backgroundColor: color,
+                  color: 'black',
+                  margin: 2,
+                  padding: 5,
+                  maxWidth: "50%",
+                }}
               />
             </Grid>
           </Grid>

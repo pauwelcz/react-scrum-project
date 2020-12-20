@@ -217,6 +217,8 @@ const ProjectScrum: FC = () => {
                     style={{
                       backgroundColor: category.color,
                       marginLeft: -25,
+                      color: 'black',
+                      margin: 2,
                       padding: 5,
                       maxWidth: "65%",
                     }}
