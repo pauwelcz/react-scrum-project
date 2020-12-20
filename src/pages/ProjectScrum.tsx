@@ -13,8 +13,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { BoardColumn } from '../components/BoardColumn';
 import { useFetchCategoriesForProject } from '../hooks/useFetchCategoriesForProject';
 import useFetchProject from '../hooks/useFetchProject';
+import useFetchTasksForProject from '../hooks/useFetchTasksForProject';
 import { categoriesCollection, Category, Project, Task, tasksCollection, useLoggedInUser } from '../utils/firebase';
-
 
 
 const useStyles = makeStyles(theme => ({
@@ -33,6 +33,9 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const filterTasksByPhase = (tasks: Task[], phase: string) => {
+  return tasks.filter(task => task.phase === phase).sort((a, b) => a.order > b.order ? 1 : -1)
+};
 
 const ProjectScrum: FC = () => {
   const classes = useStyles();
@@ -41,6 +44,7 @@ const ProjectScrum: FC = () => {
   const [error, setError] = useState<string>();
 
   const user = useLoggedInUser();
+  const tasks = useFetchTasksForProject(location.state);
   const categories: Category[] = useFetchCategoriesForProject(projectId);
   const project: Project | undefined = useFetchProject(projectId);
 
@@ -54,25 +58,10 @@ const ProjectScrum: FC = () => {
     setCategoryToDelete(null);
   }
 
+  // tasks filtered with checkboxes
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
+  useEffect(() => setFilteredTasks(tasks), [tasks]);
 
-
-  const [tasks, setTasks] = useState<Task[]>([]);
-  useEffect(() => {
-    tasksCollection.onSnapshot(
-      snapshot => {
-        const tasksFromFS: Task[] = snapshot.docs.map(doc => {
-          const task: Task = doc.data();
-          const id: string = doc.id;
-          return { ...task, id: id }
-        });
-        const tasksOfProject = tasksFromFS.filter(task => task.project === location.state);
-        setTasks(tasksOfProject);
-        setFilteredTasks(tasksOfProject);
-        setChecked({});
-      },
-      err => setError(err.message),
-    );
-  }, [location.state]);
 
   /**
    * Funkce pro mazani kategorie
@@ -92,11 +81,6 @@ const ProjectScrum: FC = () => {
     categoriesCollection.doc(categoryId).delete();
   }
 
-  // tasks filtered with checkboxes
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
-  const filterTasksByPhase = (phase: string) => {
-    return filteredTasks.filter(task => task.phase === phase).sort((a, b) => a.order > b.order ? 1 : -1)
-  };
 
   // tasks filtered with checkboxes
   const handleCheckboxToggle = (category: Category) => () => {
@@ -121,8 +105,6 @@ const ProjectScrum: FC = () => {
       }
 
       setFilteredTasks(newTasks)
-      //(newChecked)
-      //setFilteredTasks(tasks.filter(task => task.category in newChecked && newChecked[task.category] === 1));
     }
   };
 
@@ -269,16 +251,16 @@ const ProjectScrum: FC = () => {
         <DragDropContext onDragEnd={onDragEnd}>
           <Grid container item xs={12} sm={12} md={9} spacing={1}>
             <Grid item xs={12} sm={6} md={3}>
-              <BoardColumn title={"TO DO"} tasks={filterTasksByPhase("TO DO")} categories={categories} />
+              <BoardColumn title={"TO DO"} tasks={filterTasksByPhase(filteredTasks, "TO DO")} categories={categories} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <BoardColumn title={"IN PROGRESS"} tasks={filterTasksByPhase("IN PROGRESS")} categories={categories} />
+              <BoardColumn title={"IN PROGRESS"} tasks={filterTasksByPhase(filteredTasks, "IN PROGRESS")} categories={categories} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <BoardColumn title={"TESTING"} tasks={filterTasksByPhase("TESTING")} categories={categories} />
+              <BoardColumn title={"TESTING"} tasks={filterTasksByPhase(filteredTasks, "TESTING")} categories={categories} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <BoardColumn title={"DONE"} tasks={filterTasksByPhase("DONE")} categories={categories} />
+              <BoardColumn title={"DONE"} tasks={filterTasksByPhase(filteredTasks, "DONE")} categories={categories} />
             </Grid>
           </Grid>
         </DragDropContext>

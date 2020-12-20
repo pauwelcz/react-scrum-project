@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
 import firebase from 'firebase/app';
-import 'firebase/firestore';
 import 'firebase/auth';
+import 'firebase/firestore';
+import { useEffect, useState } from 'react';
 
 
 // Your web app's Firebase configuration
@@ -89,10 +89,10 @@ export const useLoggedInUser = () => {
 export const signUp = (email: string, password: string) =>
   firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
     if (user.user?.email !== null) {
-        db.collection("users").doc(user.user?.uid).set({
-          uid: user.user?.uid,
-          email: user.user?.email
-        })
+      db.collection("users").doc(user.user?.uid).set({
+        uid: user.user?.uid,
+        email: user.user?.email
+      })
     }
   });
 
@@ -102,3 +102,7 @@ export const signIn = (email: string, password: string) =>
 
 // Sign out handler
 export const signOut = () => firebase.auth().signOut();
+
+export const compareStrings = (a: string, b: string): number => {
+  return (a > b) ? 1 : ((b > a) ? -1 : 0);
+}
