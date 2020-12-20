@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Card, CardActions, CardContent } from '@material-ui/core';
-import { Button, Container, Link } from '@material-ui/core';
+import { Button, Container } from '@material-ui/core';
 import { Typography, TextField } from '@material-ui/core';
 import { ReactComponent as Logo } from './logo.svg';
 import { signIn, signUp, useLoggedInUser } from '../utils/firebase';
@@ -54,15 +54,6 @@ const Login: FC = () => {
               <b>{error}</b>
             </Typography>
           )}
-          <Typography variant='subtitle2' align='left' paragraph>
-            <Link>
-              <b>Forgot email?</b>
-            </Link>
-          </Typography>
-          <Typography variant='subtitle2' align='left' paragraph>
-            Not your device? Use Guest mode to sign in privately.{' '}
-            <Link>Learn more</Link>
-          </Typography>
         </CardContent>
         <CardActions>
           <Button
