@@ -28,27 +28,32 @@ const MyProjects: FC = () => {
 
     return (
         <Container maxWidth='md'>
-            <Grid container spacing={2} direction="column">
+            <Grid container direction="column">
               <Grid item>
                 <Typography variant="h4">My projects </Typography>
               </Grid>
+
+              <Grid item>
+                <Link to={{ pathname: '/project', state: '' }} style={{ textDecoration: 'none' }}>
+                    {/* <Button variant='contained'>Add new project</Button> */}
+                    <Fab size="large" variant="extended" color="primary" 
+                    aria-label="add project" className={classes.fabStyle}>
+                      <AddCircleOutlinedIcon className={classes.extendedIcon} />
+                      <Typography variant="h6">Add project</Typography>
+                    </Fab>
+                </Link>
+              </Grid>
+
+              <Grid container item spacing={2}>
                 {projects.map((project, i) => (
-                    <Grid key={i} xs={12} item>
+                    <Grid item key={i} xs={12}>
                         <ProjectItem project={project} />
                     </Grid>
                 ))}
+              </Grid>
             </Grid>
             
-            <Grid item>
-              <Link to={{ pathname: '/project', state: '' }} style={{ textDecoration: 'none' }}>
-                  {/* <Button variant='contained'>Add new project</Button> */}
-                  <Fab size="large" variant="extended" color="primary" 
-                  aria-label="add project" className={classes.fabStyle}>
-                    <AddCircleOutlinedIcon className={classes.extendedIcon} />
-                    <Typography variant="h6">Add project</Typography>
-                  </Fab>
-              </Link>
-            </Grid>
+            
         </Container>
     );
 };
