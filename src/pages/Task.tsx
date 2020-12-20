@@ -1,10 +1,7 @@
-import { Card, CardActions, CardContent, FormControl, makeStyles, TextField, Typography } from '@material-ui/core';
+import { Card, CardActions, CardContent, FormControl, FormControlLabel, makeStyles, Radio, RadioGroup, TextField, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip/Chip';
 import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import React, { FC, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -16,10 +13,7 @@ import * as FirestoreService from '../utils/firestore';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    fullWidth: 'true',
-    display: 'flex',
+    margin: theme.spacing(1.5),
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
@@ -166,19 +160,21 @@ const TaskForm: FC = () => {
               onChange={e => setName(e.target.value)}
             />
 
-            <FormControl className={classes.formControl}>
-              <InputLabel id="demo-simple-select-label">Phase</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
+            <FormControl className={classes.formControl} component="fieldset" fullWidth>
+              <Typography variant='caption' color='textSecondary' align="left">
+                Phase
+              </Typography>
+              <RadioGroup row
+                aria-label="phase"
+                name="phase-radio-group"
                 value={phase}
                 onChange={e => setPhase(e.target.value as string)}
               >
-                <MenuItem value={'TO DO'}>TO DO</MenuItem>
-                <MenuItem value={'IN PROGRESS'}>IN PROGRESS</MenuItem>
-                <MenuItem value={'TESTING'}>TESTING</MenuItem>
-                <MenuItem value={'DONE'}>DONE</MenuItem>
-              </Select>
+                <FormControlLabel value='TO DO' control={<Radio color="primary" />} label='TO DO' />
+                <FormControlLabel value='IN PROGRESS' control={<Radio color="primary" />} label='IN PROGRESS' />
+                <FormControlLabel value='TESTING' control={<Radio color="primary" />} label='TESTING' />
+                <FormControlLabel value='DONE' control={<Radio color="primary" />} label='DONE' />
+              </RadioGroup>
             </FormControl>
 
             <FormControl margin="normal" fullWidth className={classes.categories}>
