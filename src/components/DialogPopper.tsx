@@ -1,4 +1,4 @@
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import React, { FC, ReactNode, useState } from 'react';
 
@@ -23,9 +23,7 @@ const DialogOpennerWrapper: FC<DialogPopperProps> = (props) => {
       >
         <DialogTitle id="alert-dialog-delete">{"Data deletion warning"}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-delete-description">
-            {props.message}
-          </DialogContentText>
+          {props.message}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} color="primary">

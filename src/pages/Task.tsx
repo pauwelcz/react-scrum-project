@@ -150,13 +150,13 @@ const TaskForm: FC = () => {
   return (
     <Card>
       <CardContent>
-        <Grid item lg={6} direction="row">
+        <Grid item lg={6}>
           <Typography variant='h4' gutterBottom>
             {taskId ? 'Update task' : 'Create task'}
           </Typography>
         </Grid>
         <Grid container spacing={6} direction="row">
-          <Grid item lg={6} direction="column" alignContent="flex-start">
+          <Grid item lg={6}>
             <TextField
               label='Task name'
               name='name'

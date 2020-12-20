@@ -91,7 +91,7 @@ const ProjectItem: FC<ProjectItemProps> = ({ project }) => {
             </Link>
 
             <DialogOpennerWrapper
-              message={<Typography>This action will permanently delete project: <b>{project.name}</b></Typography>}
+              message={<Typography >This action will permanently delete project: <b>{project.name}</b></Typography>}
               deleteCallback={() => onProjectDelete()}
               openComponent={
                 (openCallback) => (
