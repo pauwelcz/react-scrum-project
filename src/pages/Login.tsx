@@ -68,7 +68,6 @@ const Login: FC = () => {
           <Button
             variant='text'
             size='large'
-            color='primary'
             // Handling promise with async/await
             onClick={async () => {
               try {
@@ -83,7 +82,6 @@ const Login: FC = () => {
           <Button
             variant='text'
             size='large'
-            color='primary'
             // Handling promise with chained handlers
             onClick={() => signIn(user, password).catch(err => setError(err.message))}
           >
