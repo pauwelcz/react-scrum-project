@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { BrowserRouter as Router, Link, Redirect, Route, Switch } from 'react-router-dom';
 import './App.css';
 import CategoryForm from './pages/Category';
@@ -17,20 +17,8 @@ import ProjectForm from './pages/Project';
 import ProjectScrum from './pages/ProjectScrum';
 import TaskForm from './pages/Task';
 import { signOut, useLoggedInUser } from './utils/firebase';
-
-
-// MUI theme override
-const ourTheme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#84c1ff',
-    },
-    secondary: {
-      main: '#f7b668',
-    },
-
-  },
-});
+import { Switch as SwitchButton} from '@material-ui/core';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 const useStyles = makeStyles(theme => ({
   menuButton: {
@@ -38,10 +26,36 @@ const useStyles = makeStyles(theme => ({
     variant: 'outlined',
     color: 'secondary',
   },
+  switch: {
+    color: 'secondary',
+    marginLeft: "auto",
+    marginRight: -12
+  },
   link: { textDecoration: 'none' },
 }));
 
 const App: FC = () => {
+  /**
+   * Darkmode
+   */
+  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const handleDarkMode = () => {
+    (darkMode ? setDarkMode(false) : setDarkMode(true));
+  }
+
+  // MUI theme override
+  const ourTheme = createMuiTheme({
+    palette: {
+      primary: {
+        main: '#84c1ff',
+      },
+      secondary: {
+        main: '#f7b668',
+      },
+      type: darkMode ? "dark" : "light",
+    },
+  });
+
   const classes = useStyles();
   const user = useLoggedInUser();
 
@@ -69,6 +83,17 @@ const App: FC = () => {
                 </Button>
               </>
             )}
+            <FormControlLabel 
+                className={classes.switch}
+                control={
+                  <SwitchButton
+                    checked={darkMode}
+                    onChange={handleDarkMode}
+                    name="darkMode"
+                  />
+                }
+                label="Dark Mode"
+              />
           </Toolbar>
         </AppBar>
 
