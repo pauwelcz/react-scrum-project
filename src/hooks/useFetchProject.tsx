@@ -8,7 +8,7 @@ export const useFetchProject = (projectId: string): Project | undefined => {
 
   useEffect(() => {
     const unsubscribe = projectsCollection
-      .doc(projectId)
+      .doc(projectId ?? '')
       .onSnapshot(
         doc => setProject(doc.data()),
         error => console.log(error.message)

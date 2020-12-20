@@ -46,8 +46,8 @@ export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
                   isDraggingOver={snapshot.isDraggingOver}
                 >
                   {props.tasks.map((task, i) => (
-                    <Grid container item direction="column" style={{ display: 'inline-block' }}>
-                      <BoardCard task={task} allCategories={props.categories} index={i} key={task.id} />
+                    <Grid container item direction="column" key={task.id} style={{ display: 'inline-block' }}>
+                      <BoardCard task={task} allCategories={props.categories} index={i} />
                     </Grid>
                   ))}
                   {provided.placeholder}

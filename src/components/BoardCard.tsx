@@ -49,7 +49,7 @@ const BoardCard: FC<BoardCardProps> = ({ task, allCategories, index }) => {
 
 
   return (
-    <Draggable draggableId={task.id} index={index} key={index}>
+    <Draggable draggableId={task.id} index={index}>
       {(provided, snapshot) => (
         <CardElement
           {...provided.draggableProps}
@@ -78,6 +78,7 @@ const BoardCard: FC<BoardCardProps> = ({ task, allCategories, index }) => {
                   <Grid container item justify="center">
                     {task.category.map((cat, i) => (
                       <Chip
+                        key={i}
                         size="small"
                         label={allCategories.find(item => item.id === cat)?.name}
                         style={{
