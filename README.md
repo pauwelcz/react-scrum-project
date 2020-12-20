@@ -1,70 +1,33 @@
-# Getting Started with Create React App
+# Scrum board app
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is an implementation of an arbitraty number of Scrum boards - stored as projects, used for organizing tasks in software development. 
 
-## Available Scripts
+## Design
+Users need to log in in order to be able to create and manage projects and tasks.
 
-In the project directory, you can run:
+### Project
+After log in, section _My projects_ becomes available in the main app menu. This is the place where users can view the list of their projects - but only those projects, which they are assigned to. 
 
-### `yarn start`
+Every project has an owner, who can manage the access of other users to the scrum board. This role is set automatically - project owner is the user who creates the project. Besides that, every project has a _name_ and _note_.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Scrum board
+Scrum board is organized in 4 columns. These columns store all tasks of a particular project. Each task is represented by a card, and each such card belogs to one of the columns according to the current development phase:
+* To do
+* In progress
+* Testing
+* Done
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Every card stores the _name_ of a task, its _phase_ , its _categories_ and a note for a more detailed description. 
 
-### `yarn test`
+### Categories
+Besides tasks, each project stores categories, which can be used for labeling cards for even better task organization. Every category has its own _color_.  
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+On the left side of the scrum board, filtering of tasks according to their assigned category can be applied. If a category is selected, all tasks labeled with this category remain visible on the scrum board, while tasks without the selected label(s) disappear.
 
-### `yarn build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Other features
+### Drag'n'drop
+If the current phase of a task changes, users can update its phase in scrum board by a simple drag and drop move. This feature works not only for moving cards between columns, but for changing cards' positios swithin one column as well.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Markdown language support
+Project and task notes support _Markdown_ language formatting. The formatted note "live" preview is always displayed on the right side of the task's or project's edit page.
