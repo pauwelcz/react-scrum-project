@@ -1,34 +1,54 @@
+import { Fab } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import AddCircleOutlinedIcon from '@material-ui/icons/AddCircleOutlined';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 import ProjectItem from '../components/ProjectItem';
 import useFetchProjectsForUsers from '../hooks/useFetchProjectsForUser';
 import { Project, useLoggedInUser } from '../utils/firebase';
 
+const useStyles = makeStyles(theme => ({
+  fabStyle: {
+    minWidth: 350,
+    margin: theme.spacing(5),
+  },
+  extendedIcon: {
+    marginRight: theme.spacing(1),
+  },
+}));
+
 const MyProjects: FC = () => {
+  const classes = useStyles();
     const user = useLoggedInUser();
     const projects: Project[] = useFetchProjectsForUsers(user?.uid ?? '');
 
     return (
         <Container maxWidth='md'>
-            <Typography variant="h4">My projects </Typography>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} direction="column">
+              <Grid item>
+                <Typography variant="h4">My projects </Typography>
+              </Grid>
                 {projects.map((project, i) => (
                     <Grid key={i} xs={12} item>
                         <ProjectItem project={project} />
                     </Grid>
                 ))}
             </Grid>
-
-            <Link to={{
-                pathname: '/project',
-                state: ''
-            }}>
-                <Button variant='contained'>Add new project</Button>
-            </Link>
+            
+            <Grid item>
+              <Link to={{ pathname: '/project', state: '' }} style={{ textDecoration: 'none' }}>
+                  {/* <Button variant='contained'>Add new project</Button> */}
+                  <Fab size="large" variant="extended" color="primary" 
+                  aria-label="add project" className={classes.fabStyle}>
+                    <AddCircleOutlinedIcon className={classes.extendedIcon} />
+                    <Typography variant="h6">Add project</Typography>
+                  </Fab>
+              </Link>
+            </Grid>
         </Container>
     );
 };
