@@ -29,9 +29,6 @@ const MyProjects: FC = () => {
     return (
         <Container maxWidth='md'>
             <Grid container direction="column">
-              <Grid item>
-                <Typography variant="h4">My projects </Typography>
-              </Grid>
 
               <Grid item>
                 <Link to={{ pathname: '/project', state: '' }} style={{ textDecoration: 'none' }}>

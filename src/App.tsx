@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   menuButton: {
     marginRight: theme.spacing(2),
     variant: 'outlined',
-    color: 'secondary',
+    color: 'primary',
   },
   switch: {
     color: 'primary',
