@@ -170,10 +170,12 @@ const TaskForm: FC = () => {
                 value={phase}
                 onChange={e => setPhase(e.target.value as string)}
               >
+              <Grid container justify="center">
                 <FormControlLabel value='TO DO' control={<Radio color="primary" />} label='TO DO' />
                 <FormControlLabel value='IN PROGRESS' control={<Radio color="primary" />} label='IN PROGRESS' />
                 <FormControlLabel value='TESTING' control={<Radio color="primary" />} label='TESTING' />
                 <FormControlLabel value='DONE' control={<Radio color="primary" />} label='DONE' />
+              </Grid>
               </RadioGroup>
             </FormControl>
 
@@ -214,7 +216,7 @@ const TaskForm: FC = () => {
             />
           </Grid>
 
-          <Grid container item lg={6} direction="row" alignItems="flex-start">
+          <Grid container item lg={6} direction="column" alignItems="flex-start">
             <Typography variant='caption' color='textSecondary'>
               Note preview
             </Typography>
