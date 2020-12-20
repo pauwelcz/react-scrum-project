@@ -6,13 +6,15 @@ import Typography from '@material-ui/core/Typography';
 import AddCircleOutlinedIcon from '@material-ui/icons/AddCircleOutlined';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import PersonAddOutlinedIcon from '@material-ui/icons/PersonAddOutlined';
 import React, { FC, useEffect, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { Link, useLocation } from 'react-router-dom';
 import { BoardColumn } from '../components/BoardColumn';
+import { useFetchCategoriesForProject } from '../hooks/useFetchCategoriesForProject';
+import useFetchProject from '../hooks/useFetchProject';
+import { categoriesCollection, Category, Project, Task, tasksCollection, useLoggedInUser } from '../utils/firebase';
 
-import { categoriesCollection, Category, Project, ProjectReference, projectsCollection, Task, TaskReference, tasksCollection, useLoggedInUser, UserItem, usersColection } from '../utils/firebase';
-import PersonAddOutlinedIcon from '@material-ui/icons/PersonAddOutlined';
 
 
 const useStyles = makeStyles(theme => ({
@@ -33,12 +35,16 @@ const useStyles = makeStyles(theme => ({
 
 
 const ProjectScrum: FC = () => {
+  const classes = useStyles();
+  const location = useLocation<string>();
+  const projectId = location.state ?? '';
   const [error, setError] = useState<string>();
 
   const user = useLoggedInUser();
-  const classes = useStyles();
-  const [checked, setChecked] = useState<Record<string, number>>({});
+  const categories: Category[] = useFetchCategoriesForProject(projectId);
+  const project: Project | undefined = useFetchProject(projectId);
 
+  const [checked, setChecked] = useState<Record<string, number>>({});
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -48,43 +54,7 @@ const ProjectScrum: FC = () => {
     setCategoryToDelete(null);
   }
 
-  // location.state: string === projectId
-  const location = useLocation<string>();
-  const projectId = location.state ?? '';
-  const projectDoc: ProjectReference = projectId ? projectsCollection.doc(projectId) : projectsCollection.doc();
 
-
-  /**
-   * Fetch current project
-   */
-  const [project, setProject] = useState<Project>();
-  useEffect(() => {
-    projectsCollection.doc(projectId).onSnapshot(doc => {
-      setProject(doc.data());
-    },
-      err => setError(err.message),
-    );
-  }, [projectId]);
-
-  const [checkedUser, setCheckedUser] = useState<Record<string, number>>({});
-
-  /**
-   * Ziskani pole kategorii pro zobrazeni
-   */
-  const [categories, setCategories] = useState<Category[]>([]);
-  useEffect(() => {
-    categoriesCollection.onSnapshot(
-      snapshot => {
-        const categoriesFromFS: Category[] = snapshot.docs.map(doc => {
-          const cat: Category = doc.data();
-          const id: string = doc.id;
-          return { ...cat, id: id }
-        });
-        setCategories(categoriesFromFS.filter(cat => cat.project === location.state));
-      },
-      err => setError(err.message),
-    );
-  }, [location.state]);
 
   const [tasks, setTasks] = useState<Task[]>([]);
   useEffect(() => {
@@ -129,8 +99,6 @@ const ProjectScrum: FC = () => {
   };
 
   // tasks filtered with checkboxes
-  const [filteredUsers, setFilteredUsers] = useState<UserItem[]>([]);
-
   const handleCheckboxToggle = (category: Category) => () => {
     const currentValue: number = checked[category.id] ?? -1;
     const newChecked: Record<string, number> = { ...checked };
@@ -158,84 +126,82 @@ const ProjectScrum: FC = () => {
     }
   };
 
-
-
   // Handle drag & drop
   const onDragEnd = (result: any) => {
-      const { source, destination, draggableId } = result
+    const { source, destination, draggableId } = result
 
-      // Do nothing if item is dropped outside the list
-      if (!destination) {
-        return
+    // Do nothing if item is dropped outside the list
+    if (!destination) {
+      return
+    }
+
+    // Do nothing if the item is dropped into the same place
+    if (destination.droppableId === source.droppableId) {
+      const sourceToChange = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order === source.index + 1)[0];
+      const destinationToChange = tasks.filter(task => task.project === projectId && task.phase === destination.droppableId && task.order === destination.index + 1)[0];
+      /**
+       * V podstate vymenim hodnoty, funguje
+       */
+      try {
+        // tasksCollection.doc(sourceToChange.id).update({ order: destinationToChange.order });
+        if (source.index > destination.index) {
+          //alert(`${destinationToChange.order}, ${sourceToChange.order}`)
+          const sourceTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order >= destinationToChange.order && task.order < sourceToChange.order)
+          sourceTasksToUpdate.forEach(task => {
+            //alert(`Upravuji ${task.name} na pozici ${task.order + 1 }`)
+            tasksCollection.doc(task.id).update({ order: task.order + 1 });
+          })
+          tasksCollection.doc(sourceToChange.id).update({ order: destinationToChange.order });
+          //alert(`Upravuji ${sourceToChange.name} na pozici ${destinationToChange.order}`)
+          // nejprve upravim index tasku
+        } else if (destination.index > source.index) {
+          const sourceTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order > sourceToChange.order && task.order <= destinationToChange.order)
+          sourceTasksToUpdate.forEach(task => {
+            //alert(`Upravuji ${task.name} na pozici ${task.order - 1 }`)
+            tasksCollection.doc(task.id).update({ order: task.order - 1 });
+          })
+          tasksCollection.doc(sourceToChange.id).update({ order: destinationToChange.order });
+          //alert(`Upravuji ${sourceToChange.name} na pozici ${destinationToChange.order}`)
+          //alert(`${sourceToChange.name}, ${sourceToChange.order}, ${destinationToChange.order}`)
+          //alert("jedu z vrchu dolu")
+        }
+      } catch (err) {
+        setError(err.what);
       }
-  
-      // Do nothing if the item is dropped into the same place
-      if (destination.droppableId === source.droppableId) {
-        const sourceToChange = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order === source.index + 1)[0];
-        const destinationToChange = tasks.filter(task => task.project === projectId && task.phase === destination.droppableId && task.order === destination.index + 1)[0];
-        /**
-         * V podstate vymenim hodnoty, funguje
-         */
+    } else {
+      /**
+       * Je potreba zmenit indexy jak v source tak v destination
+       */
+      /**
+       * Upravim source
+       */
+      const sourceTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order > source.index + 1)
+      sourceTasksToUpdate.forEach(task => {
+        //alert(`Upravuji ${task.name}, na pozici ${task.order - 1} ve ${task.phase}`)
+        tasksCollection.doc(task.id).update({ order: task.order - 1 });
+      })
+      /**
+       * Upravim destination
+       */
+      const destinationTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === destination.droppableId && task.order > destination.index)
+      destinationTasksToUpdate.forEach(task => {
+        //alert(`Upravuji ${task.name}, na pozici ${task.order + 1} ve ${task.phase}`)
+        tasksCollection.doc(task.id).update({ order: task.order + 1 });
+      })
+
+      //alert(sourceToChange.order)
+      let taskToChange = tasks.find(task => task.id === draggableId);
+      if (taskToChange) {
+        taskToChange.phase = destination.droppableId;
         try {
-          // tasksCollection.doc(sourceToChange.id).update({ order: destinationToChange.order });    
-          if (source.index > destination.index) {
-            //alert(`${destinationToChange.order}, ${sourceToChange.order}`)
-            const sourceTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order >= destinationToChange.order && task.order < sourceToChange.order)
-            sourceTasksToUpdate.map((task, i) => {
-              //alert(`Upravuji ${task.name} na pozici ${task.order + 1 }`)
-              tasksCollection.doc(task.id).update({ order: task.order + 1 });
-            })
-            tasksCollection.doc(sourceToChange.id).update({ order: destinationToChange.order });
-            //alert(`Upravuji ${sourceToChange.name} na pozici ${destinationToChange.order}`)
-            // nejprve upravim index tasku
-          } else if (destination.index > source.index) {
-            const sourceTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order > sourceToChange.order && task.order <= destinationToChange.order)
-            sourceTasksToUpdate.map((task, i) => {
-              //alert(`Upravuji ${task.name} na pozici ${task.order - 1 }`)
-              tasksCollection.doc(task.id).update({ order: task.order - 1 });
-            })
-            tasksCollection.doc(sourceToChange.id).update({ order: destinationToChange.order });
-            //alert(`Upravuji ${sourceToChange.name} na pozici ${destinationToChange.order}`)
-            //alert(`${sourceToChange.name}, ${sourceToChange.order}, ${destinationToChange.order}`)
-            //alert("jedu z vrchu dolu")
-          }
+          //alert(`Upravuji ${taskToChange.name}, na pozici ${destination.index + 1} ve ${destination.droppableId}`)
+          tasksCollection.doc(taskToChange.id).update({ phase: destination.droppableId, order: destination.index + 1 });
         } catch (err) {
           setError(err.what);
         }
-      } else {
-        /**
-         * Je potreba zmenit indexy jak v source tak v destination
-         */
-        /**
-         * Upravim source
-         */
-        const sourceTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === source.droppableId && task.order > source.index + 1)
-        sourceTasksToUpdate.map((task, i) => {
-          //alert(`Upravuji ${task.name}, na pozici ${task.order - 1} ve ${task.phase}`)
-          tasksCollection.doc(task.id).update({ order: task.order - 1 });
-        })
-        /**
-         * Upravim destination
-         */
-        const destinationTasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === destination.droppableId && task.order > destination.index)
-        destinationTasksToUpdate.map((task, i) => {
-          //alert(`Upravuji ${task.name}, na pozici ${task.order + 1} ve ${task.phase}`)
-          tasksCollection.doc(task.id).update({ order: task.order + 1 });
-        })
-
-        //alert(sourceToChange.order)
-        let taskToChange = tasks.find(task => task.id === draggableId); 
-        if (taskToChange) {
-          taskToChange.phase = destination.droppableId; 
-          try {
-            //alert(`Upravuji ${taskToChange.name}, na pozici ${destination.index + 1} ve ${destination.droppableId}`)
-            tasksCollection.doc(taskToChange.id).update({ phase: destination.droppableId, order: destination.index + 1});   
-          } catch (err) {
-            setError(err.what);
-          }
-        }
       }
     }
+  }
 
   return (
     <div>
@@ -258,7 +224,6 @@ const ProjectScrum: FC = () => {
             </ListSubheader>
             {categories.map((category: Category) => {
               const labelId = `checkbox-list-label-${category.name}`;
-
               return (
                 <ListItem key={category.id} role={undefined} dense button onClick={handleCheckboxToggle(category)}>
                   <ListItemIcon>
@@ -300,7 +265,7 @@ const ProjectScrum: FC = () => {
             })}
           </List>
         </Grid>
-        
+
         <DragDropContext onDragEnd={onDragEnd}>
           <Grid container item xs={12} sm={12} md={9} spacing={1}>
             <Grid item xs={12} sm={6} md={3}>
@@ -317,8 +282,8 @@ const ProjectScrum: FC = () => {
             </Grid>
           </Grid>
         </DragDropContext>
-        </Grid>
-      
+      </Grid>
+
       <Dialog
         open={dialogOpen}
         onClose={handleCloseDialog}
@@ -356,6 +321,7 @@ const ProjectScrum: FC = () => {
         </Fab>
       </Link>
 
+      {/* Link to: ManageUsers, state type: ManageUsersFormProps  */}
       {user && project && user.uid === project.by.uid && <Link to={{
         pathname: '/manage-users',
         state: {
