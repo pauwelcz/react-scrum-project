@@ -1,7 +1,7 @@
 import 'firebase/auth';
 import 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { UserItem, usersColection } from '../utils/firebase';
+import { compareStrings, UserItem, usersColection } from '../utils/firebase';
 
 export const useFetchAllUsers = (): UserItem[] => {
   const [users, setUsers] = useState<UserItem[]>([]);
@@ -9,7 +9,9 @@ export const useFetchAllUsers = (): UserItem[] => {
   useEffect(() => {
     const unsubscribe = usersColection
       .onSnapshot(
-        snapshot => setUsers(snapshot.docs.map(doc => doc.data())),
+        snapshot => setUsers(snapshot.docs
+          .map(doc => doc.data())
+          .sort((a: UserItem, b: UserItem) => compareStrings(a.email ?? '', b.email ?? ''))),
         err => console.log(err.message),
       );
 

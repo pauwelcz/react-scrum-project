@@ -28,11 +28,17 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+export type ProjectFormStateProps = {
+  id: string,
+  name: string,
+  note: string,
+  users: string[],
+}
 
 const ProjectForm: FC = () => {
   const classes = useStyles();
   const history = useHistory();
-  const location = useLocation<{ projectId: string, name: string, note: string, users: string[] }>();
+  const location = useLocation<ProjectFormStateProps>();
 
   const user = useLoggedInUser();
   const [name, setName] = useState(location.state.name ?? '');
@@ -40,7 +46,7 @@ const ProjectForm: FC = () => {
 
   const handleProjectSubmit = async () => {
     if (user) {
-      const projectDoc: ProjectReference = location.state.projectId ? projectsCollection.doc(location.state.projectId) : projectsCollection.doc();
+      const projectDoc: ProjectReference = location.state.id ? projectsCollection.doc(location.state.id) : projectsCollection.doc();
       const projectToSave: Project = { id: projectDoc.id, name, note, users: [user.uid], by: { uid: user.uid, email: user.email } };
       await FirestoreService.saveProject(projectToSave, user);
       history.push('/my-projects');
@@ -53,7 +59,7 @@ const ProjectForm: FC = () => {
         <CardContent>
           <Grid item lg={6} direction="row">
             <Typography variant='h4' gutterBottom>
-              {location.state.projectId ? 'Update project' : 'Create project'}
+              {location.state.id ? 'Update project' : 'Create project'}
             </Typography>
           </Grid>
           <Grid container spacing={6} direction="row">
@@ -89,7 +95,7 @@ const ProjectForm: FC = () => {
 
         <CardActions>
           <Button className={classes.button} onClick={handleProjectSubmit}>
-            {location.state.projectId ? 'Update project' : 'Create project'}
+            {location.state.id ? 'Update project' : 'Create project'}
           </Button>
 
           <Button className={classes.button} onClick={() => history.goBack()}>

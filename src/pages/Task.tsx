@@ -13,7 +13,6 @@ import { Category, Task, TaskReference, tasksCollection, useLoggedInUser } from 
 import * as FirestoreService from '../utils/firestore';
 
 
-
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -98,7 +97,7 @@ const TaskForm: FC = () => {
            * Pri presunu do jine faze je potreba take updatnout poradi prvku, ktere za nimi, tudis dekrementovat o 1
            */
           const tasksToUpdate = tasks.filter(task => task.project === projectId && task.phase === location.state.phase && task.order > taskOrderOriginal)
-          tasksToUpdate.map((task, i) => {
+          tasksToUpdate.forEach(task => {
             tasksCollection.doc(task.id).update({ order: task.order - 1 });
           })
         }

@@ -10,7 +10,9 @@ export const useFetchTasksForProject = (taskId: string): Task[] => {
     const unsubscribe = tasksCollection
       .where("project", "==", taskId)
       .onSnapshot(
-        snapshot => setTasks(snapshot.docs.map(doc => doc.data())),
+        snapshot => setTasks(snapshot.docs
+          .map(doc => doc.data())
+          .sort((a: Task, b: Task) => a.order - b.order)),
         err => console.log(err.message),
       );
 
