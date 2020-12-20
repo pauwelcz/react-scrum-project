@@ -193,8 +193,10 @@ const ProjectScrum: FC = () => {
                   <AddCircleOutlinedIcon />
                 </IconButton>
               </Link>
+
               <Divider variant="middle" />
             </ListSubheader>
+
             {categories.map((category: Category) => {
               const labelId = `checkbox-list-label-${category.name}`;
               return (
@@ -209,15 +211,14 @@ const ProjectScrum: FC = () => {
                       inputProps={{ 'aria-labelledby': labelId }}
                     />
                   </ListItemIcon>
-                  {/* <ListItemText id={labelId} primary={<Typography color="textPrimary">{category.name}</Typography>} /> */}
                   <Chip
                     size="small"
                     label={category.name}
                     style={{
                       backgroundColor: category.color,
-                      margin: 2,
+                      marginLeft: -25,
                       padding: 5,
-                      maxWidth: "50%",
+                      maxWidth: "65%",
                     }}
                   />
 
@@ -246,7 +247,6 @@ const ProjectScrum: FC = () => {
                         )}
                     />
                   </ListItemSecondaryAction>
-
                 </ListItem>
               );
             })}
