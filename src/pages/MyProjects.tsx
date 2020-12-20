@@ -27,7 +27,7 @@ const MyProjects: FC = () => {
 
     return (
         <Container maxWidth='md'>
-            <Grid container direction="column">
+          <Grid container direction="column">
 
               <Grid item>
                 <Link to={{ pathname: '/project', state: '' }} style={{ textDecoration: 'none' }}>
@@ -40,20 +40,15 @@ const MyProjects: FC = () => {
                 </Link>
               </Grid>
 
-                   <Grid container item spacing={2}>
-                    {projects.map((project, i) => (
-                      <Grid item key={i} xs={12}>
-                        <ProjectItem project={project} />
+              <Grid container item spacing={2}>
+                {projects.map((project, i) => (
+                    <Grid item key={i} xs={12}>
+                      <ProjectItem project={project} />
                     </Grid>
                 ))}
               </Grid>
             </Grid>
-          ))}
-        </Grid>
-      </Grid>
-
-
-    </Container>
+      </Container>
   );
 };
 
