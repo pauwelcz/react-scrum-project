@@ -50,6 +50,9 @@ const ProjectItem: FC<ProjectItemProps> = ({ project }) => {
           {project.name}
         </Typography>
         <Typography color='textSecondary'>
+          {`Project owner: ${project.by.email}`}
+        </Typography>
+        <Typography color='textSecondary'>
           {`Last update by: ${project.by.email}`}
         </Typography>
         {project.note && (
@@ -66,10 +69,12 @@ const ProjectItem: FC<ProjectItemProps> = ({ project }) => {
         }}>
           <Button>
             Show SCRUM
-                    </Button>
+          </Button>
         </Link>
+
         {(user?.uid === project.by.uid) && (
           <div>
+            {/* ProjectFormStateProps */}
             <Link to={{
               pathname: '/project',
               state: {
@@ -78,12 +83,12 @@ const ProjectItem: FC<ProjectItemProps> = ({ project }) => {
                 note: project.note,
                 users: project.users,
               }
-
             }}>
               <IconButton>
                 <EditIcon />
               </IconButton>
             </Link>
+
             <IconButton onClick={onDelete}>
               <DeleteIcon />
             </IconButton>
