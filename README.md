@@ -4,6 +4,8 @@ This project is an implementation of an arbitraty number of Scrum boards - store
 
 The application is available on page https://scrum-project-c5327.web.app
 
+_Authors: Pavel Sedlář, Daša Kušniráková, Adam Radvan_
+
 ## Design
 Users need to log in in order to be able to create and manage projects and tasks.
 
