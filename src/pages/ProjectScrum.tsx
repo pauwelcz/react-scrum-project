@@ -1,4 +1,4 @@
-import { Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Fab, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader } from '@material-ui/core';
+import { Checkbox, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Fab, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -218,7 +218,17 @@ const ProjectScrum: FC = () => {
                       inputProps={{ 'aria-labelledby': labelId }}
                     />
                   </ListItemIcon>
-                  <ListItemText id={labelId} primary={<Typography color="textPrimary">{category.name}</Typography>} />
+                  {/* <ListItemText id={labelId} primary={<Typography color="textPrimary">{category.name}</Typography>} /> */}
+                  <Chip
+                    size="small"
+                    label={category.name}
+                    style={{
+                      backgroundColor: category.color,
+                      margin: 2,
+                      padding: 5,
+                      maxWidth: "50%",
+                    }}
+                  />
 
                   <ListItemSecondaryAction>
                     <Link to={{
