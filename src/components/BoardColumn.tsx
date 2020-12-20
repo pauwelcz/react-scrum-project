@@ -31,7 +31,7 @@ export const BoardColumn: React.FC<BoardColumnProps> = (props) => {
   return (
     <div>
       <ColumnWrapper>
-        <Paper>
+        <Paper elevation={0}>
           <Grid container spacing={2} direction="column" justify="center" alignItems="center"
             style={{ display: 'inline-block' }}>
             <Grid item>
