@@ -26,14 +26,14 @@ const DialogOpennerWrapper: FC<DialogPopperProps> = (props) => {
           {props.message}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
+          <Button onClick={handleCloseDialog}>
             Cancel
             </Button>
           <Button onClick={() => {
             props.deleteCallback();
             handleCloseDialog();
           }}
-            color="primary" autoFocus>
+            autoFocus>
             Delete
             </Button>
         </DialogActions>
