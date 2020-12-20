@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
   button: {
     variant: 'text',
     size: 'large',
-    color: theme.palette.primary.main,
   },
   sectionTitle: {
     marginLeft: '10px',
