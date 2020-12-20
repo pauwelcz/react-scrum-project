@@ -16,13 +16,16 @@ import { categoriesCollection, Category, Project, projectsCollection, Task, task
 import DialogOpennerWrapper from './DialogPopper';
 
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   preview: {
     overflow: "hidden",
     textAlign: 'left',
     fontSize: "65%",
     maxHeight: "9em",
-  }
+  },
+  typography: {
+    color: theme.palette.primary.contrastText,
+  },
 }));
 
 export type ProjectItemProps = {
@@ -47,14 +50,11 @@ const ProjectItem: FC<ProjectItemProps> = ({ project }) => {
   return (
     <Card>
       <CardContent>
-        <Typography variant='h5' color='textSecondary'>
+        <Typography variant='h5' className={classes.typography}>
           {project.name}
         </Typography>
-        <Typography color='textSecondary'>
+        <Typography className={classes.typography}>
           {`Project owner: ${project.by.email}`}
-        </Typography>
-        <Typography color='textSecondary'>
-          {`Last update by: ${project.by.email}`}
         </Typography>
         {project.note && (
           <ReactMarkdown className={classes.preview}>
